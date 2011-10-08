@@ -12,6 +12,7 @@
 #import "GameConfig.h"
 #import "Game.h"
 #import "RootViewController.h"
+#import "YozioApi.h"
 
 @implementation GrenadeGameAppDelegate
 
@@ -94,6 +95,19 @@
 	[director enableRetinaDisplay:YES];
 	
 	
+  
+  
+  
+  
+  // Override point for customization after application launch.
+  yozio = [YozioApi sharedAPI];
+
+  
+  
+  
+  
+  
+  
 	// make the OpenGLView a child of the view controller
 	[viewController setView:glView];
 	

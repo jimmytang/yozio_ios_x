@@ -7,6 +7,7 @@
 
 #import "Game.h"
 #import "Ninja.h"
+#import "YozioApi.h"
 
 #define SLING_POSITION			ccp(60,157)
 #define SLING_BOMB_POSITION		ccpAdd(SLING_POSITION, ccp(0,9))
@@ -310,6 +311,9 @@
 
 - (void) setupNextBomb
 {
+  YozioApi *yozio = [YozioApi sharedAPI];
+  [yozio collect:@"setupNextBomb" value:@"test"];
+  
 	if ([_bombs count])
 	{
 		_curBomb = [_bombs lastObject];
@@ -418,6 +422,10 @@
 
 -(void) enemyKilled
 {
+  YozioApi *yozio = [YozioApi sharedAPI];
+  [yozio collect:@"enemyKilled" value:@"test"];
+  [yozio flush];
+  
 	_enemiesLeft--;
 	if (_enemiesLeft == 0)
 	{

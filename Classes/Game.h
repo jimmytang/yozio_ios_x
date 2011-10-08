@@ -8,6 +8,7 @@
 #import "SpaceManagerCocos2d.h"
 #import "GameConfig.h"
 #import "Bomb.h"
+#import "YozioApi.h"
 
 @interface Game : CCLayer<SpaceManagerSerializeDelegate>
 {

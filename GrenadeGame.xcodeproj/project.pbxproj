@@ -332,6 +332,11 @@
 		E0D2C48A12AEDE5C008D5DBB /* cpVect.c in Sources */ = {isa = PBXBuildFile; fileRef = E0D2C45312AEDE5C008D5DBB /* cpVect.c */; };
 		E0D2C48B12AEDE5C008D5DBB /* prime.h in Headers */ = {isa = PBXBuildFile; fileRef = E0D2C45412AEDE5C008D5DBB /* prime.h */; };
 		E0F81038120A173C005866B8 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E0F81037120A173C005866B8 /* RootViewController.m */; };
+		F7A660881440D3AC00FDF6FA /* CHANGELOG.md in Resources */ = {isa = PBXBuildFile; fileRef = F7A6607E1440D3AC00FDF6FA /* CHANGELOG.md */; };
+		F7A660891440D3AC00FDF6FA /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A660801440D3AC00FDF6FA /* JSONKit.m */; };
+		F7A6608A1440D3AC00FDF6FA /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F7A660811440D3AC00FDF6FA /* README.md */; };
+		F7A6608B1440D3AC00FDF6FA /* Timer.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A660831440D3AC00FDF6FA /* Timer.m */; };
+		F7A6608C1440D3AC00FDF6FA /* YozioApi.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A660851440D3AC00FDF6FA /* YozioApi.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -686,6 +691,14 @@
 		E0F81035120A173C005866B8 /* GameConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameConfig.h; sourceTree = "<group>"; };
 		E0F81036120A173C005866B8 /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
 		E0F81037120A173C005866B8 /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
+		F7A6607E1440D3AC00FDF6FA /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGELOG.md; sourceTree = "<group>"; };
+		F7A6607F1440D3AC00FDF6FA /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKit.h; sourceTree = "<group>"; };
+		F7A660801440D3AC00FDF6FA /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKit.m; sourceTree = "<group>"; };
+		F7A660811440D3AC00FDF6FA /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		F7A660821440D3AC00FDF6FA /* Timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Timer.h; sourceTree = "<group>"; };
+		F7A660831440D3AC00FDF6FA /* Timer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Timer.m; sourceTree = "<group>"; };
+		F7A660841440D3AC00FDF6FA /* YozioApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YozioApi.h; sourceTree = "<group>"; };
+		F7A660851440D3AC00FDF6FA /* YozioApi.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YozioApi.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -735,6 +748,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				F7A6607B1440D3AC00FDF6FA /* Yozio */,
 				A613AD5D12E7DE5000534DA5 /* SpaceManager */,
 				504DFC8A10AF177C006D82FE /* LICENSE.cocos2d */,
 				504DFC8B10AF177C006D82FE /* LICENSE.cocosdenshion */,
@@ -1309,6 +1323,37 @@
 			path = constraints;
 			sourceTree = "<group>";
 		};
+		F7A6607B1440D3AC00FDF6FA /* Yozio */ = {
+			isa = PBXGroup;
+			children = (
+				F7A6607C1440D3AC00FDF6FA /* lib */,
+				F7A660841440D3AC00FDF6FA /* YozioApi.h */,
+				F7A660851440D3AC00FDF6FA /* YozioApi.m */,
+			);
+			path = Yozio;
+			sourceTree = "<group>";
+		};
+		F7A6607C1440D3AC00FDF6FA /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				F7A6607D1440D3AC00FDF6FA /* johnezang-JSONKit-465adc1 */,
+				F7A660821440D3AC00FDF6FA /* Timer.h */,
+				F7A660831440D3AC00FDF6FA /* Timer.m */,
+			);
+			path = lib;
+			sourceTree = "<group>";
+		};
+		F7A6607D1440D3AC00FDF6FA /* johnezang-JSONKit-465adc1 */ = {
+			isa = PBXGroup;
+			children = (
+				F7A6607E1440D3AC00FDF6FA /* CHANGELOG.md */,
+				F7A6607F1440D3AC00FDF6FA /* JSONKit.h */,
+				F7A660801440D3AC00FDF6FA /* JSONKit.m */,
+				F7A660811440D3AC00FDF6FA /* README.md */,
+			);
+			path = "johnezang-JSONKit-465adc1";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1553,6 +1598,8 @@
 				A680931512EA4F4F00B8EE86 /* restart.png in Resources */,
 				A680931612EA4F4F00B8EE86 /* restartsel.png in Resources */,
 				A680A34812EB3C4D001BFB01 /* fire.png in Resources */,
+				F7A660881440D3AC00FDF6FA /* CHANGELOG.md in Resources */,
+				F7A6608A1440D3AC00FDF6FA /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1582,6 +1629,9 @@
 				A613ADA612E7E4F600534DA5 /* Game.m in Sources */,
 				A6A8538512E929C9002D27D5 /* Ninja.m in Sources */,
 				A69E22E712EA267B0069BF6E /* Bomb.m in Sources */,
+				F7A660891440D3AC00FDF6FA /* JSONKit.m in Sources */,
+				F7A6608B1440D3AC00FDF6FA /* Timer.m in Sources */,
+				F7A6608C1440D3AC00FDF6FA /* YozioApi.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
