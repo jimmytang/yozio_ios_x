@@ -424,7 +424,6 @@
 {
   YozioApi *yozio = [YozioApi sharedAPI];
   [yozio collect:@"enemyKilled" value:@"test"];
-  [yozio flush];
   
 	_enemiesLeft--;
 	if (_enemiesLeft == 0)
