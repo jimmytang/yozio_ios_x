@@ -10,6 +10,12 @@
 #import "Timer.h"
 #import "JSONKit.h"
 #define FLUSH_DATA_COUNT 5
+#define TIMER_DATA_COUNT 10
+#define COLLECT_DATA_COUNT 15
+#define ACTION_DATA_COUNT 20
+#define FUNNEL_DATA_COUNT 25
+#define REVENUE_DATA_COUNT 30
+#define ERROR_DATA_COUNT 40
 #define MAX_DATA_COUNT 50
 #define TIMER_LENGTH 30
 #define FILE_PATH [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
@@ -28,7 +34,6 @@
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection;
 // Helper methods.
 - (void)checkDataQueueSize;
-- (void)removeLowerPriority;
 - (NSString *)writePayload;
 - (NSString *)timeStampString;
 - (void)saveUnsentData;
@@ -44,6 +49,7 @@
 @synthesize receivedData;
 @synthesize deviceID;
 @synthesize connection;
+@synthesize dataCount;
 
 static YozioApi *instance = nil; 
 
@@ -58,7 +64,7 @@ static YozioApi *instance = nil;
   if (instance == nil) {
     self = [super init];
     // TODO(jimmytang): look into autorelease
-    dataQueue = [[NSMutableArray alloc] init];
+    self.dataQueue = [[NSMutableArray alloc] init];
     //    self.schemaID = SCHEMA_ID;
     self.deviceID = [UIDevice currentDevice].uniqueIdentifier;
     //    self.gameVersion = @"gameVersion";
@@ -69,6 +75,7 @@ static YozioApi *instance = nil;
     //    self.currentLevelID = 1;
     //    self.events = [NSMutableArray array];
     self.receivedData = [[NSMutableData alloc] init];
+    dataCount = 0;
   }
   return self;
 }
@@ -100,45 +107,80 @@ static YozioApi *instance = nil;
   float elapsedTime = [timer timeElapsedInMilliseconds];
   [timer release];
   NSString *elapsedTimeStr = [NSString stringWithFormat:@"%.2f", elapsedTime];
-  NSMutableDictionary* d = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"timer", @"type", timerName, @"key", elapsedTimeStr, @"value", [self timeStampString], @"timestamp",nil];
+  NSMutableDictionary* d = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"timer", @"type", timerName, @"key", elapsedTimeStr, @"value", @"", @"category", [self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil];
+  
   [self checkDataQueueSize];
-  [dataQueue addObject:d];
+  if ([self.dataQueue count] < TIMER_DATA_COUNT)
+  {  
+    [self.dataQueue addObject:d];
+  }
 }
 
 - (void)collect:(NSString *)key value:(NSString *)value
 {
-  NSDictionary *d = [NSDictionary dictionaryWithObjectsAndKeys:@"collect", @"type", key, @"key", value, @"value", [self timeStampString], @"timestamp", nil]; 
+  dataCount++;
+  NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"misc", @"type", key, @"key", value, @"value", @"", @"category", [self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil]; 
+  
   [self checkDataQueueSize];
-  [dataQueue addObject:d];
+  if ([self.dataQueue count] < COLLECT_DATA_COUNT)
+  {  
+    [self.dataQueue addObject:d];
+  }
 }
 
 
-- (void)funnel:(NSString *)funnelName index:(NSInteger *)index
+- (void)funnel:(NSString *)funnelName step:(NSInteger *)step
 {
-  NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"funnel", @"type", funnelName, @"funnelName", index, @"index", [self timeStampString], @"timestamp", nil]; 
+  NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"funnel", @"type", funnelName, @"key", step, @"value", @"", @"category",[self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil]; 
+  
   [self checkDataQueueSize];
-  [dataQueue addObject:d];
+  if ([self.dataQueue count] < FUNNEL_DATA_COUNT)
+  {  
+    [self.dataQueue addObject:d];
+  }
 }
 
-- (void)sale:(NSMutableArray *)offered bought:(NSString *)bought
+- (void)revenueShown:(NSString *)item cost:(NSString *)cost category:(NSString *)category
 {
-  NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"sale", @"type", offered, @"offered", bought, @"bought", [self timeStampString], @"timestamp", nil]; 
+  NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"revenue_shown", @"type", item, @"key", cost, @"value", category, @"category",[self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil]; 
+
   [self checkDataQueueSize];
-  [dataQueue addObject:d];  
+  if ([self.dataQueue count] < REVENUE_DATA_COUNT)
+  {  
+    [self.dataQueue addObject:d];
+  }
 }
 
-- (void)action:(NSString *)actionName
+- (void)revenueBought:(NSString *)item cost:(NSString *)cost category:(NSString *)category
 {
-  NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"action", @"type", actionName, @"actionName", [self timeStampString], @"timestamp", nil]; 
+  NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"revenue_bought", @"type", item, @"key", cost, @"value", category, @"category",[self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil]; 
+
   [self checkDataQueueSize];
-  [dataQueue addObject:d];
+  if ([self.dataQueue count] < REVENUE_DATA_COUNT)
+  {  
+    [self.dataQueue addObject:d];
+  }
 }
 
-- (void)error:(NSString *)errorName message:(NSString *)message stacktrace:(NSString *)stacktrace
+- (void)action:(NSString *)actionName actionObject:(NSString *)actionObject
 {
-  NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"error", @"type", errorName, @"errorName", message, @"message", stacktrace, @"stacktrace", [self timeStampString], @"timestamp", nil]; 
+  NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"action", @"type", actionName, @"key", actionObject, @"value", @"", @"category",[self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil]; 
+
   [self checkDataQueueSize];
-  [dataQueue addObject:d];
+  if ([self.dataQueue count] < ACTION_DATA_COUNT)
+  {  
+    [self.dataQueue addObject:d];
+  }
+}
+
+- (void)error:(NSString *)errorName message:(NSString *)message 
+{
+  NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"error", @"type", errorName, @"key", message, @"value", @"", @"category",[self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil]; 
+  [self checkDataQueueSize];
+  if ([self.dataQueue count] < ERROR_DATA_COUNT)
+  {  
+    [self.dataQueue addObject:d];
+  }
 }
 
 - (void)flush
@@ -157,9 +199,16 @@ static YozioApi *instance = nil;
   //  TODO(jt): Get data to send (but don't remove from queue, only remove after succesfully sent).
   NSString *dataStr = [self writePayload];
 	NSString *postBody = [NSString stringWithFormat:@"data=%@", dataStr];
+  NSString* escapedUrlString =
+  [postBody stringByAddingPercentEscapesUsingEncoding:
+   NSASCIIStringEncoding];
+  NSMutableString *urlString = [[NSMutableString alloc] initWithString:@"http://localhost:3000/listener/listener/p.gif?"];
+  [urlString appendString:escapedUrlString];
   
-  //  TODO(jt): Fill in real server URL
-  NSURL *url = [NSURL URLWithString:@"http://localhost:3000/listener/listener/p.gif?asd=1"];
+  //  TODO(jt): Fill in real server URLac
+  NSURL *url = [NSURL URLWithString:urlString];
+  
+  NSLog(@"%@", urlString);
 	
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
 	[request setHTTPMethod:@"GET"];
@@ -232,7 +281,6 @@ static YozioApi *instance = nil;
   NSLog(@"connectionDidFinishLoading");
   NSString *response = [[NSString alloc] initWithData:self.receivedData
                                              encoding:NSUTF8StringEncoding];
-  //  TODO(jt): if response is OK, remove data from queue, else log failure.
 
   NSLog(@"receivedData:%@", self.receivedData);
   NSLog(@"response:%@", response);
@@ -255,21 +303,12 @@ static YozioApi *instance = nil;
 - (void)checkDataQueueSize
 {
   NSLog(@"checkDataQueueSize");
-  NSLog(@"%i",[dataQueue count]);
-  if ([dataQueue count] > 0 && [dataQueue count] % FLUSH_DATA_COUNT == 0) 
+  NSLog(@"%i",[self.dataQueue count]);
+  if ([self.dataQueue count] > 0 && [self.dataQueue count] % FLUSH_DATA_COUNT == 0) 
   {
     NSLog(@"flushing");
     [self flush]; 
   }
-  if ([dataQueue count] > MAX_DATA_COUNT)
-  {
-    [self removeLowerPriority]; 
-  }
-}
-
-- (void)removeLowerPriority
-{
-//  todo: Jimmy Tang
 }
 
 - (NSString *)writePayload
@@ -278,7 +317,7 @@ static YozioApi *instance = nil;
   [payload setValue:self.deviceID forKey:@"deviceID"];
   [payload setValue:[NSNumber numberWithInteger:[dataToSend count]] forKey:@"dataCount"];
   [payload setValue:dataToSend forKey:@"payload"];
-  NSLog(@"dataQueue: %@", dataQueue);
+  NSLog(@"self.dataQueue: %@", self.dataQueue);
   NSLog(@"dataToSend: %@", dataToSend);
   return [payload JSONString];
   [payload release];
@@ -287,7 +326,7 @@ static YozioApi *instance = nil;
 - (NSString *)timeStampString
 {
   NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-  dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
+  dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss SSS";
   
   NSTimeZone *gmt = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
   [dateFormatter setTimeZone:gmt];
@@ -300,7 +339,8 @@ static YozioApi *instance = nil;
 {
   //  TODO(jt): implement me
   NSLog(@"saveUnsentData");
-  if (![NSKeyedArchiver archiveRootObject:dataQueue toFile:FILE_PATH]) {
+  if (![NSKeyedArchiver archiveRootObject:self.dataQueue toFile:FILE_PATH]) 
+  {
 		NSLog(@"Unable to archive data!!!");
 	}
 }
@@ -310,7 +350,8 @@ static YozioApi *instance = nil;
   //  TODO(jt): implement me
   NSLog(@"loadUnsentData");
   self.dataQueue = [NSKeyedUnarchiver unarchiveObjectWithFile:FILE_PATH];
-	if (!self.dataQueue) {
+	if (!self.dataQueue) 
+  {
 		self.dataQueue = [NSMutableArray array];    
   }
 }
@@ -323,3 +364,11 @@ static YozioApi *instance = nil;
 }
   
 @end
+
+
+
+
+
+
+
+

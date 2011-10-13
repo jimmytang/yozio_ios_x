@@ -17,6 +17,7 @@
   NSMutableData *receivedData;
   NSURLConnection *connection;
   NSString *deviceID;
+  NSInteger dataCount;
 }
 
 @property (retain) NSMutableArray* dataQueue;
@@ -25,15 +26,17 @@
 @property(nonatomic, retain) NSMutableData *receivedData;
 @property(nonatomic,retain) NSURLConnection *connection;
 @property (retain) NSString* deviceID;
+@property (nonatomic, assign) NSInteger dataCount;
 
 + (id)sharedAPI;
 - (void)startTimer:(NSString *)timerName;
 - (void)endTimer:(NSString *)timerName;
 - (void)collect:(NSString *)key value:(NSString *)value;
-- (void)funnel:(NSString *)funnelName index:(NSInteger *)index;
-- (void)sale:(NSMutableArray *)offered bought:(NSString *)bought;
-- (void)action:(NSString *)actionName;
-- (void)error:(NSString *)errorName message:(NSString *)message stacktrace:(NSString *)stacktrace;
+- (void)funnel:(NSString *)funnelName step:(NSInteger *)step;
+- (void)revenueShown:(NSString *)item cost:(NSString *)cost category:(NSString *)category;
+- (void)revenueBought:(NSString *)item cost:(NSString *)cost category:(NSString *)category;
+- (void)action:(NSString *)actionName actionObject:(NSString *)actionObject;
+- (void)error:(NSString *)errorName message:(NSString *)message;
 - (void)flush;
 
 @end
