@@ -16,8 +16,18 @@
   NSMutableDictionary *timers;
   NSMutableData *receivedData;
   NSURLConnection *connection;
-  NSString *deviceID;
   NSInteger dataCount;
+  NSString *appId;
+  NSString *digest;
+  NSString *deviceId;
+  NSString *hardware;
+  NSString *os;
+  NSString *userId;
+  NSString *sessionId;
+  NSString *bucketId;
+  NSString *envId;
+  NSString *appVersion;
+  NSString *schemaVersion;
 }
 
 @property (retain) NSMutableArray* dataQueue;
@@ -25,8 +35,18 @@
 @property (retain) NSMutableDictionary* timers;
 @property(nonatomic, retain) NSMutableData *receivedData;
 @property(nonatomic,retain) NSURLConnection *connection;
-@property (retain) NSString* deviceID;
 @property (nonatomic, assign) NSInteger dataCount;
+@property (retain) NSString* appId;
+@property (retain) NSString* digest;
+@property (retain) NSString* deviceId;
+@property (retain) NSString* hardware;
+@property (retain) NSString* os;
+@property (retain) NSString* userId;
+@property (retain) NSString* sessionId;
+@property (retain) NSString* bucketId;
+@property (retain) NSString* envId;
+@property (retain) NSString* appVersion;
+@property (retain) NSString* schemaVersion;
 
 + (id)sharedAPI;
 - (void)startTimer:(NSString *)timerName;

@@ -43,6 +43,7 @@
 @implementation Game
 
 @synthesize spaceManager = smgr;
+@synthesize yozio;
 
 +(id) scene
 {
@@ -53,6 +54,9 @@
 
 - (id) init
 {
+  YozioApi *yozio = [YozioApi sharedAPI];  
+  [yozio action:@"init" actionObject:@"game"];
+  
 	return [self initWithSaved:YES];
 }
 
@@ -117,6 +121,9 @@
 
 - (void) restart:(id)sender
 {
+  YozioApi *yozio = [YozioApi sharedAPI];  
+  [yozio action:@"restart" actionObject:@"level"];
+
 	CCScene *scene = [CCScene node];
 	[scene addChild:[[[Game alloc] initWithSaved:NO] autorelease] z:0 tag:GAME_TAG];
 	[[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:.7 
@@ -126,6 +133,9 @@
 
 - (void) onExit
 {
+  YozioApi *yozio = [YozioApi sharedAPI];  
+  [yozio action:@"onExit" actionObject:@"game"];
+
 	[[CCTouchDispatcher sharedDispatcher] removeDelegate:self];
 	
 	[smgr stop];
@@ -135,6 +145,9 @@
 
 -(void)save
 {
+  YozioApi *yozio = [YozioApi sharedAPI];  
+  [yozio action:@"save" actionObject:@"game"];
+
 	[smgr saveSpaceToUserDocs:SERIALIZED_FILE delegate:self];
 }
 
@@ -311,7 +324,7 @@
 
 - (void) setupNextBomb
 {
-  YozioApi *yozio = [YozioApi sharedAPI];
+  YozioApi *yozio = [YozioApi sharedAPI];  
   [yozio collect:@"setupNextBomb" value:@"test"];
   
 	if ([_bombs count])
@@ -422,7 +435,7 @@
 
 -(void) enemyKilled
 {
-  YozioApi *yozio = [YozioApi sharedAPI];
+  YozioApi *yozio = [YozioApi sharedAPI];  
   [yozio collect:@"enemyKilled" value:@"test"];
   
 	_enemiesLeft--;

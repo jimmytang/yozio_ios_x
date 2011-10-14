@@ -47,9 +47,20 @@
 @synthesize dataToSend;
 @synthesize timers;
 @synthesize receivedData;
-@synthesize deviceID;
 @synthesize connection;
 @synthesize dataCount;
+@synthesize appId;
+@synthesize digest;
+@synthesize deviceId;
+@synthesize hardware;
+@synthesize os;
+@synthesize userId;
+@synthesize sessionId;
+@synthesize bucketId;
+@synthesize envId;
+@synthesize appVersion;
+@synthesize schemaVersion;
+
 
 static YozioApi *instance = nil; 
 
@@ -65,15 +76,34 @@ static YozioApi *instance = nil;
     self = [super init];
     // TODO(jimmytang): look into autorelease
     self.dataQueue = [[NSMutableArray alloc] init];
-    //    self.schemaID = SCHEMA_ID;
-    self.deviceID = [UIDevice currentDevice].uniqueIdentifier;
-    //    self.gameVersion = @"gameVersion";
-    //    self.sessionID = @"sessionID";
-    //    self.bucketID = @"bucketID";
-    //    self.userID = @"userID";
-    //    self.environment = @"sandbox";
-    //    self.currentLevelID = 1;
-    //    self.events = [NSMutableArray array];
+    self.appId = @"temp appId";
+    self.digest = @"temp digest";
+    self.deviceId = [UIDevice currentDevice].uniqueIdentifier;
+    self.hardware = [UIDevice currentDevice].model;
+    self.os = [[UIDevice currentDevice] systemVersion];
+
+    
+    
+    UIDevice* device = [UIDevice currentDevice];
+    NSString* name = [device name];
+    NSString* systemName = [device systemName];
+    NSString* systemVersion = [device systemVersion];
+    NSString* model = [device model];
+    NSString* localizedModel = [device localizedModel];
+    UIUserInterfaceIdiom userInterfaceIdiom = [device userInterfaceIdiom];
+    UIDeviceOrientation orientation = [device orientation];
+    UIInterfaceOrientation UIIOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+    NSLog(@"%@",device);
+    
+    
+    
+    self.userId = @"temp userId";
+    self.sessionId = @"temp sessionId";
+    self.bucketId = @"temp bucketId";
+    self.envId = @"PRODUCTION";
+    self.appVersion = @"temp appVersion";
+    self.schemaVersion = @"temp schemaVersion";
+    
     self.receivedData = [[NSMutableData alloc] init];
     dataCount = 0;
   }
@@ -314,12 +344,26 @@ static YozioApi *instance = nil;
 - (NSString *)writePayload
 {
   NSMutableDictionary* payload = [[NSMutableDictionary alloc] init];
-  [payload setValue:self.deviceID forKey:@"deviceID"];
-  [payload setValue:[NSNumber numberWithInteger:[dataToSend count]] forKey:@"dataCount"];
+  [payload setValue:self.appId forKey:@"appId"];
+  [payload setValue:self.digest forKey:@"digest"];
+  [payload setValue:self.deviceId forKey:@"deviceId"];
+  [payload setValue:self.hardware forKey:@"hardware"];
+  [payload setValue:self.os forKey:@"os"];
+  [payload setValue:self.userId forKey:@"userId"];
+  [payload setValue:self.sessionId forKey:@"sessionId"];
+  [payload setValue:self.bucketId forKey:@"bucketId"];
+  [payload setValue:self.envId forKey:@"envId"];
+  [payload setValue:self.appVersion forKey:@"appVersion"];
+  [payload setValue:self.schemaVersion forKey:@"schemaVersion"];
+  [payload setValue:[NSNumber numberWithInteger:[dataToSend count]] forKey:@"count"];
   [payload setValue:dataToSend forKey:@"payload"];
+  
   NSLog(@"self.dataQueue: %@", self.dataQueue);
   NSLog(@"dataToSend: %@", dataToSend);
+  NSLog(@"payload: %@", payload);
+  
   return [payload JSONString];
+  
   [payload release];
 }
 

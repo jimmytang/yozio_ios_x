@@ -13,7 +13,8 @@
 @interface Game : CCLayer<SpaceManagerSerializeDelegate>
 {
 	SpaceManagerCocos2d *smgr;
-	
+  YozioApi *yozio;
+
 	NSMutableArray	*_bombs;
 	Bomb			*_curBomb;
 	
@@ -21,6 +22,7 @@
 }
 
 @property (readonly) SpaceManager* spaceManager;
+@property (retain) YozioApi* yozio;
 
 +(id) scene;
 -(id) initWithSaved:(BOOL)loadIt;
