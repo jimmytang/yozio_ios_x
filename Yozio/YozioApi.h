@@ -24,8 +24,8 @@
   NSString *os;
   NSString *userId;
   NSString *sessionId;
-  NSString *bucketId;
-  NSString *envId;
+  NSString *bucket;
+  NSString *env;
   NSString *appVersion;
   NSString *schemaVersion;
 }
@@ -43,18 +43,18 @@
 @property (retain) NSString* os;
 @property (retain) NSString* userId;
 @property (retain) NSString* sessionId;
-@property (retain) NSString* bucketId;
-@property (retain) NSString* envId;
+@property (retain) NSString* bucket;
+@property (retain) NSString* env;
 @property (retain) NSString* appVersion;
 @property (retain) NSString* schemaVersion;
 
 + (id)sharedAPI;
 - (void)startTimer:(NSString *)timerName;
 - (void)endTimer:(NSString *)timerName;
+- (void)collect:(NSString *)type key:(NSString *)key value:(NSString *)value  category:(NSString *)category maxQueue:(NSInteger)maxQueue;
 - (void)collect:(NSString *)key value:(NSString *)value;
-- (void)funnel:(NSString *)funnelName step:(NSInteger *)step;
-- (void)revenueShown:(NSString *)item cost:(NSString *)cost category:(NSString *)category;
-- (void)revenueBought:(NSString *)item cost:(NSString *)cost category:(NSString *)category;
+- (void)funnel:(NSString *)funnelName step:(NSString *)step;
+- (void)revenue:(NSString *)item cost:(NSString *)cost category:(NSString *)category;
 - (void)action:(NSString *)actionName actionObject:(NSString *)actionObject;
 - (void)error:(NSString *)errorName message:(NSString *)message;
 - (void)flush;

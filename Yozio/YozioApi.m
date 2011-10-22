@@ -56,8 +56,8 @@
 @synthesize os;
 @synthesize userId;
 @synthesize sessionId;
-@synthesize bucketId;
-@synthesize envId;
+@synthesize bucket;
+@synthesize env;
 @synthesize appVersion;
 @synthesize schemaVersion;
 
@@ -81,26 +81,14 @@ static YozioApi *instance = nil;
     self.deviceId = [UIDevice currentDevice].uniqueIdentifier;
     self.hardware = [UIDevice currentDevice].model;
     self.os = [[UIDevice currentDevice] systemVersion];
-
-    
     
     UIDevice* device = [UIDevice currentDevice];
-    NSString* name = [device name];
-    NSString* systemName = [device systemName];
-    NSString* systemVersion = [device systemVersion];
-    NSString* model = [device model];
-    NSString* localizedModel = [device localizedModel];
-    UIUserInterfaceIdiom userInterfaceIdiom = [device userInterfaceIdiom];
-    UIDeviceOrientation orientation = [device orientation];
-    UIInterfaceOrientation UIIOrientation = [[UIApplication sharedApplication] statusBarOrientation];
     NSLog(@"%@",device);
-    
-    
-    
+
     self.userId = @"temp userId";
     self.sessionId = @"temp sessionId";
-    self.bucketId = @"temp bucketId";
-    self.envId = @"PRODUCTION";
+    self.bucket = @"temp bucket";
+    self.env = @"PRODUCTION";
     self.appVersion = @"temp appVersion";
     self.schemaVersion = @"temp schemaVersion";
     
@@ -146,71 +134,41 @@ static YozioApi *instance = nil;
   }
 }
 
-- (void)collect:(NSString *)key value:(NSString *)value
+- (void)collect:(NSString *)type key:(NSString *)key value:(NSString *)value category:(NSString *)category maxQueue:(NSInteger)maxQueue
 {
   dataCount++;
-  NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"misc", @"type", key, @"key", value, @"value", @"", @"category", [self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil]; 
+  NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:type, @"type", key, @"key", value, @"value", category, @"category", [self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil]; 
   
   [self checkDataQueueSize];
-  if ([self.dataQueue count] < COLLECT_DATA_COUNT)
+  if ([self.dataQueue count] < maxQueue)
   {  
     [self.dataQueue addObject:d];
   }
 }
 
-
-- (void)funnel:(NSString *)funnelName step:(NSInteger *)step
+- (void)collect:(NSString *)key value:(NSString *)value
 {
-  NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"funnel", @"type", funnelName, @"key", step, @"value", @"", @"category",[self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil]; 
-  
-  [self checkDataQueueSize];
-  if ([self.dataQueue count] < FUNNEL_DATA_COUNT)
-  {  
-    [self.dataQueue addObject:d];
-  }
+  [self collect:@"misc" key:key value:value category:@"" maxQueue:COLLECT_DATA_COUNT];
 }
 
-- (void)revenueShown:(NSString *)item cost:(NSString *)cost category:(NSString *)category
+- (void)funnel:(NSString *)funnelName step:(NSString *)step
 {
-  NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"revenue_shown", @"type", item, @"key", cost, @"value", category, @"category",[self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil]; 
-
-  [self checkDataQueueSize];
-  if ([self.dataQueue count] < REVENUE_DATA_COUNT)
-  {  
-    [self.dataQueue addObject:d];
-  }
+  [self collect:@"funnel" key:funnelName value:step category:@"" maxQueue:FUNNEL_DATA_COUNT];
 }
 
-- (void)revenueBought:(NSString *)item cost:(NSString *)cost category:(NSString *)category
+- (void)revenue:(NSString *)item cost:(NSString *)cost category:(NSString *)category
 {
-  NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"revenue_bought", @"type", item, @"key", cost, @"value", category, @"category",[self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil]; 
-
-  [self checkDataQueueSize];
-  if ([self.dataQueue count] < REVENUE_DATA_COUNT)
-  {  
-    [self.dataQueue addObject:d];
-  }
+  [self collect:@"revenue" key:item value:cost category:category maxQueue:REVENUE_DATA_COUNT];
 }
 
 - (void)action:(NSString *)actionName actionObject:(NSString *)actionObject
 {
-  NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"action", @"type", actionName, @"key", actionObject, @"value", @"", @"category",[self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil]; 
-
-  [self checkDataQueueSize];
-  if ([self.dataQueue count] < ACTION_DATA_COUNT)
-  {  
-    [self.dataQueue addObject:d];
-  }
+  [self collect:@"action" key:actionName value:actionObject category:@"" maxQueue:ACTION_DATA_COUNT];
 }
 
 - (void)error:(NSString *)errorName message:(NSString *)message 
 {
-  NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"error", @"type", errorName, @"key", message, @"value", @"", @"category",[self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil]; 
-  [self checkDataQueueSize];
-  if ([self.dataQueue count] < ERROR_DATA_COUNT)
-  {  
-    [self.dataQueue addObject:d];
-  }
+  [self collect:@"error" key:errorName value:message category:@"" maxQueue:ERROR_DATA_COUNT];
 }
 
 - (void)flush
@@ -284,7 +242,6 @@ static YozioApi *instance = nil;
     NSLog(@"200: OK");
     self.receivedData = [NSMutableData data];
   } else {
-    NSLog(@"FUCK YOU");
     //  TODO(jt): log unsuccessful request
   }
 }
@@ -351,8 +308,8 @@ static YozioApi *instance = nil;
   [payload setValue:self.os forKey:@"os"];
   [payload setValue:self.userId forKey:@"userId"];
   [payload setValue:self.sessionId forKey:@"sessionId"];
-  [payload setValue:self.bucketId forKey:@"bucketId"];
-  [payload setValue:self.envId forKey:@"envId"];
+  [payload setValue:self.bucket forKey:@"bucket"];
+  [payload setValue:self.env forKey:@"env"];
   [payload setValue:self.appVersion forKey:@"appVersion"];
   [payload setValue:self.schemaVersion forKey:@"schemaVersion"];
   [payload setValue:[NSNumber numberWithInteger:[dataToSend count]] forKey:@"count"];
