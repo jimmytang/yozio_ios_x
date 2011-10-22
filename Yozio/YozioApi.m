@@ -18,6 +18,7 @@
 #define ERROR_DATA_COUNT 40
 #define MAX_DATA_COUNT 50
 #define TIMER_LENGTH 30
+#define SERVER_URL @"http://localhost:3000/listener/listener/p.gif?"
 #define FILE_PATH [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
 
 
@@ -190,7 +191,7 @@ static YozioApi *instance = nil;
   NSString* escapedUrlString =
   [postBody stringByAddingPercentEscapesUsingEncoding:
    NSASCIIStringEncoding];
-  NSMutableString *urlString = [[NSMutableString alloc] initWithString:@"http://localhost:3000/listener/listener/p.gif?"];
+  NSMutableString *urlString = [[NSMutableString alloc] initWithString:SERVER_URL];
   [urlString appendString:escapedUrlString];
   
   //  TODO(jt): Fill in real server URLac
