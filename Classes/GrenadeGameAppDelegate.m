@@ -12,7 +12,7 @@
 #import "GameConfig.h"
 #import "Game.h"
 #import "RootViewController.h"
-#import "YozioApi.h"
+#import "Yozio.h"
 
 @implementation GrenadeGameAppDelegate
 
@@ -100,7 +100,7 @@
   
   
   // Override point for customization after application launch.
-  yozio = [YozioApi sharedAPI];
+  yozio = [Yozio sharedAPI];
 
   
   

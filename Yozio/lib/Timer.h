@@ -2,7 +2,6 @@
 //  Timer.h
 //  GrenadeGame
 //
-//  Created by Jimmy Tang on 10/2/11.
 //  Copyright 2011 UC Berkeley. All rights reserved.
 //
 

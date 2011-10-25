@@ -7,7 +7,7 @@
 
 #import "Game.h"
 #import "Ninja.h"
-#import "YozioApi.h"
+#import "Yozio.h"
 
 #define SLING_POSITION			ccp(60,157)
 #define SLING_BOMB_POSITION		ccpAdd(SLING_POSITION, ccp(0,9))
@@ -54,7 +54,7 @@
 
 - (id) init
 {
-  YozioApi *yozio = [YozioApi sharedAPI];  
+  Yozio *yozio = [Yozio sharedAPI];  
   [yozio action:@"init" actionObject:@"game"];
   
 	return [self initWithSaved:YES];
@@ -121,7 +121,7 @@
 
 - (void) restart:(id)sender
 {
-  YozioApi *yozio = [YozioApi sharedAPI];  
+  Yozio *yozio = [Yozio sharedAPI];  
   [yozio action:@"restart" actionObject:@"level"];
 
 	CCScene *scene = [CCScene node];
@@ -133,7 +133,7 @@
 
 - (void) onExit
 {
-  YozioApi *yozio = [YozioApi sharedAPI];  
+  Yozio *yozio = [Yozio sharedAPI];  
   [yozio action:@"onExit" actionObject:@"game"];
 
 	[[CCTouchDispatcher sharedDispatcher] removeDelegate:self];
@@ -145,7 +145,7 @@
 
 -(void)save
 {
-  YozioApi *yozio = [YozioApi sharedAPI];  
+  Yozio *yozio = [Yozio sharedAPI];  
   [yozio action:@"save" actionObject:@"game"];
 
 	[smgr saveSpaceToUserDocs:SERIALIZED_FILE delegate:self];
@@ -324,7 +324,7 @@
 
 - (void) setupNextBomb
 {
-  YozioApi *yozio = [YozioApi sharedAPI];  
+  Yozio *yozio = [Yozio sharedAPI];  
   [yozio collect:@"setupNextBomb" value:@"test"];
   
 	if ([_bombs count])
@@ -435,7 +435,7 @@
 
 -(void) enemyKilled
 {
-  YozioApi *yozio = [YozioApi sharedAPI];  
+  Yozio *yozio = [Yozio sharedAPI];  
   [yozio collect:@"enemyKilled" value:@"test"];
   
 	_enemiesLeft--;

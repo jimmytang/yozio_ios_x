@@ -8,12 +8,12 @@
 #import "SpaceManagerCocos2d.h"
 #import "GameConfig.h"
 #import "Bomb.h"
-#import "YozioApi.h"
+#import "Yozio.h"
 
 @interface Game : CCLayer<SpaceManagerSerializeDelegate>
 {
 	SpaceManagerCocos2d *smgr;
-  YozioApi *yozio;
+  Yozio *yozio;
 
 	NSMutableArray	*_bombs;
 	Bomb			*_curBomb;
@@ -22,7 +22,7 @@
 }
 
 @property (readonly) SpaceManager* spaceManager;
-@property (retain) YozioApi* yozio;
+@property (retain) Yozio* yozio;
 
 +(id) scene;
 -(id) initWithSaved:(BOOL)loadIt;

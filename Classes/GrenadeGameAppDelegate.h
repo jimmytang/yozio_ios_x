@@ -9,12 +9,12 @@
 #import <UIKit/UIKit.h>
 
 @class RootViewController;
-@class YozioApi;
+@class Yozio;
 
 @interface GrenadeGameAppDelegate : NSObject <UIApplicationDelegate> {
 	UIWindow			*window;
 	RootViewController	*viewController;
-  YozioApi *yozio;
+  Yozio *yozio;
 }
 
 @property (nonatomic, retain) UIWindow *window;
