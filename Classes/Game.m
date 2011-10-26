@@ -54,7 +54,6 @@
 
 - (id) init
 {
-  Yozio *yozio = [Yozio sharedAPI];  
   [yozio action:@"init" actionObject:@"game"];
   
 	return [self initWithSaved:YES];
@@ -121,7 +120,6 @@
 
 - (void) restart:(id)sender
 {
-  Yozio *yozio = [Yozio sharedAPI];  
   [yozio action:@"restart" actionObject:@"level"];
 
 	CCScene *scene = [CCScene node];
@@ -133,7 +131,6 @@
 
 - (void) onExit
 {
-  Yozio *yozio = [Yozio sharedAPI];  
   [yozio action:@"onExit" actionObject:@"game"];
 
 	[[CCTouchDispatcher sharedDispatcher] removeDelegate:self];
@@ -145,7 +142,6 @@
 
 -(void)save
 {
-  Yozio *yozio = [Yozio sharedAPI];  
   [yozio action:@"save" actionObject:@"game"];
 
 	[smgr saveSpaceToUserDocs:SERIALIZED_FILE delegate:self];
@@ -324,7 +320,6 @@
 
 - (void) setupNextBomb
 {
-  Yozio *yozio = [Yozio sharedAPI];  
   [yozio collect:@"setupNextBomb" value:@"test"];
   
 	if ([_bombs count])
@@ -435,7 +430,6 @@
 
 -(void) enemyKilled
 {
-  Yozio *yozio = [Yozio sharedAPI];  
   [yozio collect:@"enemyKilled" value:@"test"];
   
 	_enemiesLeft--;
