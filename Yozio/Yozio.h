@@ -6,6 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Timer.h"
 
 @interface Yozio : NSObject
 {
