@@ -183,7 +183,7 @@ static Yozio *instance = nil;
   NSString *dataStr = [self buildPayload];
   NSString *postBody = [NSString stringWithFormat:@"data=%@", dataStr];
   NSString *escapedUrlString =
-    [postBody stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+      [postBody stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
   NSMutableString *urlString = [[NSMutableString alloc] initWithString:self.serverUrl];
   [urlString appendString:escapedUrlString];
   NSURL *url = [NSURL URLWithString:urlString];
