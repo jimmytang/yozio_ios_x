@@ -1,0 +1,267 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F7BF4FAB1457B8B1009A8A10 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7BF4FAA1457B8B1009A8A10 /* Foundation.framework */; };
+		F7BF4FCB1457B93F009A8A10 /* Yozio-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = F7BF4FC41457B93F009A8A10 /* Yozio-Prefix.pch */; };
+		F7BF4FCC1457B93F009A8A10 /* Yozio.h in Headers */ = {isa = PBXBuildFile; fileRef = F7BF4FC51457B93F009A8A10 /* Yozio.h */; };
+		F7BF4FCD1457B93F009A8A10 /* Yozio.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BF4FC61457B93F009A8A10 /* Yozio.m */; };
+		F7E5ABEC145D37DC0034CC70 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = F7E5ABE0145D37DC0034CC70 /* JSONKit.m */; };
+		F7E5ABEE145D37DC0034CC70 /* Timer.m in Sources */ = {isa = PBXBuildFile; fileRef = F7E5ABE3145D37DC0034CC70 /* Timer.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		F7BF4FA71457B8B1009A8A10 /* libYozio.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libYozio.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		F7BF4FAA1457B8B1009A8A10 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		F7BF4FC41457B93F009A8A10 /* Yozio-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Yozio-Prefix.pch"; sourceTree = "<group>"; };
+		F7BF4FC51457B93F009A8A10 /* Yozio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Yozio.h; sourceTree = "<group>"; };
+		F7BF4FC61457B93F009A8A10 /* Yozio.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Yozio.m; sourceTree = "<group>"; };
+		F7E5ABDE145D37DC0034CC70 /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGELOG.md; sourceTree = "<group>"; };
+		F7E5ABDF145D37DC0034CC70 /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKit.h; sourceTree = "<group>"; };
+		F7E5ABE0145D37DC0034CC70 /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKit.m; sourceTree = "<group>"; };
+		F7E5ABE1145D37DC0034CC70 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		F7E5ABE2145D37DC0034CC70 /* Timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Timer.h; sourceTree = "<group>"; };
+		F7E5ABE3145D37DC0034CC70 /* Timer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Timer.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F7BF4FA41457B8B1009A8A10 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F7BF4FAB1457B8B1009A8A10 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F7BF4F9C1457B8B0009A8A10 = {
+			isa = PBXGroup;
+			children = (
+				F7BF4FBB1457B93F009A8A10 /* Yozio */,
+				F7BF4FA91457B8B1009A8A10 /* Frameworks */,
+				F7BF4FA81457B8B1009A8A10 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F7BF4FA81457B8B1009A8A10 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F7BF4FA71457B8B1009A8A10 /* libYozio.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F7BF4FA91457B8B1009A8A10 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F7BF4FAA1457B8B1009A8A10 /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F7BF4FBB1457B93F009A8A10 /* Yozio */ = {
+			isa = PBXGroup;
+			children = (
+				F7E5ABDC145D37DC0034CC70 /* lib */,
+				F7BF4FC41457B93F009A8A10 /* Yozio-Prefix.pch */,
+				F7BF4FC51457B93F009A8A10 /* Yozio.h */,
+				F7BF4FC61457B93F009A8A10 /* Yozio.m */,
+			);
+			path = Yozio;
+			sourceTree = "<group>";
+		};
+		F7E5ABDC145D37DC0034CC70 /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				F7E5ABDD145D37DC0034CC70 /* johnezang-JSONKit-465adc1 */,
+				F7E5ABE2145D37DC0034CC70 /* Timer.h */,
+				F7E5ABE3145D37DC0034CC70 /* Timer.m */,
+			);
+			path = lib;
+			sourceTree = "<group>";
+		};
+		F7E5ABDD145D37DC0034CC70 /* johnezang-JSONKit-465adc1 */ = {
+			isa = PBXGroup;
+			children = (
+				F7E5ABDE145D37DC0034CC70 /* CHANGELOG.md */,
+				F7E5ABDF145D37DC0034CC70 /* JSONKit.h */,
+				F7E5ABE0145D37DC0034CC70 /* JSONKit.m */,
+				F7E5ABE1145D37DC0034CC70 /* README.md */,
+			);
+			path = "johnezang-JSONKit-465adc1";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		F7BF4FA51457B8B1009A8A10 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F7BF4FCB1457B93F009A8A10 /* Yozio-Prefix.pch in Headers */,
+				F7BF4FCC1457B93F009A8A10 /* Yozio.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		F7BF4FA61457B8B1009A8A10 /* Yozio */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F7BF4FB41457B8B1009A8A10 /* Build configuration list for PBXNativeTarget "Yozio" */;
+			buildPhases = (
+				F7BF4FA31457B8B1009A8A10 /* Sources */,
+				F7BF4FA41457B8B1009A8A10 /* Frameworks */,
+				F7BF4FA51457B8B1009A8A10 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Yozio;
+			productName = Yozio;
+			productReference = F7BF4FA71457B8B1009A8A10 /* libYozio.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F7BF4F9E1457B8B0009A8A10 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+				ORGANIZATIONNAME = "UC Berkeley";
+			};
+			buildConfigurationList = F7BF4FA11457B8B0009A8A10 /* Build configuration list for PBXProject "Yozio" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = F7BF4F9C1457B8B0009A8A10;
+			productRefGroup = F7BF4FA81457B8B1009A8A10 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F7BF4FA61457B8B1009A8A10 /* Yozio */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F7BF4FA31457B8B1009A8A10 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F7BF4FCD1457B93F009A8A10 /* Yozio.m in Sources */,
+				F7E5ABEC145D37DC0034CC70 /* JSONKit.m in Sources */,
+				F7E5ABEE145D37DC0034CC70 /* Timer.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		F7BF4FB21457B8B1009A8A10 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		F7BF4FB31457B8B1009A8A10 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F7BF4FB51457B8B1009A8A10 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/Yozio.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Yozio/Yozio-Prefix.pch";
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		F7BF4FB61457B8B1009A8A10 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/Yozio.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Yozio/Yozio-Prefix.pch";
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F7BF4FA11457B8B0009A8A10 /* Build configuration list for PBXProject "Yozio" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F7BF4FB21457B8B1009A8A10 /* Debug */,
+				F7BF4FB31457B8B1009A8A10 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F7BF4FB41457B8B1009A8A10 /* Build configuration list for PBXNativeTarget "Yozio" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F7BF4FB51457B8B1009A8A10 /* Debug */,
+				F7BF4FB61457B8B1009A8A10 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F7BF4F9E1457B8B0009A8A10 /* Project object */;
+}
