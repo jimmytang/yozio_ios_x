@@ -53,7 +53,7 @@
 
 - (void)startTimer:(NSString *)timerName;
 
-- (void)endTimer:(NSString *)timerName;
+- (void)endTimer:(NSString *)timerName category:(NSString *)category;
 
 - (void)collect:(NSString *)key value:(NSString *)value category:(NSString *)category;
 

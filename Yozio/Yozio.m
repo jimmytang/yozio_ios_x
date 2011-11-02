@@ -123,20 +123,14 @@ static Yozio *instance = nil;
   [timers setValue:timer forKey:timerName];
 }
 
-- (void)endTimer:(NSString *)timerName
+- (void)endTimer:(NSString *)timerName category:(NSString *)category
 {
   Timer* timer = [timers valueForKey:timerName];
   [timer stopTimer];
   float elapsedTime = [timer timeElapsedInMilliseconds];
-  NSString *elapsedTimeStr = [NSString stringWithFormat:@"%.2f", elapsedTime];
-  NSMutableDictionary* d = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"timer", @"type", timerName, @"key", elapsedTimeStr, @"value", @"", @"category", [self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil];
   [timer release];
-  
-  [self checkDataQueueSize];
-  if ([self.dataQueue count] < TIMER_DATA_COUNT)
-  {  
-    [self.dataQueue addObject:d];
-  }
+  NSString *elapsedTimeStr = [NSString stringWithFormat:@"%.2f", elapsedTime];
+  [self collect:@"timer" key:timerName value:elapsedTimeStr category:category maxQueue:TIMER_DATA_COUNT];
 }
 
 - (void)collect:(NSString *)key value:(NSString *)value category:(NSString *)category
@@ -278,7 +272,6 @@ static Yozio *instance = nil;
   // Increment dataCount even if we don't add to data queue so we know how much data we missed.
   dataCount++;
   NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:type, @"type", key, @"key", value, @"value", category, @"category", [self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil]; 
-  
   [self checkDataQueueSize];
   if ([self.dataQueue count] < maxQueue)
   {  
