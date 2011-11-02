@@ -23,6 +23,51 @@
 
 // Private method declarations.
 @interface Yozio()
+{
+  NSString *_appId;
+  NSString *_userId;
+  NSString *_bucket;
+  NSString *_env;
+  NSString *_appVersion;
+  
+  NSString *serverUrl;
+  NSString *digest;
+  NSString *deviceId;
+  NSString *hardware;
+  NSString *os;
+  NSString *sessionId;
+  NSString *schemaVersion;
+  
+  NSMutableArray *dataQueue;
+  NSArray *dataToSend;
+  NSInteger dataCount;
+  NSMutableDictionary *timers;
+  NSMutableData *receivedData;
+  NSURLConnection *connection;
+}
+
+// User variables that need to be set by user.
+@property (retain) NSString* _appId;
+@property (retain) NSString* _userId;
+@property (retain) NSString* _bucket;
+@property (retain) NSString* _env;
+@property (retain) NSString* _appVersion;
+// User variables that can be figured out.
+@property (retain) NSString* serverUrl;
+@property (retain) NSString* digest;
+@property (retain) NSString* deviceId;
+@property (retain) NSString* hardware;
+@property (retain) NSString* os;
+@property (retain) NSString* sessionId;
+@property (retain) NSString* schemaVersion;
+// Internal variables.
+@property (retain) NSMutableArray* dataQueue;
+@property (retain) NSArray* dataToSend;
+@property (nonatomic, assign) NSInteger dataCount;
+@property (retain) NSMutableDictionary* timers;
+@property(nonatomic, retain) NSMutableData *receivedData;
+@property(nonatomic,retain) NSURLConnection *connection;
+
 // Notification observer methods.
 - (void)applicationDidEnterBackground:(NSNotificationCenter *)notification;
 - (void)applicationWillEnterForeground:(NSNotificationCenter *)notification;
@@ -35,6 +80,7 @@
 // Helper methods.
 - (void)collect:(NSString *)type key:(NSString *)key value:(NSString *)value  category:(NSString *)category maxQueue:(NSInteger)maxQueue;
 - (void)checkDataQueueSize;
+- (void)doFlush;
 - (NSString *)buildPayload;
 - (NSString *)timeStampString;
 - (void)saveUnsentData;
@@ -44,24 +90,24 @@
 
 
 @implementation Yozio
+@synthesize _appId;
+@synthesize _userId;
+@synthesize _bucket;
+@synthesize _env;
+@synthesize _appVersion;
 @synthesize serverUrl;
-@synthesize dataQueue;
-@synthesize dataToSend;
-@synthesize timers;
-@synthesize receivedData;
-@synthesize connection;
-@synthesize dataCount;
-@synthesize appId;
 @synthesize digest;
 @synthesize deviceId;
 @synthesize hardware;
 @synthesize os;
-@synthesize userId;
 @synthesize sessionId;
-@synthesize bucket;
-@synthesize env;
-@synthesize appVersion;
 @synthesize schemaVersion;
+@synthesize dataQueue;
+@synthesize dataToSend;
+@synthesize dataCount;
+@synthesize timers;
+@synthesize receivedData;
+@synthesize connection;
 
 
 static Yozio *instance = nil; 
@@ -76,31 +122,24 @@ static Yozio *instance = nil;
 
 - (id)init
 {
-  if (instance == nil) {
-    self = [super init];
-    self.serverUrl = @"http://localhost:3000/listener/listener/p.gif?";
-    // TODO(jimmytang): look into autorelease
-    self.dataQueue = [[NSMutableArray alloc] init];
-    self.appId = @"temp appId";
-    self.digest = @"temp digest";
-    // TODO(jt): use a hashed MAC address from en0 (not active interface)
-    self.deviceId = [UIDevice currentDevice].uniqueIdentifier;
-    self.hardware = [UIDevice currentDevice].model;
-    self.os = [[UIDevice currentDevice] systemVersion];
-    
-    UIDevice* device = [UIDevice currentDevice];
-    NSLog(@"%@",device);
-
-    self.userId = @"temp userId";
-    self.sessionId = @"temp sessionId";
-    self.bucket = @"temp bucket";
-    self.env = @"PRODUCTION";
-    self.appVersion = @"temp appVersion";
-    self.schemaVersion = @"temp schemaVersion";
-    
-    self.receivedData = [[NSMutableData alloc] init];
-    dataCount = 0;
-  }
+  self = [super init];
+  UIDevice* device = [UIDevice currentDevice];
+  self.serverUrl = @"http://localhost:3000/listener/listener/p.gif?";
+  self.digest = @"temp digest";
+  // TODO(jt): use a hashed MAC address from en0 (not active interface)
+  self.deviceId = device.uniqueIdentifier;
+  self.hardware = device.model;
+  self.os = [device systemVersion];
+  self.sessionId = @"temp sessionId";
+  self.schemaVersion = @"temp schemaVersion";
+  
+  // TODO(jimmytang): look into autorelease
+  self.dataQueue = [[NSMutableArray alloc] init];
+  self.dataCount = 0;
+  // TODO(jt): initialize timers?
+  self.receivedData = [[NSMutableData alloc] init];
+  
+  NSLog(@"%@",device);
   return self;
 }
 
@@ -109,84 +148,62 @@ static Yozio *instance = nil;
  * Pulbic API.
  *******************************************/
 
-+ (id)sharedAPI
++ (void)configure:(NSString *)appId userId:(NSString *)userId bucket:(NSString *)bucket env:(NSString *)env appVersion:(NSString *)appVersion
 {
-  return instance;
+  instance._appId = appId;
+  instance._userId = userId;
+  instance._bucket = bucket;
+  instance._env = env;
+  instance._appVersion = appVersion;
 }
 
-- (void)startTimer:(NSString *)timerName
++ (void)startTimer:(NSString *)timerName
 {
   Timer* timer = [[Timer alloc] init];
   [timer startTimer];
-  [timers setValue:timer forKey:timerName];
+  [instance.timers setValue:timer forKey:timerName];
 }
 
-- (void)endTimer:(NSString *)timerName category:(NSString *)category
++ (void)endTimer:(NSString *)timerName category:(NSString *)category
 {
-  Timer* timer = [timers valueForKey:timerName];
+  Timer* timer = [instance.timers valueForKey:timerName];
   [timer stopTimer];
   float elapsedTime = [timer timeElapsedInMilliseconds];
   [timer release];
   NSString *elapsedTimeStr = [NSString stringWithFormat:@"%.2f", elapsedTime];
-  [self collect:@"timer" key:timerName value:elapsedTimeStr category:category maxQueue:TIMER_DATA_COUNT];
+  [instance collect:@"timer" key:timerName value:elapsedTimeStr category:category maxQueue:TIMER_DATA_COUNT];
 }
 
-- (void)collect:(NSString *)key value:(NSString *)value category:(NSString *)category
++ (void)collect:(NSString *)key value:(NSString *)value category:(NSString *)category
 {
-  [self collect:@"misc" key:key value:value category:category maxQueue:COLLECT_DATA_COUNT];
+  
+  [instance collect:@"misc" key:key value:value category:category maxQueue:COLLECT_DATA_COUNT];
 }
 
-- (void)funnel:(NSString *)funnelName funnelValue:(NSString *)funnelValue category:(NSString *)category
++ (void)funnel:(NSString *)funnelName funnelValue:(NSString *)funnelValue category:(NSString *)category
 {
-  [self collect:@"funnel" key:funnelName value:funnelValue category:category maxQueue:FUNNEL_DATA_COUNT];
+  [instance collect:@"funnel" key:funnelName value:funnelValue category:category maxQueue:FUNNEL_DATA_COUNT];
 }
 
-- (void)revenue:(NSString *)itemName itemCost:(double)itemCost category:(NSString *)category
++ (void)revenue:(NSString *)itemName itemCost:(double)itemCost category:(NSString *)category
 {
   NSString *stringCost = [NSString stringWithFormat:@"%d", itemCost];
-  [self collect:@"revenue" key:itemName value:stringCost category:category maxQueue:REVENUE_DATA_COUNT];
+  [instance collect:@"revenue" key:itemName value:stringCost category:category maxQueue:REVENUE_DATA_COUNT];
 }
 
-- (void)action:(NSString *)actionName actionValue:(NSString *)actionValue category:(NSString *)category
++ (void)action:(NSString *)actionName actionValue:(NSString *)actionValue category:(NSString *)category
 {
-  [self collect:@"action" key:actionName value:actionValue category:category maxQueue:ACTION_DATA_COUNT];
+  [instance collect:@"action" key:actionName value:actionValue category:category maxQueue:ACTION_DATA_COUNT];
 }
 
-- (void)error:(NSString *)errorName errorMessage:(NSString *)errorMessage category:(NSString *)category
++ (void)error:(NSString *)errorName errorMessage:(NSString *)errorMessage category:(NSString *)category
 {
-  [self collect:@"error" key:errorName value:errorMessage category:category maxQueue:ERROR_DATA_COUNT];
+  [instance collect:@"error" key:errorName value:errorMessage category:category maxQueue:ERROR_DATA_COUNT];
 }
 
-- (void)flush
++ (void)flush
 {
-  if ([self.dataQueue count] == 0 || self.connection != nil) {
-    // No events or already pushing data.
-    NSLog(@"%@", self.connection);
-    return;
-  } else if ([self.dataQueue count] > FLUSH_DATA_COUNT) {
-    self.dataToSend = [self.dataQueue subarrayWithRange:NSMakeRange(0, FLUSH_DATA_COUNT)];
-  } else {
-    self.dataToSend = [NSArray arrayWithArray:self.dataQueue];
-  }
-
-  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-  
-  //  TODO(jt): Get data to send (but don't remove from queue, only remove after succesfully sent).
-  NSString *dataStr = [self buildPayload];
-  NSString *postBody = [NSString stringWithFormat:@"data=%@", dataStr];
-  NSString *escapedUrlString =
-      [postBody stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
-  NSMutableString *urlString = [[NSMutableString alloc] initWithString:self.serverUrl];
-  [urlString appendString:escapedUrlString];
-  NSURL *url = [NSURL URLWithString:urlString];
-  
-  NSLog(@"%@", urlString);
-	
-	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-	[request setHTTPMethod:@"GET"];
-
-	self.connection = [NSURLConnection connectionWithRequest:request delegate:self];
-	[self.connection start];
+  [instance doFlush];
 }
 
 
@@ -204,7 +221,7 @@ static Yozio *instance = nil;
 {
   //  TODO(jt): implement me
   [self loadUnsentData];
-  [self flush];
+  [self doFlush];
 }
 
 - (void)applicationWillTerminate:(NSNotificationCenter *)notification
@@ -285,24 +302,56 @@ static Yozio *instance = nil;
   if ([self.dataQueue count] > 0 && [self.dataQueue count] % FLUSH_DATA_COUNT == 0) 
   {
     NSLog(@"flushing");
-    [self flush]; 
+    [self doFlush]; 
   }
+}
+
+- (void)doFlush
+{
+  if ([self.dataQueue count] == 0 || self.connection != nil) {
+    // No events or already pushing data.
+    NSLog(@"%@", self.connection);
+    return;
+  } else if ([self.dataQueue count] > FLUSH_DATA_COUNT) {
+    self.dataToSend = [self.dataQueue subarrayWithRange:NSMakeRange(0, FLUSH_DATA_COUNT)];
+  } else {
+    self.dataToSend = [NSArray arrayWithArray:self.dataQueue];
+  }
+  
+  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+  
+  //  TODO(jt): Get data to send (but don't remove from queue, only remove after succesfully sent).
+  NSString *dataStr = [self buildPayload];
+  NSString *postBody = [NSString stringWithFormat:@"data=%@", dataStr];
+  NSString *escapedUrlString =
+  [postBody stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+  NSMutableString *urlString = [[NSMutableString alloc] initWithString:self.serverUrl];
+  [urlString appendString:escapedUrlString];
+  NSURL *url = [NSURL URLWithString:urlString];
+  
+  NSLog(@"%@", urlString);
+	
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+	[request setHTTPMethod:@"GET"];
+  
+	self.connection = [NSURLConnection connectionWithRequest:request delegate:self];
+	[self.connection start];
 }
 
 // TODO(js): change this to take in dataToSend as an arg instead of using the instance var.
 - (NSString *)buildPayload
 {
   NSMutableDictionary* payload = [[NSMutableDictionary alloc] init];
-  [payload setValue:self.appId forKey:@"appId"];
+  [payload setValue:self._appId forKey:@"appId"];
+  [payload setValue:self._userId forKey:@"userId"];
+  [payload setValue:self._bucket forKey:@"bucket"];
+  [payload setValue:self._env forKey:@"env"];
+  [payload setValue:self._appVersion forKey:@"appVersion"];
   [payload setValue:self.digest forKey:@"digest"];
   [payload setValue:self.deviceId forKey:@"deviceId"];
   [payload setValue:self.hardware forKey:@"hardware"];
   [payload setValue:self.os forKey:@"os"];
-  [payload setValue:self.userId forKey:@"userId"];
   [payload setValue:self.sessionId forKey:@"sessionId"];
-  [payload setValue:self.bucket forKey:@"bucket"];
-  [payload setValue:self.env forKey:@"env"];
-  [payload setValue:self.appVersion forKey:@"appVersion"];
   [payload setValue:self.schemaVersion forKey:@"schemaVersion"];
   [payload setValue:[NSNumber numberWithInteger:[dataToSend count]] forKey:@"count"];
   [payload setValue:dataToSend forKey:@"payload"];
