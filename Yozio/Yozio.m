@@ -109,8 +109,6 @@ static Yozio *instance = nil;
  * Pulbic API.
  *******************************************/
 
-// TODO(jimmytang): add call to check if flushing is required in the different collect methods.
-
 + (id)sharedAPI
 {
   return instance;
@@ -271,11 +269,11 @@ static Yozio *instance = nil;
 {
   // Increment dataCount even if we don't add to data queue so we know how much data we missed.
   dataCount++;
-  NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:type, @"type", key, @"key", value, @"value", category, @"category", [self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil]; 
-  [self checkDataQueueSize];
   if ([self.dataQueue count] < maxQueue)
-  {  
+  {
+    NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:type, @"type", key, @"key", value, @"value", category, @"category", [self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil];
     [self.dataQueue addObject:d];
+    [self checkDataQueueSize];
   }
 }
 
