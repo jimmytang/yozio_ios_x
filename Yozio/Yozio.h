@@ -10,6 +10,7 @@
 
 @interface Yozio : NSObject
 {
+  NSString *serverUrl;
 	NSMutableArray *dataQueue;
   NSArray *dataToSend;
   NSMutableDictionary *timers;
@@ -29,6 +30,7 @@
   NSString *schemaVersion;
 }
 
+@property (retain) NSString* serverUrl;
 @property (retain) NSMutableArray* dataQueue;
 @property (retain) NSArray* dataToSend;
 @property (retain) NSMutableDictionary* timers;

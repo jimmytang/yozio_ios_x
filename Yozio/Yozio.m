@@ -18,7 +18,6 @@
 #define ERROR_DATA_COUNT 40
 #define MAX_DATA_COUNT 50
 #define TIMER_LENGTH 30
-#define SERVER_URL @"http://localhost:3000/listener/listener/p.gif?"
 #define FILE_PATH [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
 
 
@@ -36,7 +35,7 @@
 // Helper methods.
 - (void)collect:(NSString *)type key:(NSString *)key value:(NSString *)value  category:(NSString *)category maxQueue:(NSInteger)maxQueue;
 - (void)checkDataQueueSize;
-- (NSString *)writePayload;
+- (NSString *)buildPayload;
 - (NSString *)timeStampString;
 - (void)saveUnsentData;
 - (void)loadUnsentData;
@@ -45,6 +44,7 @@
 
 
 @implementation Yozio
+@synthesize serverUrl;
 @synthesize dataQueue;
 @synthesize dataToSend;
 @synthesize timers;
@@ -78,10 +78,12 @@ static Yozio *instance = nil;
 {
   if (instance == nil) {
     self = [super init];
+    self.serverUrl = @"http://localhost:3000/listener/listener/p.gif?";
     // TODO(jimmytang): look into autorelease
     self.dataQueue = [[NSMutableArray alloc] init];
     self.appId = @"temp appId";
     self.digest = @"temp digest";
+    // TODO(jt): use a hashed MAC address from en0 (not active interface)
     self.deviceId = [UIDevice currentDevice].uniqueIdentifier;
     self.hardware = [UIDevice currentDevice].model;
     self.os = [[UIDevice currentDevice] systemVersion];
@@ -178,15 +180,12 @@ static Yozio *instance = nil;
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
   
   //  TODO(jt): Get data to send (but don't remove from queue, only remove after succesfully sent).
-  NSString *dataStr = [self writePayload];
+  NSString *dataStr = [self buildPayload];
   NSString *postBody = [NSString stringWithFormat:@"data=%@", dataStr];
-  NSString* escapedUrlString =
-  // TODO(jt): Do we ever send postBody?
-  [postBody stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
-  NSMutableString *urlString = [[NSMutableString alloc] initWithString:SERVER_URL];
+  NSString *escapedUrlString =
+    [postBody stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+  NSMutableString *urlString = [[NSMutableString alloc] initWithString:self.serverUrl];
   [urlString appendString:escapedUrlString];
-  
-  //  TODO(jt): Fill in real server URLac
   NSURL *url = [NSURL URLWithString:urlString];
   
   NSLog(@"%@", urlString);
@@ -276,6 +275,7 @@ static Yozio *instance = nil;
 
 - (void)collect:(NSString *)type key:(NSString *)key value:(NSString *)value category:(NSString *)category maxQueue:(NSInteger)maxQueue
 {
+  // Increment dataCount even if we don't add to data queue so we know how much data we missed.
   dataCount++;
   NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:type, @"type", key, @"key", value, @"value", category, @"category", [self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil]; 
   
@@ -298,8 +298,7 @@ static Yozio *instance = nil;
 }
 
 // TODO(js): change this to take in dataToSend as an arg instead of using the instance var.
-// TODO(js): rename to buildPayload
-- (NSString *)writePayload
+- (NSString *)buildPayload
 {
   NSMutableDictionary* payload = [[NSMutableDictionary alloc] init];
   [payload setValue:self.appId forKey:@"appId"];
@@ -320,10 +319,8 @@ static Yozio *instance = nil;
   NSLog(@"dataToSend: %@", dataToSend);
   NSLog(@"payload: %@", payload);
   
+  [payload autorelease];
   return [payload JSONString];
-  
-  // TODO(jt): why release after return?
-  [payload release];
 }
 
 - (NSString *)timeStampString
