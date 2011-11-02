@@ -221,11 +221,12 @@ static Yozio *instance = nil;
 - (void)connection:(NSURLConnection *) didReceiveResponse:(NSHTTPURLResponse *) response
 {
   NSLog(@"didReceiveResponse");
-  if ([response statusCode] == 200) {
+  NSInteger statusCode = [response statusCode];
+  if (statusCode == 200) {
     NSLog(@"200: OK");
     self.receivedData = [NSMutableData data];
   } else {
-    //  TODO(jt): log unsuccessful request
+    NSLog(@"%@", [NSString stringWithFormat:@"Bad response %d", statusCode]);
   }
 }
 
@@ -328,7 +329,6 @@ static Yozio *instance = nil;
 
 - (void)saveUnsentData
 {
-  //  TODO(jt): implement me
   NSLog(@"saveUnsentData");
   if (![NSKeyedArchiver archiveRootObject:self.dataQueue toFile:FILE_PATH]) 
   {
@@ -338,7 +338,6 @@ static Yozio *instance = nil;
 
 - (void)loadUnsentData
 {
-  //  TODO(jt): implement me
   NSLog(@"loadUnsentData");
   self.dataQueue = [NSKeyedUnarchiver unarchiveObjectWithFile:FILE_PATH];
   if (!self.dataQueue) 
