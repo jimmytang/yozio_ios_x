@@ -176,8 +176,9 @@ static YozioApi *instance = nil;
 
 - (void)flush
 {
-  if ([self.dataQueue count] == 0 || self.connection != nil) { // No events or already pushing data.
-  NSLog(@"%@", self.connection);
+  if ([self.dataQueue count] == 0 || self.connection != nil) {
+    // No events or already pushing data.
+    NSLog(@"%@", self.connection);
     return;
   } else if ([self.dataQueue count] > FLUSH_DATA_COUNT) {
     self.dataToSend = [self.dataQueue subarrayWithRange:NSMakeRange(0, FLUSH_DATA_COUNT)];
@@ -300,6 +301,8 @@ static YozioApi *instance = nil;
   }
 }
 
+// TODO(js): change this to take in dataToSend as an arg instead of using the instance var.
+// TODO(js): rename to buildPayload
 - (NSString *)writePayload
 {
   NSMutableDictionary* payload = [[NSMutableDictionary alloc] init];
@@ -323,7 +326,7 @@ static YozioApi *instance = nil;
   
   return [payload JSONString];
   
-  // TODO(jt): release after return?
+  // TODO(jt): why release after return?
   [payload release];
 }
 
