@@ -49,14 +49,21 @@
 @property (retain) NSString* schemaVersion;
 
 + (id)sharedAPI;
+
 - (void)startTimer:(NSString *)timerName;
+
 - (void)endTimer:(NSString *)timerName;
-- (void)collect:(NSString *)type key:(NSString *)key value:(NSString *)value  category:(NSString *)category maxQueue:(NSInteger)maxQueue;
-- (void)collect:(NSString *)key value:(NSString *)value;
-- (void)funnel:(NSString *)funnelName step:(NSString *)step;
-- (void)revenue:(NSString *)item cost:(NSString *)cost category:(NSString *)category;
-- (void)action:(NSString *)actionName actionObject:(NSString *)actionObject;
-- (void)error:(NSString *)errorName message:(NSString *)message;
+
+- (void)collect:(NSString *)key value:(NSString *)value category:(NSString *)category;
+
+- (void)funnel:(NSString *)funnelName funnelValue:(NSString *)funnelValue category:(NSString *)category;
+
+- (void)revenue:(NSString *)itemName itemCost:(double)itemCost category:(NSString *)category;
+
+- (void)action:(NSString *)actionName actionValue:(NSString *)actionValue category:(NSString *)category;
+
+- (void)error:(NSString *)errorName errorMessage:(NSString *)errorMessage category:(NSString *)category;
+
 - (void)flush;
 
 @end

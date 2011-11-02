@@ -34,6 +34,7 @@
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error;
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection;
 // Helper methods.
+- (void)collect:(NSString *)type key:(NSString *)key value:(NSString *)value  category:(NSString *)category maxQueue:(NSInteger)maxQueue;
 - (void)checkDataQueueSize;
 - (NSString *)writePayload;
 - (NSString *)timeStampString;
@@ -137,41 +138,30 @@ static YozioApi *instance = nil;
   }
 }
 
-- (void)collect:(NSString *)type key:(NSString *)key value:(NSString *)value category:(NSString *)category maxQueue:(NSInteger)maxQueue
+- (void)collect:(NSString *)key value:(NSString *)value category:(NSString *)category
 {
-  dataCount++;
-  NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:type, @"type", key, @"key", value, @"value", category, @"category", [self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil]; 
-  
-  [self checkDataQueueSize];
-  if ([self.dataQueue count] < maxQueue)
-  {  
-    [self.dataQueue addObject:d];
-  }
+  [self collect:@"misc" key:key value:value category:category maxQueue:COLLECT_DATA_COUNT];
 }
 
-- (void)collect:(NSString *)key value:(NSString *)value
+- (void)funnel:(NSString *)funnelName funnelValue:(NSString *)funnelValue category:(NSString *)category
 {
-  [self collect:@"misc" key:key value:value category:@"" maxQueue:COLLECT_DATA_COUNT];
+  [self collect:@"funnel" key:funnelName value:funnelValue category:category maxQueue:FUNNEL_DATA_COUNT];
 }
 
-- (void)funnel:(NSString *)funnelName step:(NSString *)step
+- (void)revenue:(NSString *)itemName itemCost:(double)itemCost category:(NSString *)category
 {
-  [self collect:@"funnel" key:funnelName value:step category:@"" maxQueue:FUNNEL_DATA_COUNT];
+  NSString *stringCost = [NSString stringWithFormat:@"%d", itemCost];
+  [self collect:@"revenue" key:itemName value:stringCost category:category maxQueue:REVENUE_DATA_COUNT];
 }
 
-- (void)revenue:(NSString *)item cost:(NSString *)cost category:(NSString *)category
+- (void)action:(NSString *)actionName actionValue:(NSString *)actionValue category:(NSString *)category
 {
-  [self collect:@"revenue" key:item value:cost category:category maxQueue:REVENUE_DATA_COUNT];
+  [self collect:@"action" key:actionName value:actionValue category:category maxQueue:ACTION_DATA_COUNT];
 }
 
-- (void)action:(NSString *)actionName actionObject:(NSString *)actionObject
+- (void)error:(NSString *)errorName errorMessage:(NSString *)errorMessage category:(NSString *)category
 {
-  [self collect:@"action" key:actionName value:actionObject category:@"" maxQueue:ACTION_DATA_COUNT];
-}
-
-- (void)error:(NSString *)errorName message:(NSString *)message 
-{
-  [self collect:@"error" key:errorName value:message category:@"" maxQueue:ERROR_DATA_COUNT];
+  [self collect:@"error" key:errorName value:errorMessage category:category maxQueue:ERROR_DATA_COUNT];
 }
 
 - (void)flush
@@ -192,6 +182,7 @@ static YozioApi *instance = nil;
   NSString *dataStr = [self writePayload];
   NSString *postBody = [NSString stringWithFormat:@"data=%@", dataStr];
   NSString* escapedUrlString =
+  // TODO(jt): Do we ever send postBody?
   [postBody stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
   NSMutableString *urlString = [[NSMutableString alloc] initWithString:SERVER_URL];
   [urlString appendString:escapedUrlString];
@@ -289,6 +280,18 @@ static YozioApi *instance = nil;
 /*******************************************
  * Helper methods.
  *******************************************/
+
+- (void)collect:(NSString *)type key:(NSString *)key value:(NSString *)value category:(NSString *)category maxQueue:(NSInteger)maxQueue
+{
+  dataCount++;
+  NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:type, @"type", key, @"key", value, @"value", category, @"category", [self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil]; 
+  
+  [self checkDataQueueSize];
+  if ([self.dataQueue count] < maxQueue)
+  {  
+    [self.dataQueue addObject:d];
+  }
+}
 
 - (void)checkDataQueueSize
 {
