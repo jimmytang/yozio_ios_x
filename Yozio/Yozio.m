@@ -118,7 +118,6 @@ static Yozio *instance = nil;
 
 - (void)startTimer:(NSString *)timerName
 {
-  // TODO(jimmytang): memory management for timer.
   Timer* timer = [[Timer alloc] init];
   [timer startTimer];
   [timers setValue:timer forKey:timerName];
@@ -131,6 +130,7 @@ static Yozio *instance = nil;
   float elapsedTime = [timer timeElapsedInMilliseconds];
   NSString *elapsedTimeStr = [NSString stringWithFormat:@"%.2f", elapsedTime];
   NSMutableDictionary* d = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"timer", @"type", timerName, @"key", elapsedTimeStr, @"value", @"", @"category", [self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil];
+  [timer release];
   
   [self checkDataQueueSize];
   if ([self.dataQueue count] < TIMER_DATA_COUNT)
