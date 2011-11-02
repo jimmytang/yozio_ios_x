@@ -68,7 +68,9 @@ static YozioApi *instance = nil;
 + (void)initialize
 {
   if (instance == nil)
+  {
     instance = [[self alloc] init];
+  }
 }
 
 - (id)init
@@ -108,7 +110,7 @@ static YozioApi *instance = nil;
 
 + (id)sharedAPI
 {
-	return instance;
+  return instance;
 }
 
 - (void)startTimer:(NSString *)timerName
@@ -175,22 +177,21 @@ static YozioApi *instance = nil;
 - (void)flush
 {
   if ([self.dataQueue count] == 0 || self.connection != nil) { // No events or already pushing data.
-    NSLog(@"%@", self.connection);
-		return;
-	} else if ([self.dataQueue count] > FLUSH_DATA_COUNT) {
-		self.dataToSend = [self.dataQueue subarrayWithRange:NSMakeRange(0, FLUSH_DATA_COUNT)];
-	} else {
-		self.dataToSend = [NSArray arrayWithArray:self.dataQueue];
-	}
+  NSLog(@"%@", self.connection);
+    return;
+  } else if ([self.dataQueue count] > FLUSH_DATA_COUNT) {
+    self.dataToSend = [self.dataQueue subarrayWithRange:NSMakeRange(0, FLUSH_DATA_COUNT)];
+  } else {
+    self.dataToSend = [NSArray arrayWithArray:self.dataQueue];
+  }
 
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
   
   //  TODO(jt): Get data to send (but don't remove from queue, only remove after succesfully sent).
   NSString *dataStr = [self writePayload];
-	NSString *postBody = [NSString stringWithFormat:@"data=%@", dataStr];
+  NSString *postBody = [NSString stringWithFormat:@"data=%@", dataStr];
   NSString* escapedUrlString =
-  [postBody stringByAddingPercentEscapesUsingEncoding:
-   NSASCIIStringEncoding];
+  [postBody stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
   NSMutableString *urlString = [[NSMutableString alloc] initWithString:SERVER_URL];
   [urlString appendString:escapedUrlString];
   
@@ -199,11 +200,11 @@ static YozioApi *instance = nil;
   
   NSLog(@"%@", urlString);
 	
-	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
-	[request setHTTPMethod:@"GET"];
+  NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
+  [request setHTTPMethod:@"GET"];
 
-	self.connection = [NSURLConnection connectionWithRequest:request delegate:self];
-	[self.connection start];
+  self.connection = [NSURLConnection connectionWithRequest:request delegate:self];
+  [self.connection start];
   [request release];
 }
 
@@ -259,8 +260,8 @@ static YozioApi *instance = nil;
 {
   NSLog(@"didFailWithError");
   //  TODO(jt): log failure
-	self.dataToSend = nil;
-	self.connection = nil;
+  self.dataToSend = nil;
+  self.connection = nil;
   [self connectionComplete];
 }
 
@@ -275,10 +276,10 @@ static YozioApi *instance = nil;
   NSLog(@"Before remove:%@", self.dataQueue);
   [self.dataQueue removeObjectsInArray:self.dataToSend];
   NSLog(@"After remove:%@", self.dataQueue);
-	self.dataToSend = nil;
-	self.receivedData = nil;
+  self.dataToSend = nil;
+  self.receivedData = nil;
   self.connection = nil;
-	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
   [response release];
   [self connectionComplete];
 }
@@ -322,6 +323,7 @@ static YozioApi *instance = nil;
   
   return [payload JSONString];
   
+  // TODO(jt): release after return?
   [payload release];
 }
 
@@ -343,8 +345,8 @@ static YozioApi *instance = nil;
   NSLog(@"saveUnsentData");
   if (![NSKeyedArchiver archiveRootObject:self.dataQueue toFile:FILE_PATH]) 
   {
-		NSLog(@"Unable to archive data!!!");
-	}
+    NSLog(@"Unable to archive data!!!");
+  }
 }
 
 - (void)loadUnsentData
@@ -352,9 +354,9 @@ static YozioApi *instance = nil;
   //  TODO(jt): implement me
   NSLog(@"loadUnsentData");
   self.dataQueue = [NSKeyedUnarchiver unarchiveObjectWithFile:FILE_PATH];
-	if (!self.dataQueue) 
+  if (!self.dataQueue) 
   {
-		self.dataQueue = [NSMutableArray array];    
+    self.dataQueue = [NSMutableArray array];    
   }
 }
 
