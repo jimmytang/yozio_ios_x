@@ -90,9 +90,9 @@
 - (void)loadUnsentData;
 - (void)connectionComplete;
 - (void) updateDeviceId;
-- (NSString *)getUUID;
+- (NSString *)getDeviceId;
+- (BOOL) storeDeviceId:(NSString *)uuid;
 - (NSString *)makeUUID;
-- (BOOL) storeUUID:(NSString *)uuid;
 @end
 
 
@@ -134,7 +134,7 @@ static Yozio *instance = nil;
   self.serverUrl = @"http://localhost:3000/listener/listener/p.gif?";
   // TODO(jt): get real digest
   self.digest = @"";
-  self.deviceId = [self getUUID];
+  self.deviceId = [self getDeviceId];
   self.hardware = device.model;
   self.os = [device systemVersion];
   self.sessionId = [self makeUUID];
@@ -413,14 +413,14 @@ static Yozio *instance = nil;
 - (void) updateDeviceId
 {
   if (self.deviceId == nil) {
-    self.deviceId = [self getUUID];
+    self.deviceId = [self getDeviceId];
   }
 }
 
 /**
  * @returns The string UUID or nil if an error occurred while creating/loading the UUID.
  */
-- (NSString *)getUUID
+- (NSString *)getDeviceId
 {
   NSError *loadError = nil;
   NSString *uuid = [SFHFKeychainUtils getPasswordForUsername:UUID_KEYCHAIN_USERNAME
@@ -430,7 +430,7 @@ static Yozio *instance = nil;
   if (loadErrorCode == errSecItemNotFound) {
     // No UUID stored in keychain yet.
     uuid = [self makeUUID];
-    if (![self storeUUID:uuid]) {
+    if (![self storeDeviceId:uuid]) {
       return nil;
     }
   } else if (loadErrorCode != errSecSuccess) {
@@ -441,16 +441,7 @@ static Yozio *instance = nil;
   return uuid;
 }
 
-// Code taken from http://www.tuaw.com/2011/08/21/dev-juice-help-me-generate-unique-identifiers/
-- (NSString *)makeUUID
-{
-  CFUUIDRef theUUID = CFUUIDCreate(NULL);
-  NSString *uuidString = (__bridge_transfer NSString *) CFUUIDCreateString(NULL, theUUID);
-  CFRelease(theUUID);
-  return uuidString;
-}
-
-- (BOOL) storeUUID:(NSString *)uuid
+- (BOOL) storeDeviceId:(NSString *)uuid
 {
   NSError *storeError = nil;
   [SFHFKeychainUtils storeUsername:UUID_KEYCHAIN_USERNAME
@@ -464,6 +455,15 @@ static Yozio *instance = nil;
     return NO;
   }
   return YES;
+}
+
+// Code taken from http://www.tuaw.com/2011/08/21/dev-juice-help-me-generate-unique-identifiers/
+- (NSString *)makeUUID
+{
+  CFUUIDRef theUUID = CFUUIDCreate(NULL);
+  NSString *uuidString = (__bridge_transfer NSString *) CFUUIDCreateString(NULL, theUUID);
+  CFRelease(theUUID);
+  return uuidString;
 }
   
 @end
