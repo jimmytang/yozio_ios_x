@@ -133,11 +133,9 @@ static Yozio *instance = nil;
   self.sessionId = @"temp sessionId";
   self.schemaVersion = @"temp schemaVersion";
   
-  // TODO(jimmytang): look into autorelease
-  self.dataQueue = [[NSMutableArray alloc] init];
+  self.dataQueue = [NSMutableArray array];
   self.dataCount = 0;
   // TODO(jt): initialize timers?
-  self.receivedData = [[NSMutableData alloc] init];
   
   NSLog(@"%@",device);
   return self;
@@ -148,7 +146,13 @@ static Yozio *instance = nil;
  * Pulbic API.
  *******************************************/
 
-+ (void)configure:(NSString *)appId userId:(NSString *)userId bucket:(NSString *)bucket env:(NSString *)env appVersion:(NSString *)appVersion
+// TODO(jt): make the public API methods thread safe?
+
++ (void)configure:(NSString *)appId
+           userId:(NSString *)userId
+           bucket:(NSString *)bucket
+              env:(NSString *)env
+       appVersion:(NSString *)appVersion
 {
   instance._appId = appId;
   instance._userId = userId;
@@ -219,14 +223,12 @@ static Yozio *instance = nil;
 
 - (void)applicationWillEnterForeground:(NSNotificationCenter *)notification
 {
-  //  TODO(jt): implement me
   [self loadUnsentData];
   [self doFlush];
 }
 
 - (void)applicationWillTerminate:(NSNotificationCenter *)notification
 {
-  //  TODO(jt): implement me
   [self saveUnsentData];
 }
 
@@ -258,9 +260,6 @@ static Yozio *instance = nil;
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
   NSLog(@"didFailWithError");
-  //  TODO(jt): log failure
-  self.dataToSend = nil;
-  self.connection = nil;
   [self connectionComplete];
 }
 
@@ -271,10 +270,6 @@ static Yozio *instance = nil;
   NSLog(@"Before remove:%@", self.dataQueue);
   [self.dataQueue removeObjectsInArray:self.dataToSend];
   NSLog(@"After remove:%@", self.dataQueue);
-  self.dataToSend = nil;
-  self.receivedData = nil;
-  self.connection = nil;
-	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
   [self connectionComplete];
 }
 
@@ -320,17 +315,14 @@ static Yozio *instance = nil;
   
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
   
-  //  TODO(jt): Get data to send (but don't remove from queue, only remove after succesfully sent).
   NSString *dataStr = [self buildPayload];
   NSString *postBody = [NSString stringWithFormat:@"data=%@", dataStr];
   NSString *escapedUrlString =
   [postBody stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
   NSMutableString *urlString = [[NSMutableString alloc] initWithString:self.serverUrl];
   [urlString appendString:escapedUrlString];
-  NSURL *url = [NSURL URLWithString:urlString];
-  
   NSLog(@"%@", urlString);
-	
+  NSURL *url = [NSURL URLWithString:urlString];
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
 	[request setHTTPMethod:@"GET"];
   
@@ -353,11 +345,11 @@ static Yozio *instance = nil;
   [payload setValue:self.os forKey:@"os"];
   [payload setValue:self.sessionId forKey:@"sessionId"];
   [payload setValue:self.schemaVersion forKey:@"schemaVersion"];
-  [payload setValue:[NSNumber numberWithInteger:[dataToSend count]] forKey:@"count"];
-  [payload setValue:dataToSend forKey:@"payload"];
+  [payload setValue:[NSNumber numberWithInteger:[self.dataToSend count]] forKey:@"count"];
+  [payload setValue:self.dataToSend forKey:@"payload"];
   
   NSLog(@"self.dataQueue: %@", self.dataQueue);
-  NSLog(@"dataToSend: %@", dataToSend);
+  NSLog(@"dataToSend: %@", self.dataToSend);
   NSLog(@"payload: %@", payload);
   
   [payload autorelease];
@@ -398,16 +390,10 @@ static Yozio *instance = nil;
 - (void)connectionComplete
 {
   self.receivedData = nil;
+  self.dataToSend = nil;
+  self.connection = nil;
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
   //  TODO(jt): stop background task if running in background
 }
   
 @end
-
-
-
-
-
-
-
-
