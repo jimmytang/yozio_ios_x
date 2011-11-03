@@ -178,11 +178,17 @@ static Yozio *instance = nil;
 + (void)endTimer:(NSString *)timerName category:(NSString *)category
 {
   Timer* timer = [instance.timers valueForKey:timerName];
-  [timer stopTimer];
-  float elapsedTime = [timer timeElapsedInMilliseconds];
-  [timer release];
-  NSString *elapsedTimeStr = [NSString stringWithFormat:@"%.2f", elapsedTime];
-  [instance collect:@"timer" key:timerName value:elapsedTimeStr category:category maxQueue:TIMER_DATA_COUNT];
+  if (timer == nil) {
+    // We don't want developers to get away with bad instrumentation code, so raise an
+    // exception and force them to deal with it.
+    [NSException raise:@"Invalid timerName" format:@"timerName %@ is invalid", timerName];
+  } else {
+    [timer stopTimer];
+    float elapsedTime = [timer timeElapsedInMilliseconds];
+    [timer release];
+    NSString *elapsedTimeStr = [NSString stringWithFormat:@"%.2f", elapsedTime];
+    [instance collect:@"timer" key:timerName value:elapsedTimeStr category:category maxQueue:TIMER_DATA_COUNT];
+  }
 }
 
 + (void)collect:(NSString *)key value:(NSString *)value category:(NSString *)category
@@ -191,25 +197,25 @@ static Yozio *instance = nil;
   [instance collect:@"misc" key:key value:value category:category maxQueue:COLLECT_DATA_COUNT];
 }
 
-+ (void)funnel:(NSString *)funnelName funnelValue:(NSString *)funnelValue category:(NSString *)category
++ (void)funnel:(NSString *)funnelName value:(NSString *)value category:(NSString *)category
 {
-  [instance collect:@"funnel" key:funnelName value:funnelValue category:category maxQueue:FUNNEL_DATA_COUNT];
+  [instance collect:@"funnel" key:funnelName value:value category:category maxQueue:FUNNEL_DATA_COUNT];
 }
 
-+ (void)revenue:(NSString *)itemName itemCost:(double)itemCost category:(NSString *)category
++ (void)revenue:(NSString *)itemName cost:(double)cost category:(NSString *)category
 {
-  NSString *stringCost = [NSString stringWithFormat:@"%d", itemCost];
+  NSString *stringCost = [NSString stringWithFormat:@"%d", cost];
   [instance collect:@"revenue" key:itemName value:stringCost category:category maxQueue:REVENUE_DATA_COUNT];
 }
 
-+ (void)action:(NSString *)actionName actionValue:(NSString *)actionValue category:(NSString *)category
++ (void)action:(NSString *)context value:(NSString *)actionName category:(NSString *)category
 {
-  [instance collect:@"action" key:actionName value:actionValue category:category maxQueue:ACTION_DATA_COUNT];
+  [instance collect:@"action" key:context value:actionName category:category maxQueue:ACTION_DATA_COUNT];
 }
 
-+ (void)error:(NSString *)errorName errorMessage:(NSString *)errorMessage category:(NSString *)category
++ (void)error:(NSString *)errorName message:(NSString *)message category:(NSString *)category
 {
-  [instance collect:@"error" key:errorName value:errorMessage category:category maxQueue:ERROR_DATA_COUNT];
+  [instance collect:@"error" key:errorName value:message category:category maxQueue:ERROR_DATA_COUNT];
 }
 
 + (void)flush
@@ -428,7 +434,7 @@ static Yozio *instance = nil;
                                                        error:&loadError];
   NSInteger loadErrorCode = [loadError code];
   if (loadErrorCode == errSecItemNotFound) {
-    // No UUID stored in keychain yet.
+    // No deviceId stored in keychain yet.
     uuid = [self makeUUID];
     if (![self storeDeviceId:uuid]) {
       return nil;
