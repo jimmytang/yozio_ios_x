@@ -291,8 +291,8 @@ static Yozio *instance = nil;
   {
     NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:type, @"type", key, @"key", value, @"value", category, @"category", [self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil];
     [self.dataQueue addObject:d];
-    [self checkDataQueueSize];
   }
+  [self checkDataQueueSize];
 }
 
 - (void)checkDataQueueSize
