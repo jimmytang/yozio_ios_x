@@ -132,12 +132,15 @@ static Yozio *instance = nil;
   self = [super init];
   UIDevice* device = [UIDevice currentDevice];
   self.serverUrl = @"http://localhost:3000/listener/listener/p.gif?";
-  self.digest = @"temp digest";
+  // TODO(jt): get real digest
+  self.digest = @"";
   self.deviceId = [self getUUID];
   self.hardware = device.model;
   self.os = [device systemVersion];
-  self.sessionId = @"temp sessionId";
-  self.schemaVersion = @"temp schemaVersion";
+  self.sessionId = [self makeUUID];
+  self.schemaVersion = @"";
+  // TODO(jt): store phone orientation and app orientation
+  // TODO(jt): network interface (wifi, 3g)
   
   self.dataQueue = [NSMutableArray array];
   self.dataCount = 0;
@@ -227,6 +230,8 @@ static Yozio *instance = nil;
 
 - (void)applicationWillEnterForeground:(NSNotificationCenter *)notification
 {
+  // Start a new session.
+  self.sessionId = [self makeUUID];
   [self loadUnsentData];
   [self doFlush];
 }
