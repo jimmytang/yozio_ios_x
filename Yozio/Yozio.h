@@ -28,7 +28,7 @@
  *
  *     Add instrumentation code at any point by calling any of the instrumentation methods.
  *
- *         [Yozio action:@"Level 1" actionName:@"jump" category:@"MyCategory"];
+ *         [Yozio action:@"jump" context:@"Level 1" category:@"MyCategory"];
  *
  *     NOTE: Yozio is not thread safe. It is your responsibility to make sure that there are no
  *           concurrent calls to any Yozio methods.
@@ -130,15 +130,15 @@
 /**
  * Instruments some user action. An action can be anything, such as a button click.
  *
+ * @param actionName The name of the action the user performed.
  * @param context The context in which the action was performed. For example, if your application
  *                is a game with muliple levels, each level can be the different context. Or if
  *                your application has multiple screens, each screen can be a different context.
- * @param actionName The name of the action the user performed.
  * @param category The category to group this event under.
  *
- * @example [Yozio action:@"Level 1" actionName:@"jump" category:@"MyCategory"];
+ * @example [Yozio action:@"jump" context:@"Level 1"  category:@"MyCategory"];
  */
-+ (void)action:(NSString *)context actionName:(NSString *)actionName category:(NSString *)category;
++ (void)action:(NSString *)actionName context:(NSString *)context category:(NSString *)category;
 
 
 /**
