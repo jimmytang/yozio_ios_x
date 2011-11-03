@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0E5968FA1462456C00433554 /* SFHFKeychainUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E5968F81462456C00433554 /* SFHFKeychainUtils.h */; };
+		0E5968FB1462456C00433554 /* SFHFKeychainUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E5968F91462456C00433554 /* SFHFKeychainUtils.m */; };
 		F7BF4FAB1457B8B1009A8A10 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7BF4FAA1457B8B1009A8A10 /* Foundation.framework */; };
 		F7BF4FCB1457B93F009A8A10 /* Yozio-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = F7BF4FC41457B93F009A8A10 /* Yozio-Prefix.pch */; };
 		F7BF4FCC1457B93F009A8A10 /* Yozio.h in Headers */ = {isa = PBXBuildFile; fileRef = F7BF4FC51457B93F009A8A10 /* Yozio.h */; };
@@ -16,6 +18,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0E5968F81462456C00433554 /* SFHFKeychainUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFHFKeychainUtils.h; sourceTree = "<group>"; };
+		0E5968F91462456C00433554 /* SFHFKeychainUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFHFKeychainUtils.m; sourceTree = "<group>"; };
 		F7BF4FA71457B8B1009A8A10 /* libYozio.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libYozio.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7BF4FAA1457B8B1009A8A10 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F7BF4FC41457B93F009A8A10 /* Yozio-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Yozio-Prefix.pch"; sourceTree = "<group>"; };
@@ -80,6 +84,8 @@
 		F7E5ABDC145D37DC0034CC70 /* lib */ = {
 			isa = PBXGroup;
 			children = (
+				0E5968F81462456C00433554 /* SFHFKeychainUtils.h */,
+				0E5968F91462456C00433554 /* SFHFKeychainUtils.m */,
 				F7E5ABDD145D37DC0034CC70 /* johnezang-JSONKit-465adc1 */,
 				F7E5ABE2145D37DC0034CC70 /* Timer.h */,
 				F7E5ABE3145D37DC0034CC70 /* Timer.m */,
@@ -107,6 +113,7 @@
 			files = (
 				F7BF4FCB1457B93F009A8A10 /* Yozio-Prefix.pch in Headers */,
 				F7BF4FCC1457B93F009A8A10 /* Yozio.h in Headers */,
+				0E5968FA1462456C00433554 /* SFHFKeychainUtils.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -164,6 +171,7 @@
 				F7BF4FCD1457B93F009A8A10 /* Yozio.m in Sources */,
 				F7E5ABEC145D37DC0034CC70 /* JSONKit.m in Sources */,
 				F7E5ABEE145D37DC0034CC70 /* Timer.m in Sources */,
+				0E5968FB1462456C00433554 /* SFHFKeychainUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

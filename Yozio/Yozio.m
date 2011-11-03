@@ -8,7 +8,9 @@
 #import "Yozio.h"
 #import "Timer.h"
 #import "JSONKit.h"
+#import "SFHFKeychainUtils.h"
 #import <UIKit/UIKit.h>
+
 #define FLUSH_DATA_COUNT 5
 #define TIMER_DATA_COUNT 10
 #define COLLECT_DATA_COUNT 15
@@ -19,7 +21,8 @@
 #define MAX_DATA_COUNT 50
 #define TIMER_LENGTH 30
 #define FILE_PATH [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
-
+#define UUID_KEYCHAIN_USERNAME @"UUID"
+#define KEYCHAIN_SERVICE @"yozio"
 
 // Private method declarations.
 @interface Yozio()
@@ -86,6 +89,10 @@
 - (void)saveUnsentData;
 - (void)loadUnsentData;
 - (void)connectionComplete;
+- (void) updateDeviceId;
+- (NSString *)getUUID;
+- (NSString *)makeUUID;
+- (BOOL) storeUUID:(NSString *)uuid;
 @end
 
 
@@ -127,7 +134,7 @@ static Yozio *instance = nil;
   self.serverUrl = @"http://localhost:3000/listener/listener/p.gif?";
   self.digest = @"temp digest";
   // TODO(jt): use a hashed MAC address from en0 (not active interface)
-  self.deviceId = device.uniqueIdentifier;
+  self.deviceId = [self getUUID];
   self.hardware = device.model;
   self.os = [device systemVersion];
   self.sessionId = @"temp sessionId";
@@ -137,7 +144,7 @@ static Yozio *instance = nil;
   self.dataCount = 0;
   // TODO(jt): initialize timers?
   
-  NSLog(@"%@",device);
+  NSLog(@"%@", device);
   return self;
 }
 
@@ -312,6 +319,7 @@ static Yozio *instance = nil;
   } else {
     self.dataToSend = [NSArray arrayWithArray:self.dataQueue];
   }
+  [self updateDeviceId];
   
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
   
@@ -394,6 +402,66 @@ static Yozio *instance = nil;
   self.connection = nil;
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
   //  TODO(jt): stop background task if running in background
+}
+
+/**
+ * Tries to set deviceId to the UUID if it is nil. The deviceId can still potentially be
+ * nil after calling this method.
+ */
+- (void) updateDeviceId
+{
+  if (self.deviceId == nil) {
+    self.deviceId = [self getUUID];
+  }
+}
+
+/**
+ * @returns The string UUID or nil if an error occurred while creating/loading the UUID.
+ */
+- (NSString *)getUUID
+{
+  NSError *loadError = nil;
+  NSString *uuid = [SFHFKeychainUtils getPasswordForUsername:UUID_KEYCHAIN_USERNAME
+                                              andServiceName:KEYCHAIN_SERVICE
+                                                       error:&loadError];
+  NSInteger loadErrorCode = [loadError code];
+  if (loadErrorCode == errSecItemNotFound) {
+    // No UUID stored in keychain yet.
+    uuid = [self makeUUID];
+    if (![self storeUUID:uuid]) {
+      return nil;
+    }
+  } else if (loadErrorCode != errSecSuccess) {
+    NSLog(@"Error loading UUID from keychain.");
+    NSLog(@"%@", [loadError localizedDescription]);
+    return nil;
+  }
+  return uuid;
+}
+
+// Code taken from http://www.tuaw.com/2011/08/21/dev-juice-help-me-generate-unique-identifiers/
+- (NSString *)makeUUID
+{
+  CFUUIDRef theUUID = CFUUIDCreate(NULL);
+  NSString *uuidString = (__bridge_transfer NSString *) CFUUIDCreateString(NULL, theUUID);
+  CFRelease(theUUID);
+  return uuidString;
+}
+
+- (BOOL) storeUUID:(NSString *)uuid
+{
+  NSError *storeError = nil;
+  [SFHFKeychainUtils storeUsername:UUID_KEYCHAIN_USERNAME
+                       andPassword:uuid
+                    forServiceName:KEYCHAIN_SERVICE
+                    updateExisting:true
+                             error:&storeError];
+  if ([storeError code] != errSecSuccess) {
+    NSLog(@"Error storing UUID to keychain.");
+    NSLog(@"%@", [storeError localizedDescription]);
+    return NO;
+  }
+  return YES;
 }
   
 @end
