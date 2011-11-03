@@ -208,7 +208,7 @@ static Yozio *instance = nil;
   [instance collect:@"revenue" key:itemName value:stringCost category:category maxQueue:REVENUE_DATA_COUNT];
 }
 
-+ (void)action:(NSString *)context value:(NSString *)actionName category:(NSString *)category
++ (void)action:(NSString *)context actionName:(NSString *)actionName category:(NSString *)category
 {
   [instance collect:@"action" key:context value:actionName category:category maxQueue:ACTION_DATA_COUNT];
 }

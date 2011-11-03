@@ -138,7 +138,7 @@
  *
  * @example [Yozio action:@"Level 1" actionName:@"jump" category:@"MyCategory"];
  */
-+ (void)action:(NSString *)context value:(NSString *)actionName category:(NSString *)category;
++ (void)action:(NSString *)context actionName:(NSString *)actionName category:(NSString *)category;
 
 
 /**
