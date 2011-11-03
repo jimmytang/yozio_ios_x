@@ -50,26 +50,26 @@
 }
 
 // User variables that need to be set by user.
-@property (retain) NSString* _appId;
-@property (retain) NSString* _userId;
-@property (retain) NSString* _bucket;
-@property (retain) NSString* _env;
-@property (retain) NSString* _appVersion;
+@property(nonatomic, retain) NSString* _appId;
+@property(nonatomic, retain) NSString* _userId;
+@property(nonatomic, retain) NSString* _bucket;
+@property(nonatomic, retain) NSString* _env;
+@property(nonatomic, retain) NSString* _appVersion;
 // User variables that can be figured out.
-@property (retain) NSString* serverUrl;
-@property (retain) NSString* digest;
-@property (retain) NSString* deviceId;
-@property (retain) NSString* hardware;
-@property (retain) NSString* os;
-@property (retain) NSString* sessionId;
-@property (retain) NSString* schemaVersion;
+@property(nonatomic, retain) NSString* serverUrl;
+@property(nonatomic, retain) NSString* digest;
+@property(nonatomic, retain) NSString* deviceId;
+@property(nonatomic, retain) NSString* hardware;
+@property(nonatomic, retain) NSString* os;
+@property(nonatomic, retain) NSString* sessionId;
+@property(nonatomic, retain) NSString* schemaVersion;
 // Internal variables.
-@property (retain) NSMutableArray* dataQueue;
-@property (retain) NSArray* dataToSend;
-@property (nonatomic, assign) NSInteger dataCount;
-@property (retain) NSMutableDictionary* timers;
+@property(nonatomic, retain) NSMutableArray* dataQueue;
+@property(nonatomic, retain) NSArray* dataToSend;
+@property(nonatomic, assign) NSInteger dataCount;
+@property(nonatomic, retain) NSMutableDictionary* timers;
 @property(nonatomic, retain) NSMutableData *receivedData;
-@property(nonatomic,retain) NSURLConnection *connection;
+@property(nonatomic, retain) NSURLConnection *connection;
 
 // Notification observer methods.
 - (void)applicationDidEnterBackground:(NSNotificationCenter *)notification;
@@ -133,7 +133,6 @@ static Yozio *instance = nil;
   UIDevice* device = [UIDevice currentDevice];
   self.serverUrl = @"http://localhost:3000/listener/listener/p.gif?";
   self.digest = @"temp digest";
-  // TODO(jt): use a hashed MAC address from en0 (not active interface)
   self.deviceId = [self getUUID];
   self.hardware = device.model;
   self.os = [device systemVersion];
@@ -152,8 +151,6 @@ static Yozio *instance = nil;
 /*******************************************
  * Pulbic API.
  *******************************************/
-
-// TODO(jt): make the public API methods thread safe?
 
 + (void)configure:(NSString *)appId
            userId:(NSString *)userId
