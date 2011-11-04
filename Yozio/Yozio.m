@@ -23,6 +23,15 @@
 #define FILE_PATH [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
 #define UUID_KEYCHAIN_USERNAME @"UUID"
 #define KEYCHAIN_SERVICE @"yozio"
+// Orientations.
+#define ORIENT_PORTRAIT @"portrait"
+#define ORIENT_PORTRAIT_UPSIDE_DOWN @"flippedPortrait"
+#define ORIENT_LANDSCAPE_LEFT @"landscapeLeft"
+#define ORIENT_LANDSCAPE_RIGHT @"landscapeRight"
+#define ORIENT_FACE_UP @"faceUp"
+#define ORIENT_FACE_DOWN @"faceDown"
+#define ORIENT_UNKNOWN @"unknown"
+
 
 // Private method declarations.
 @interface Yozio()
@@ -81,7 +90,11 @@
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error;
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection;
 // Helper methods.
-- (void)collect:(NSString *)type key:(NSString *)key value:(NSString *)value  category:(NSString *)category maxQueue:(NSInteger)maxQueue;
+- (void)collect:(NSString *)type
+            key:(NSString *)key
+          value:(NSString *)value
+       category:(NSString *)category
+       maxQueue:(NSInteger)maxQueue;
 - (void)checkDataQueueSize;
 - (void)doFlush;
 - (NSString *)buildPayload;
@@ -89,10 +102,11 @@
 - (void)saveUnsentData;
 - (void)loadUnsentData;
 - (void)connectionComplete;
-- (void) updateDeviceId;
-- (NSString *)getDeviceId;
+- (NSString *)loadOrCreateDeviceId;
 - (BOOL) storeDeviceId:(NSString *)uuid;
 - (NSString *)makeUUID;
+- (NSString *)deviceOrientation;
+- (NSString *)uiOrientation;
 @end
 
 
@@ -129,22 +143,21 @@ static Yozio *instance = nil;
 
 - (id)init
 {
+  // TODO(jt): add timer to auto flush.
+  
   self = [super init];
   UIDevice* device = [UIDevice currentDevice];
   self.serverUrl = @"http://localhost:3000/listener/listener/p.gif?";
   // TODO(jt): get real digest
   self.digest = @"";
-  self.deviceId = [self getDeviceId];
   self.hardware = device.model;
   self.os = [device systemVersion];
   self.sessionId = [self makeUUID];
   self.schemaVersion = @"";
-  // TODO(jt): store phone orientation and app orientation
-  // TODO(jt): network interface (wifi, 3g)
   
   self.dataQueue = [NSMutableArray array];
   self.dataCount = 0;
-  // TODO(jt): initialize timers?
+  self.timers = [NSMutableDictionary dictionary];
   
   NSLog(@"%@", device);
   return self;
@@ -187,35 +200,59 @@ static Yozio *instance = nil;
     float elapsedTime = [timer timeElapsedInMilliseconds];
     [timer release];
     NSString *elapsedTimeStr = [NSString stringWithFormat:@"%.2f", elapsedTime];
-    [instance collect:@"timer" key:timerName value:elapsedTimeStr category:category maxQueue:TIMER_DATA_COUNT];
+    [instance collect:@"timer"
+                  key:timerName
+                value:elapsedTimeStr
+             category:category
+             maxQueue:TIMER_DATA_COUNT];
   }
 }
 
 + (void)collect:(NSString *)key value:(NSString *)value category:(NSString *)category
 {
   
-  [instance collect:@"misc" key:key value:value category:category maxQueue:COLLECT_DATA_COUNT];
+  [instance collect:@"misc"
+                key:key
+              value:value
+           category:category
+           maxQueue:COLLECT_DATA_COUNT];
 }
 
 + (void)funnel:(NSString *)funnelName value:(NSString *)value category:(NSString *)category
 {
-  [instance collect:@"funnel" key:funnelName value:value category:category maxQueue:FUNNEL_DATA_COUNT];
+  [instance collect:@"funnel"
+                key:funnelName
+              value:value
+           category:category
+           maxQueue:FUNNEL_DATA_COUNT];
 }
 
 + (void)revenue:(NSString *)itemName cost:(double)cost category:(NSString *)category
 {
   NSString *stringCost = [NSString stringWithFormat:@"%d", cost];
-  [instance collect:@"revenue" key:itemName value:stringCost category:category maxQueue:REVENUE_DATA_COUNT];
+  [instance collect:@"revenue"
+                key:itemName
+              value:stringCost
+           category:category
+           maxQueue:REVENUE_DATA_COUNT];
 }
 
 + (void)action:(NSString *)actionName context:(NSString *)context category:(NSString *)category
 {
-  [instance collect:@"action" key:context value:actionName category:category maxQueue:ACTION_DATA_COUNT];
+  [instance collect:@"action"
+                key:context
+              value:actionName
+           category:category
+           maxQueue:ACTION_DATA_COUNT];
 }
 
 + (void)error:(NSString *)errorName message:(NSString *)message category:(NSString *)category
 {
-  [instance collect:@"error" key:errorName value:message category:category maxQueue:ERROR_DATA_COUNT];
+  [instance collect:@"error"
+                key:errorName
+              value:message
+           category:category
+           maxQueue:ERROR_DATA_COUNT];
 }
 
 + (void)flush
@@ -293,13 +330,24 @@ static Yozio *instance = nil;
  * Helper methods.
  *******************************************/
 
-- (void)collect:(NSString *)type key:(NSString *)key value:(NSString *)value category:(NSString *)category maxQueue:(NSInteger)maxQueue
+- (void)collect:(NSString *)type
+            key:(NSString *)key
+          value:(NSString *)value
+       category:(NSString *)category
+       maxQueue:(NSInteger)maxQueue
 {
   // Increment dataCount even if we don't add to data queue so we know how much data we missed.
   dataCount++;
   if ([self.dataQueue count] < maxQueue)
   {
-    NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:type, @"type", key, @"key", value, @"value", category, @"category", [self timeStampString], @"timestamp", [NSNumber numberWithInteger:dataCount], @"id", nil];
+    NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                  type, @"type",
+                                  key, @"key",
+                                  value, @"value",
+                                  category, @"category",
+                                  [self timeStampString], @"timestamp",
+                                  [NSNumber numberWithInteger:dataCount], @"id",
+                                  nil];
     [self.dataQueue addObject:d];
   }
   [self checkDataQueueSize];
@@ -327,7 +375,6 @@ static Yozio *instance = nil;
   } else {
     self.dataToSend = [NSArray arrayWithArray:self.dataQueue];
   }
-  [self updateDeviceId];
   
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
   
@@ -346,7 +393,6 @@ static Yozio *instance = nil;
 	[self.connection start];
 }
 
-// TODO(js): change this to take in dataToSend as an arg instead of using the instance var.
 - (NSString *)buildPayload
 {
   NSMutableDictionary* payload = [[NSMutableDictionary alloc] init];
@@ -356,12 +402,15 @@ static Yozio *instance = nil;
   [payload setValue:self._env forKey:@"env"];
   [payload setValue:self._appVersion forKey:@"appVersion"];
   [payload setValue:self.digest forKey:@"digest"];
-  [payload setValue:self.deviceId forKey:@"deviceId"];
+  [payload setValue:[self loadOrCreateDeviceId] forKey:@"deviceId"];
   [payload setValue:self.hardware forKey:@"hardware"];
   [payload setValue:self.os forKey:@"os"];
   [payload setValue:self.sessionId forKey:@"sessionId"];
   [payload setValue:self.schemaVersion forKey:@"schemaVersion"];
   [payload setValue:[NSNumber numberWithInteger:[self.dataToSend count]] forKey:@"count"];
+  [payload setValue:[self deviceOrientation] forKey:@"orientation"];
+  [payload setValue:[self uiOrientation] forKey:@"uiOrientation"];
+  // TODO(jt): network interface (wifi, 3g)
   [payload setValue:self.dataToSend forKey:@"payload"];
   
   NSLog(@"self.dataQueue: %@", self.dataQueue);
@@ -413,21 +462,17 @@ static Yozio *instance = nil;
 }
 
 /**
- * Tries to set deviceId to the UUID if it is nil. The deviceId can still potentially be
- * nil after calling this method.
+ * Loads the deviceId from keychain. If one doesn't exist, create a new deviceId, store it in the
+ * keychain, and return the new deviceId.
+ *
+ * @return The deviceId or nil if any error occurred while loading/creating/storing the UUID.
  */
-- (void) updateDeviceId
+- (NSString *)loadOrCreateDeviceId
 {
-  if (self.deviceId == nil) {
-    self.deviceId = [self getDeviceId];
+  if (self.deviceId != nil) {
+    return self.deviceId;
   }
-}
-
-/**
- * @returns The string UUID or nil if an error occurred while creating/loading the UUID.
- */
-- (NSString *)getDeviceId
-{
+  
   NSError *loadError = nil;
   NSString *uuid = [SFHFKeychainUtils getPasswordForUsername:UUID_KEYCHAIN_USERNAME
                                               andServiceName:KEYCHAIN_SERVICE
@@ -444,7 +489,8 @@ static Yozio *instance = nil;
     NSLog(@"%@", [loadError localizedDescription]);
     return nil;
   }
-  return uuid;
+  self.deviceId = uuid;
+  return self.deviceId;
 }
 
 - (BOOL) storeDeviceId:(NSString *)uuid
@@ -470,6 +516,42 @@ static Yozio *instance = nil;
   NSString *uuidString = (__bridge_transfer NSString *) CFUUIDCreateString(NULL, theUUID);
   CFRelease(theUUID);
   return uuidString;
+}
+
+- (NSString*)deviceOrientation {
+  UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+  switch(orientation) {
+    case UIDeviceOrientationPortrait:
+      return ORIENT_PORTRAIT;
+    case UIDeviceOrientationPortraitUpsideDown:
+      return ORIENT_PORTRAIT_UPSIDE_DOWN;
+    case UIDeviceOrientationLandscapeLeft:
+      return ORIENT_LANDSCAPE_LEFT;
+    case UIDeviceOrientationLandscapeRight:
+      return ORIENT_LANDSCAPE_RIGHT;
+    case UIDeviceOrientationFaceUp:
+      return ORIENT_FACE_UP;
+    case UIDeviceOrientationFaceDown:
+      return ORIENT_FACE_DOWN;
+    default:
+      return ORIENT_UNKNOWN;
+  }
+}
+
+- (NSString *)uiOrientation {
+  UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+  switch (orientation) {
+    case UIInterfaceOrientationPortrait:
+      return ORIENT_PORTRAIT;
+    case UIInterfaceOrientationPortraitUpsideDown:
+      return ORIENT_PORTRAIT_UPSIDE_DOWN;
+    case UIInterfaceOrientationLandscapeLeft:
+      return ORIENT_LANDSCAPE_LEFT;
+    case UIInterfaceOrientationLandscapeRight:
+      return ORIENT_LANDSCAPE_RIGHT;
+    default:
+      return ORIENT_UNKNOWN;
+  }
 }
   
 @end

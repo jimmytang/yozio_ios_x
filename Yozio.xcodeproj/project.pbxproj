@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0E5968FA1462456C00433554 /* SFHFKeychainUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E5968F81462456C00433554 /* SFHFKeychainUtils.h */; };
 		0E5968FB1462456C00433554 /* SFHFKeychainUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E5968F91462456C00433554 /* SFHFKeychainUtils.m */; };
+		0E596903146260DE00433554 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E59690114625F3000433554 /* Security.framework */; };
 		F7BF4FAB1457B8B1009A8A10 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7BF4FAA1457B8B1009A8A10 /* Foundation.framework */; };
 		F7BF4FCB1457B93F009A8A10 /* Yozio-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = F7BF4FC41457B93F009A8A10 /* Yozio-Prefix.pch */; };
 		F7BF4FCC1457B93F009A8A10 /* Yozio.h in Headers */ = {isa = PBXBuildFile; fileRef = F7BF4FC51457B93F009A8A10 /* Yozio.h */; };
@@ -20,6 +21,7 @@
 /* Begin PBXFileReference section */
 		0E5968F81462456C00433554 /* SFHFKeychainUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFHFKeychainUtils.h; sourceTree = "<group>"; };
 		0E5968F91462456C00433554 /* SFHFKeychainUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFHFKeychainUtils.m; sourceTree = "<group>"; };
+		0E59690114625F3000433554 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		F7BF4FA71457B8B1009A8A10 /* libYozio.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libYozio.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7BF4FAA1457B8B1009A8A10 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F7BF4FC41457B93F009A8A10 /* Yozio-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Yozio-Prefix.pch"; sourceTree = "<group>"; };
@@ -39,6 +41,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7BF4FAB1457B8B1009A8A10 /* Foundation.framework in Frameworks */,
+				0E596903146260DE00433554 /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +68,7 @@
 		F7BF4FA91457B8B1009A8A10 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0E59690114625F3000433554 /* Security.framework */,
 				F7BF4FAA1457B8B1009A8A10 /* Foundation.framework */,
 			);
 			name = Frameworks;
@@ -197,7 +201,7 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 			};
@@ -215,7 +219,7 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
