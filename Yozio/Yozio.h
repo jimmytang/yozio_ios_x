@@ -9,7 +9,7 @@
 /**
  * Setup:
  *     Link the libraries "libYozio.a" and "Security.framework" to your binary.
- *     To do this in Xcode, click on your project in the Project navigator choose your target.
+ *     To do this in Xcode, click on your project in the Project navigator and choose your target.
  *     Click on the "Build Phases" tab and add "libYozio.a" and "Security.framework" to the
  *     "Link Binary With Libraries" section.
  *
@@ -19,7 +19,6 @@
  *
  *         [Yozio configure:@"550e8400-e29b-41d4-a716-446655440000"
  *                   userId:@"MyUserId"
- *                   bucket:@"control"
  *                      env:@"production"
  *               appVersion:@"1.0.1"];
  *
@@ -28,30 +27,27 @@
  *         [Yozio action:@"jump" context:@"Level 1" category:@"MyCategory"];
  *
  *     NOTE: Yozio is not thread safe. It is your responsibility to make sure that there are no
- *           concurrent calls to any Yozio methods.
+ *           concurrent calls to any of the Yozio methods.
  */
 
 
 /**
  * Configures Yozio with your application's information.
  *
- * @param appId The unique application id that we provided you.
+ * @param appId The unique application uuid that we provided you.
  * @param userId The id of the user currently using your application. If your application
  *               does not support users, pass in an empty string.
- * @param bucket The experiment group to use. This field is used for A/B testing.
  * @param env The environment that the application is currently running in (i.e. "production"
  *            or "sandbox").
  * @param appVersion The current version of your application.
  *
  * @example [Yozio configure:@"550e8400-e29b-41d4-a716-446655440000"
  *                   userId:@"MyUserId"
- *                   bucket:@"control"
  *                      env:@"production"
  *               appVersion:@"1.0.1"];
  */
 + (void)configure:(NSString *)appId
            userId:(NSString *)userId
-           bucket:(NSString *)bucket
               env:(NSString *)env
        appVersion:(NSString *)appVersion;
 

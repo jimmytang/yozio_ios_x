@@ -35,7 +35,6 @@
 {
   NSString *_appId;
   NSString *_userId;
-  NSString *_bucket;
   NSString *_env;
   NSString *_appVersion;
   
@@ -46,6 +45,7 @@
   NSString *os;
   NSString *sessionId;
   NSString *schemaVersion;
+  NSString *bucket;
   
   NSMutableArray *dataQueue;
   NSArray *dataToSend;
@@ -58,7 +58,6 @@
 // User variables that need to be set by user.
 @property(nonatomic, retain) NSString* _appId;
 @property(nonatomic, retain) NSString* _userId;
-@property(nonatomic, retain) NSString* _bucket;
 @property(nonatomic, retain) NSString* _env;
 @property(nonatomic, retain) NSString* _appVersion;
 // User variables that can be figured out.
@@ -69,6 +68,7 @@
 @property(nonatomic, retain) NSString* os;
 @property(nonatomic, retain) NSString* sessionId;
 @property(nonatomic, retain) NSString* schemaVersion;
+@property(nonatomic, retain) NSString* bucket;
 // Internal variables.
 @property(nonatomic, retain) NSMutableArray* dataQueue;
 @property(nonatomic, retain) NSArray* dataToSend;
@@ -110,7 +110,6 @@
 @implementation Yozio
 @synthesize _appId;
 @synthesize _userId;
-@synthesize _bucket;
 @synthesize _env;
 @synthesize _appVersion;
 @synthesize serverUrl;
@@ -120,6 +119,7 @@
 @synthesize os;
 @synthesize sessionId;
 @synthesize schemaVersion;
+@synthesize bucket;
 @synthesize dataQueue;
 @synthesize dataToSend;
 @synthesize dataCount;
@@ -151,6 +151,7 @@ static Yozio *instance = nil;
   self.os = [device systemVersion];
   self.sessionId = [self makeUUID];
   self.schemaVersion = @"";
+  self.bucket = @"";
   
   self.dataQueue = [NSMutableArray array];
   self.dataCount = 0;
@@ -167,13 +168,11 @@ static Yozio *instance = nil;
 
 + (void)configure:(NSString *)appId
            userId:(NSString *)userId
-           bucket:(NSString *)bucket
               env:(NSString *)env
        appVersion:(NSString *)appVersion
 {
   instance._appId = appId;
   instance._userId = userId;
-  instance._bucket = bucket;
   instance._env = env;
   instance._appVersion = appVersion;
 }
@@ -402,7 +401,6 @@ static Yozio *instance = nil;
   
   [payload setValue:self._appId forKey:@"appId"];
   [payload setValue:self._userId forKey:@"userId"];
-  [payload setValue:self._bucket forKey:@"bucket"];
   [payload setValue:self._env forKey:@"env"];
   [payload setValue:self._appVersion forKey:@"appVersion"];
   [payload setValue:self.digest forKey:@"digest"];
@@ -411,6 +409,7 @@ static Yozio *instance = nil;
   [payload setValue:self.os forKey:@"os"];
   [payload setValue:self.sessionId forKey:@"sessionId"];
   [payload setValue:self.schemaVersion forKey:@"schemaVersion"];
+  [payload setValue:self.bucket forKey:@"bucket"];
   [payload setValue:[NSNumber numberWithInteger:[self.dataToSend count]] forKey:@"count"];
   [payload setValue:[self deviceOrientation] forKey:@"orientation"];
   [payload setValue:[self uiOrientation] forKey:@"uiOrientation"];
