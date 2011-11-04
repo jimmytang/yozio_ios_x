@@ -1,7 +1,4 @@
 //
-//  Yozio.h
-//  GrenadeGame
-//
 //  Copyright 2011 Yozio. All rights reserved.
 //
 

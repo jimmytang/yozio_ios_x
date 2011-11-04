@@ -1,7 +1,4 @@
 //
-//  YozioApi.m
-//  GrenadeGame
-//
 //  Copyright 2011 Yozio. All rights reserved.
 //
 
@@ -184,7 +181,7 @@ static Yozio *instance = nil;
 + (void)startTimer:(NSString *)timerName
 {
   Timer* timer = [[Timer alloc] init];
-  [timer startTimer];
+  [timer start];
   [instance.timers setValue:timer forKey:timerName];
 }
 
@@ -196,8 +193,8 @@ static Yozio *instance = nil;
     // exception and force them to deal with it.
     [NSException raise:@"Invalid timerName" format:@"timerName %@ is invalid", timerName];
   } else {
-    [timer stopTimer];
-    float elapsedTime = [timer timeElapsedInMilliseconds];
+    [timer stop];
+    float elapsedTime = [timer timeElapsed];
     [timer release];
     NSString *elapsedTimeStr = [NSString stringWithFormat:@"%.2f", elapsedTime];
     [instance collect:@"timer"
@@ -396,6 +393,13 @@ static Yozio *instance = nil;
 - (NSString *)buildPayload
 {
   NSMutableDictionary* payload = [[NSMutableDictionary alloc] init];
+  NSLocale *locale = [NSLocale currentLocale];
+  NSString *countryCode = [locale objectForKey: NSLocaleCountryCode];
+  NSString *countryName = [locale displayNameForKey:NSLocaleCountryCode value:countryCode];
+  [NSTimeZone resetSystemTimeZone];
+  NSInteger timezoneOffset = [[NSTimeZone systemTimeZone] secondsFromGMT]/3600;
+  NSString *timezone = [NSString stringWithFormat:@"%d", timezoneOffset];
+  
   [payload setValue:self._appId forKey:@"appId"];
   [payload setValue:self._userId forKey:@"userId"];
   [payload setValue:self._bucket forKey:@"bucket"];
@@ -410,6 +414,9 @@ static Yozio *instance = nil;
   [payload setValue:[NSNumber numberWithInteger:[self.dataToSend count]] forKey:@"count"];
   [payload setValue:[self deviceOrientation] forKey:@"orientation"];
   [payload setValue:[self uiOrientation] forKey:@"uiOrientation"];
+  [payload setValue:countryName forKey:@"country"];
+  [payload setValue:[[NSLocale preferredLanguages] objectAtIndex:0] forKey:@"language"];
+  [payload setValue:timezone forKey:@"timezone"];
   // TODO(jt): network interface (wifi, 3g)
   [payload setValue:self.dataToSend forKey:@"payload"];
   
