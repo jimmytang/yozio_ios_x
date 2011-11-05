@@ -28,6 +28,14 @@
 #define P_COUNT @"count"
 #define P_PAYLOAD @"payload"
 
+// Instrumentation entry types.
+#define E_TIMER @"timer"
+#define E_FUNNEL @"funnel"
+#define E_REVENUE @"revenue"
+#define E_ACTION @"action"
+#define E_ERROR @"error"
+#define E_COLLECT @"misc"
+
 // Orientations strings.
 #define ORIENT_PORTRAIT @"portrait"
 #define ORIENT_PORTRAIT_UPSIDE_DOWN @"flippedPortrait"
@@ -227,7 +235,7 @@ static Yozio *instance = nil;
     [instance.timers removeObjectForKey:timerName];
     float elapsedTime = [[NSDate date] timeIntervalSinceDate:startTime];
     NSString *elapsedTimeStr = [NSString stringWithFormat:@"%.2f", elapsedTime];
-    [instance collect:@"timer"
+    [instance collect:E_TIMER
                   key:timerName
                 value:elapsedTimeStr
              category:category
@@ -235,19 +243,9 @@ static Yozio *instance = nil;
   }
 }
 
-+ (void)collect:(NSString *)key value:(NSString *)value category:(NSString *)category
-{
-  
-  [instance collect:@"misc"
-                key:key
-              value:value
-           category:category
-           maxQueue:COLLECT_DATA_LIMIT];
-}
-
 + (void)funnel:(NSString *)funnelName value:(NSString *)value category:(NSString *)category
 {
-  [instance collect:@"funnel"
+  [instance collect:E_FUNNEL
                 key:funnelName
               value:value
            category:category
@@ -257,7 +255,7 @@ static Yozio *instance = nil;
 + (void)revenue:(NSString *)itemName cost:(double)cost category:(NSString *)category
 {
   NSString *stringCost = [NSString stringWithFormat:@"%d", cost];
-  [instance collect:@"revenue"
+  [instance collect:E_REVENUE
                 key:itemName
               value:stringCost
            category:category
@@ -266,7 +264,7 @@ static Yozio *instance = nil;
 
 + (void)action:(NSString *)actionName context:(NSString *)context category:(NSString *)category
 {
-  [instance collect:@"action"
+  [instance collect:E_ACTION
                 key:context
               value:actionName
            category:category
@@ -275,11 +273,21 @@ static Yozio *instance = nil;
 
 + (void)error:(NSString *)errorName message:(NSString *)message category:(NSString *)category
 {
-  [instance collect:@"error"
+  [instance collect:E_ERROR
                 key:errorName
               value:message
            category:category
            maxQueue:ERROR_DATA_LIMIT];
+}
+
++ (void)collect:(NSString *)key value:(NSString *)value category:(NSString *)category
+{
+  
+  [instance collect:E_COLLECT
+                key:key
+              value:value
+           category:category
+           maxQueue:COLLECT_DATA_LIMIT];
 }
 
 + (void)flush
