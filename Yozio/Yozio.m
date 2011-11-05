@@ -44,15 +44,15 @@
 
 // Flush configuration.
 // TODO(jt): fine tune these numbers
-#define FLUSH_DATA_COUNT 5
-#define TIMER_DATA_COUNT 10
-#define COLLECT_DATA_COUNT 15
-#define ACTION_DATA_COUNT 20
-#define FUNNEL_DATA_COUNT 25
-#define REVENUE_DATA_COUNT 30
-#define ERROR_DATA_COUNT 40
-#define MAX_DATA_COUNT 50
-#define TIMER_LENGTH 30
+// Number of items in the queue before forcing a flush.
+#define FLUSH_DATA_COUNT 15
+#define TIMER_DATA_LIMIT 30
+#define COLLECT_DATA_LIMIT 30
+#define ACTION_DATA_LIMIT 30
+#define FUNNEL_DATA_LIMIT 60
+#define REVENUE_DATA_LIMIT 120
+#define ERROR_DATA_LIMIT 30
+#define FLUSH_INTERVAL_SEC 30
 
 #define FILE_PATH [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
 #define UUID_KEYCHAIN_USERNAME @"UUID"
@@ -74,6 +74,7 @@
   NSString *schemaVersion;
   NSString *experiments;
   
+  NSTimer *flushTimer;
   NSMutableArray *dataQueue;
   NSArray *dataToSend;
   NSInteger dataCount;
@@ -84,23 +85,24 @@
 }
 
 // User variables that need to be set by user.
-@property(nonatomic, retain) NSString* _serverUrl;
-@property(nonatomic, retain) NSString* _userId;
-@property(nonatomic, retain) NSString* _env;
-@property(nonatomic, retain) NSString* _appVersion;
+@property(nonatomic, retain) NSString *_serverUrl;
+@property(nonatomic, retain) NSString *_userId;
+@property(nonatomic, retain) NSString *_env;
+@property(nonatomic, retain) NSString *_appVersion;
 // User variables that can be figured out.
-@property(nonatomic, retain) NSString* digest;
-@property(nonatomic, retain) NSString* deviceId;
-@property(nonatomic, retain) NSString* hardware;
-@property(nonatomic, retain) NSString* os;
-@property(nonatomic, retain) NSString* sessionId;
-@property(nonatomic, retain) NSString* schemaVersion;
-@property(nonatomic, retain) NSString* experiments;
+@property(nonatomic, retain) NSString *digest;
+@property(nonatomic, retain) NSString *deviceId;
+@property(nonatomic, retain) NSString *hardware;
+@property(nonatomic, retain) NSString *os;
+@property(nonatomic, retain) NSString *sessionId;
+@property(nonatomic, retain) NSString *schemaVersion;
+@property(nonatomic, retain) NSString *experiments;
 // Internal variables.
-@property(nonatomic, retain) NSMutableArray* dataQueue;
-@property(nonatomic, retain) NSArray* dataToSend;
+@property(nonatomic, retain) NSTimer *flushTimer;
+@property(nonatomic, retain) NSMutableArray *dataQueue;
+@property(nonatomic, retain) NSArray *dataToSend;
 @property(nonatomic, assign) NSInteger dataCount;
-@property(nonatomic, retain) NSMutableDictionary* timers;
+@property(nonatomic, retain) NSMutableDictionary *timers;
 @property(nonatomic, retain) NSMutableData *receivedData;
 @property(nonatomic, retain) NSURLConnection *connection;
 @property(nonatomic, retain) Reachability *reachability;
@@ -128,7 +130,7 @@
 - (void)loadUnsentData;
 - (void)connectionComplete;
 - (NSString *)loadOrCreateDeviceId;
-- (BOOL) storeDeviceId:(NSString *)uuid;
+- (BOOL)storeDeviceId:(NSString *)uuid;
 - (NSString *)makeUUID;
 - (NSString *)deviceOrientation;
 - (NSString *)uiOrientation;
@@ -148,6 +150,7 @@
 @synthesize sessionId;
 @synthesize schemaVersion;
 @synthesize experiments;
+@synthesize flushTimer;
 @synthesize dataQueue;
 @synthesize dataToSend;
 @synthesize dataCount;
@@ -169,8 +172,6 @@ static Yozio *instance = nil;
 
 - (id)init
 {
-  // TODO(jt): add timer to auto flush.
-  
   self = [super init];
   UIDevice* device = [UIDevice currentDevice];
   // TODO(jt): get real digest
@@ -181,6 +182,11 @@ static Yozio *instance = nil;
   self.schemaVersion = @"";
   self.experiments = @"";
   
+  self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_INTERVAL_SEC
+                                                     target:self 
+                                                   selector:@selector(checkDataQueueSize) 
+                                                   userInfo:nil 
+                                                    repeats:YES];
   self.dataQueue = [NSMutableArray array];
   self.dataCount = 0;
   self.timers = [NSMutableDictionary dictionary];
@@ -229,7 +235,7 @@ static Yozio *instance = nil;
                   key:timerName
                 value:elapsedTimeStr
              category:category
-             maxQueue:TIMER_DATA_COUNT];
+             maxQueue:TIMER_DATA_LIMIT];
   }
 }
 
@@ -240,7 +246,7 @@ static Yozio *instance = nil;
                 key:key
               value:value
            category:category
-           maxQueue:COLLECT_DATA_COUNT];
+           maxQueue:COLLECT_DATA_LIMIT];
 }
 
 + (void)funnel:(NSString *)funnelName value:(NSString *)value category:(NSString *)category
@@ -249,7 +255,7 @@ static Yozio *instance = nil;
                 key:funnelName
               value:value
            category:category
-           maxQueue:FUNNEL_DATA_COUNT];
+           maxQueue:FUNNEL_DATA_LIMIT];
 }
 
 + (void)revenue:(NSString *)itemName cost:(double)cost category:(NSString *)category
@@ -259,7 +265,7 @@ static Yozio *instance = nil;
                 key:itemName
               value:stringCost
            category:category
-           maxQueue:REVENUE_DATA_COUNT];
+           maxQueue:REVENUE_DATA_LIMIT];
 }
 
 + (void)action:(NSString *)actionName context:(NSString *)context category:(NSString *)category
@@ -268,7 +274,7 @@ static Yozio *instance = nil;
                 key:context
               value:actionName
            category:category
-           maxQueue:ACTION_DATA_COUNT];
+           maxQueue:ACTION_DATA_LIMIT];
 }
 
 + (void)error:(NSString *)errorName message:(NSString *)message category:(NSString *)category
@@ -277,7 +283,7 @@ static Yozio *instance = nil;
                 key:errorName
               value:message
            category:category
-           maxQueue:ERROR_DATA_COUNT];
+           maxQueue:ERROR_DATA_LIMIT];
 }
 
 + (void)flush
@@ -572,7 +578,8 @@ static Yozio *instance = nil;
   }
 }
 
-- (NSString *)uiOrientation {
+- (NSString *)uiOrientation
+{
   UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
   switch (orientation) {
     case UIInterfaceOrientationPortrait:
@@ -588,7 +595,8 @@ static Yozio *instance = nil;
   }
 }
 
-- (NSString *)networkInterface {
+- (NSString *)networkInterface
+{
   NetworkStatus status = [reachability currentReachabilityStatus];
   switch (status) {
     case ReachableViaWWAN:
