@@ -24,7 +24,7 @@
  *
  *     Add instrumentation code at any point by calling any of the instrumentation methods.
  *
- *         [Yozio action:@"jump" context:@"Level 1" category:@"MyCategory"];
+ *         [Yozio action:@"jump" context:@"Level 1" category:@"play"];
  *
  *     NOTE: Yozio is not thread safe. It is your responsibility to make sure that there are no
  *           concurrent calls to any of the Yozio methods.
@@ -37,7 +37,7 @@
  * @param serverUrl The server url we provided you for your application.
  * @param userId The id of the user currently using your application. If your application
  *               does not support users, pass in an empty string.
- * @param env The environment that the application is currently running in (i.e. "production"
+ * @param env The environment that the application is currently running in ( possible values are "production"
  *            or "sandbox").
  * @param appVersion The current version of your application.
  *
@@ -115,7 +115,7 @@
  * @param cost The price the user payed to purchase the item.
  * @param category The category to group this event under.
  *
- * @example [Yozio revenue:@"PowerShield" cost:20.5 category:@"MyCategory"];
+ * @example [Yozio revenue:@"PowerShield" cost:20.5 category:@"Defence"];
  */
 + (void)revenue:(NSString *)itemName cost:(double)cost category:(NSString *)category;
 
@@ -129,7 +129,7 @@
  *                your application has multiple screens, each screen can be a different context.
  * @param category The category to group this event under.
  *
- * @example [Yozio action:@"jump" context:@"Level 1"  category:@"MyCategory"];
+ * @example [Yozio action:@"jump" context:@"Level 1"  category:@"play"];
  */
 + (void)action:(NSString *)actionName context:(NSString *)context category:(NSString *)category;
 
@@ -143,7 +143,7 @@
  *
  * @example NSError *error = ...;
  *          NSString *errorMsg = [error localizedFailureReason];
- *          [Yozio error:@"Save Error" message:errorMsg category:@"MyCategory"];
+ *          [Yozio error:@"Save Error" message:errorMsg category:@"persistence"];
  */
 + (void)error:(NSString *)errorName message:(NSString *)message category:(NSString *)category;
 
