@@ -9,19 +9,27 @@
 #import "Timer.h"
 #import <UIKit/UIKit.h>
 
-// TODO(jt): fine tune these numbers
-#define FLUSH_DATA_COUNT 5
-#define TIMER_DATA_COUNT 10
-#define COLLECT_DATA_COUNT 15
-#define ACTION_DATA_COUNT 20
-#define FUNNEL_DATA_COUNT 25
-#define REVENUE_DATA_COUNT 30
-#define ERROR_DATA_COUNT 40
-#define MAX_DATA_COUNT 50
-#define TIMER_LENGTH 30
-#define FILE_PATH [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
-#define UUID_KEYCHAIN_USERNAME @"UUID"
-#define KEYCHAIN_SERVICE @"yozio"
+// Payload keys.
+#define P_APP_ID @"appId"
+#define P_USER_ID @"userId"
+#define P_ENVIRONMENT @"env"
+#define P_APP_VERSION @"appVersion"
+#define P_DIGEST @"digest"
+#define P_DEVICE_ID @"deviceId"
+#define P_HARDWARE @"hardware"
+#define P_OPERATING_SYSTEM @"os"
+#define P_SESSION_ID @"sessionId"
+#define P_SCHEMA_VERSION @"schemaVersion"
+#define P_EXPERIMENTS @"experiments"
+#define P_DEVICE_ORIENTATION @"orientation"
+#define P_UI_ORIENTATION @"uiOrientation"
+#define P_NETWORK_INTERFACE @"network"
+#define P_COUNTRY @"country"
+#define P_LANGUAGE @"language"
+#define P_TIMEZONE @"timezone"
+#define P_COUNT @"count"
+#define P_PAYLOAD @"payload"
+
 // Orientations strings.
 #define ORIENT_PORTRAIT @"portrait"
 #define ORIENT_PORTRAIT_UPSIDE_DOWN @"flippedPortrait"
@@ -34,6 +42,22 @@
 #define REACHABILITY_WWAN @"wwan"
 #define REACHABILITY_WIFI @"wifi"
 #define REACHABILITY_UNKNOWN @"unknown"
+
+// Flush configuration.
+// TODO(jt): fine tune these numbers
+#define FLUSH_DATA_COUNT 5
+#define TIMER_DATA_COUNT 10
+#define COLLECT_DATA_COUNT 15
+#define ACTION_DATA_COUNT 20
+#define FUNNEL_DATA_COUNT 25
+#define REVENUE_DATA_COUNT 30
+#define ERROR_DATA_COUNT 40
+#define MAX_DATA_COUNT 50
+#define TIMER_LENGTH 30
+
+#define FILE_PATH [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
+#define UUID_KEYCHAIN_USERNAME @"UUID"
+#define KEYCHAIN_SERVICE @"yozio"
 
 // Private method declarations.
 @interface Yozio()
@@ -50,7 +74,7 @@
   NSString *os;
   NSString *sessionId;
   NSString *schemaVersion;
-  NSString *bucket;
+  NSString *experiments;
   
   NSMutableArray *dataQueue;
   NSArray *dataToSend;
@@ -74,7 +98,7 @@
 @property(nonatomic, retain) NSString* os;
 @property(nonatomic, retain) NSString* sessionId;
 @property(nonatomic, retain) NSString* schemaVersion;
-@property(nonatomic, retain) NSString* bucket;
+@property(nonatomic, retain) NSString* experiments;
 // Internal variables.
 @property(nonatomic, retain) NSMutableArray* dataQueue;
 @property(nonatomic, retain) NSArray* dataToSend;
@@ -127,7 +151,7 @@
 @synthesize os;
 @synthesize sessionId;
 @synthesize schemaVersion;
-@synthesize bucket;
+@synthesize experiments;
 @synthesize dataQueue;
 @synthesize dataToSend;
 @synthesize dataCount;
@@ -160,7 +184,7 @@ static Yozio *instance = nil;
   self.os = [device systemVersion];
   self.sessionId = [self makeUUID];
   self.schemaVersion = @"";
-  self.bucket = @"";
+  self.experiments = @"";
   
   self.dataQueue = [NSMutableArray array];
   self.dataCount = 0;
@@ -407,27 +431,27 @@ static Yozio *instance = nil;
   NSString *countryName = [locale displayNameForKey:NSLocaleCountryCode value:countryCode];
   [NSTimeZone resetSystemTimeZone];
   NSInteger timezoneOffset = [[NSTimeZone systemTimeZone] secondsFromGMT]/3600;
-  NSString *timezone = [NSString stringWithFormat:@"%d", timezoneOffset];
+  NSNumber *timezone = [NSNumber numberWithInteger:timezoneOffset];
   
-  [payload setValue:self._appId forKey:@"appId"];
-  [payload setValue:self._userId forKey:@"userId"];
-  [payload setValue:self._env forKey:@"env"];
-  [payload setValue:self._appVersion forKey:@"appVersion"];
-  [payload setValue:self.digest forKey:@"digest"];
-  [payload setValue:[self loadOrCreateDeviceId] forKey:@"deviceId"];
-  [payload setValue:self.hardware forKey:@"hardware"];
-  [payload setValue:self.os forKey:@"os"];
-  [payload setValue:self.sessionId forKey:@"sessionId"];
-  [payload setValue:self.schemaVersion forKey:@"schemaVersion"];
-  [payload setValue:self.bucket forKey:@"bucket"];
-  [payload setValue:[NSNumber numberWithInteger:[self.dataToSend count]] forKey:@"count"];
-  [payload setValue:[self deviceOrientation] forKey:@"orientation"];
-  [payload setValue:[self uiOrientation] forKey:@"uiOrientation"];
-  [payload setValue:[self networkInterface] forKey:@"network"];
-  [payload setValue:countryName forKey:@"country"];
-  [payload setValue:[[NSLocale preferredLanguages] objectAtIndex:0] forKey:@"language"];
-  [payload setValue:timezone forKey:@"timezone"];
-  [payload setValue:self.dataToSend forKey:@"payload"];
+  [payload setValue:self._appId forKey:P_APP_ID];
+  [payload setValue:self._userId forKey:P_USER_ID];
+  [payload setValue:self._env forKey:P_ENVIRONMENT];
+  [payload setValue:self._appVersion forKey:P_APP_VERSION];
+  [payload setValue:self.digest forKey:P_DIGEST];
+  [payload setValue:[self loadOrCreateDeviceId] forKey:P_DEVICE_ID];
+  [payload setValue:self.hardware forKey:P_HARDWARE];
+  [payload setValue:self.os forKey:P_OPERATING_SYSTEM];
+  [payload setValue:self.sessionId forKey:P_SESSION_ID];
+  [payload setValue:self.schemaVersion forKey:P_SCHEMA_VERSION];
+  [payload setValue:self.experiments forKey:P_EXPERIMENTS];
+  [payload setValue:[self deviceOrientation] forKey:P_DEVICE_ORIENTATION];
+  [payload setValue:[self uiOrientation] forKey:P_UI_ORIENTATION];
+  [payload setValue:[self networkInterface] forKey:P_NETWORK_INTERFACE];
+  [payload setValue:countryName forKey:P_COUNTRY];
+  [payload setValue:[[NSLocale preferredLanguages] objectAtIndex:0] forKey:P_LANGUAGE];
+  [payload setValue:timezone forKey:P_TIMEZONE];
+  [payload setValue:[NSNumber numberWithInteger:[self.dataToSend count]] forKey:P_COUNT];
+  [payload setValue:self.dataToSend forKey:P_PAYLOAD];
   
   NSLog(@"self.dataQueue: %@", self.dataQueue);
   NSLog(@"dataToSend: %@", self.dataToSend);
