@@ -13,7 +13,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F7BF4FA61457B8B1009A8A10"
+               BlueprintIdentifier = "0E39604D1465155A0087D86A"
                BuildableName = "libYozio.a"
                BlueprintName = "Yozio"
                ReferencedContainer = "container:Yozio.xcodeproj">
@@ -27,6 +27,16 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       buildConfiguration = "Debug">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "0E39605D1465155A0087D86A"
+               BuildableName = "YozioTests.octest"
+               BlueprintName = "YozioTests"
+               ReferencedContainer = "container:Yozio.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
