@@ -52,16 +52,19 @@
 #define REACHABILITY_WIFI @"wifi"
 #define REACHABILITY_UNKNOWN @"unknown"
 
-// Flush configuration.
 // TODO(jt): fine tune these numbers
-// Number of items in the queue before forcing a flush.
+
+// The number of items in the queue before forcing a flush.
 #define FLUSH_DATA_COUNT 15
+// XX_DATA_LIMIT describes the required number of items in the queue before that instrumentation
+// event type starts being dropped.
 #define TIMER_DATA_LIMIT 30
 #define COLLECT_DATA_LIMIT 30
 #define ACTION_DATA_LIMIT 30
 #define FUNNEL_DATA_LIMIT 60
 #define REVENUE_DATA_LIMIT 120
 #define ERROR_DATA_LIMIT 30
+// Time interval before automatically flushing the data queue.
 #define FLUSH_INTERVAL_SEC 30
 
 #define FILE_PATH [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
@@ -433,7 +436,7 @@ static Yozio *instance = nil;
 
 - (NSString *)buildPayload
 {
-  NSMutableDictionary* payload = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary* payload = [NSMutableDictionary dictionary];
   NSLocale *locale = [NSLocale currentLocale];
   NSString *countryCode = [locale objectForKey: NSLocaleCountryCode];
   NSString *countryName = [locale displayNameForKey:NSLocaleCountryCode value:countryCode];
@@ -464,7 +467,6 @@ static Yozio *instance = nil;
   [Yozio log:@"dataToSend: %@", self.dataToSend];
   [Yozio log:@"payload: %@", payload];
   
-  [payload autorelease];
   return [payload JSONString];
 }
 
@@ -519,7 +521,6 @@ static Yozio *instance = nil;
   if (self.deviceId != nil) {
     return self.deviceId;
   }
-  
   NSError *loadError = nil;
   NSString *uuid = [SFHFKeychainUtils getPasswordForUsername:UUID_KEYCHAIN_USERNAME
                                               andServiceName:KEYCHAIN_SERVICE
