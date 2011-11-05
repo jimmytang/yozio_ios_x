@@ -187,26 +187,6 @@ static Yozio *instance = nil;
 - (id)init
 {
   self = [super init];
-  UIDevice* device = [UIDevice currentDevice];
-  // TODO(jt): get real digest
-  self.digest = @"";
-  self.hardware = device.model;
-  self.os = [device systemVersion];
-  self.sessionId = [self makeUUID];
-  self.schemaVersion = @"";
-  self.experiments = @"";
-  
-  self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_INTERVAL_SEC
-                                                     target:self 
-                                                   selector:@selector(checkDataQueueSize) 
-                                                   userInfo:nil 
-                                                    repeats:YES];
-  self.dataQueue = [NSMutableArray array];
-  self.dataCount = 0;
-  self.timers = [NSMutableDictionary dictionary];
-  self.reachability = [Reachability reachabilityForInternetConnection];
-  
-  [Yozio log:@"%@", device];
   return self;
 }
 
@@ -224,6 +204,25 @@ static Yozio *instance = nil;
   instance._userId = userId;
   instance._env = env;
   instance._appVersion = appVersion;
+  
+  UIDevice* device = [UIDevice currentDevice];
+  // TODO(jt): get real digest
+  instance.digest = @"";
+  instance.hardware = device.model;
+  instance.os = [device systemVersion];
+  instance.sessionId = [instance makeUUID];
+  instance.schemaVersion = @"";
+  instance.experiments = @"";
+  
+  instance.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_INTERVAL_SEC
+                                                     target:instance
+                                                   selector:@selector(checkDataQueueSize)
+                                                   userInfo:nil
+                                                    repeats:YES];
+  instance.dataQueue = [NSMutableArray array];
+  instance.dataCount = 0;
+  instance.timers = [NSMutableDictionary dictionary];
+  instance.reachability = [Reachability reachabilityForInternetConnection];
 }
 
 + (void)startTimer:(NSString *)timerName
