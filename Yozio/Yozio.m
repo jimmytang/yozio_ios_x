@@ -8,6 +8,9 @@
 #import "SFHFKeychainUtils.h"
 #import <UIKit/UIKit.h>
 
+// Set to true to show log messages.
+#define YOZIO_LOG true
+
 // Payload keys.
 #define P_USER_ID @"userId"
 #define P_ENVIRONMENT @"env"
@@ -142,6 +145,7 @@
 - (NSString *)deviceOrientation;
 - (NSString *)uiOrientation;
 - (NSString *)networkInterface;
++ (void)log:(NSString *)format, ...;
 @end
 
 
@@ -199,7 +203,7 @@ static Yozio *instance = nil;
   self.timers = [NSMutableDictionary dictionary];
   self.reachability = [Reachability reachabilityForInternetConnection];
   
-  NSLog(@"%@", device);
+  [Yozio log:@"%@", device];
   return self;
 }
 
@@ -282,7 +286,6 @@ static Yozio *instance = nil;
 
 + (void)collect:(NSString *)key value:(NSString *)value category:(NSString *)category
 {
-  
   [instance collect:E_COLLECT
                 key:key
               value:value
@@ -326,37 +329,37 @@ static Yozio *instance = nil;
 
 - (void)connection:(NSURLConnection *) didReceiveResponse:(NSHTTPURLResponse *) response
 {
-  NSLog(@"didReceiveResponse");
+  [Yozio log:@"didReceiveResponse"];
   NSInteger statusCode = [response statusCode];
   if (statusCode == 200) {
-    NSLog(@"200: OK");
+    [Yozio log:@"200: OK"];
     self.receivedData = [NSMutableData data];
   } else {
-    NSLog(@"%@", [NSString stringWithFormat:@"Bad response %d", statusCode]);
+    [Yozio log:@"Bad response %d", statusCode];
   }
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-  NSLog(@"didReceiveData");
-  NSLog(@"%@", data);
+  [Yozio log:@"didReceiveData"];
+  [Yozio log:@"%@", data];
   [self.receivedData appendData:data];
-  NSLog(@"%@", self.receivedData);
+  [Yozio log:@"%@", self.receivedData];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-  NSLog(@"didFailWithError");
+  [Yozio log:@"didFailWithError"];
   [self connectionComplete];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
-  NSLog(@"connectionDidFinishLoading");
-  NSLog(@"receivedData:%@", self.receivedData);
-  NSLog(@"Before remove:%@", self.dataQueue);
+  [Yozio log:@"connectionDidFinishLoading"];
+  [Yozio log:@"receivedData: %@", self.receivedData];
+  [Yozio log:@"Before remove: %@", self.dataQueue];
   [self.dataQueue removeObjectsInArray:self.dataToSend];
-  NSLog(@"After remove:%@", self.dataQueue);
+  [Yozio log:@"After remove: %@", self.dataQueue];
   [self connectionComplete];
 }
 
@@ -390,11 +393,11 @@ static Yozio *instance = nil;
 
 - (void)checkDataQueueSize
 {
-  NSLog(@"checkDataQueueSize");
-  NSLog(@"%i",[self.dataQueue count]);
+  [Yozio log:@"checkDataQueueSize"];
+  [Yozio log:@"%i",[self.dataQueue count]];
   if ([self.dataQueue count] > 0 && [self.dataQueue count] % FLUSH_DATA_COUNT == 0) 
   {
-    NSLog(@"flushing");
+    [Yozio log:@"flushing"];
     [self doFlush]; 
   }
 }
@@ -403,7 +406,7 @@ static Yozio *instance = nil;
 {
   if ([self.dataQueue count] == 0 || self.connection != nil) {
     // No events or already pushing data.
-    NSLog(@"%@", self.connection);
+    [Yozio log:@"%@", self.connection];
     return;
   } else if ([self.dataQueue count] > FLUSH_DATA_COUNT) {
     self.dataToSend = [self.dataQueue subarrayWithRange:NSMakeRange(0, FLUSH_DATA_COUNT)];
@@ -419,7 +422,7 @@ static Yozio *instance = nil;
   [postBody stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
   NSMutableString *urlString = [[NSMutableString alloc] initWithString:self._serverUrl];
   [urlString appendString:escapedUrlString];
-  NSLog(@"%@", urlString);
+  [Yozio log:@"%@", urlString];
   NSURL *url = [NSURL URLWithString:urlString];
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
 	[request setHTTPMethod:@"GET"];
@@ -457,9 +460,9 @@ static Yozio *instance = nil;
   [payload setValue:[NSNumber numberWithInteger:[self.dataToSend count]] forKey:P_COUNT];
   [payload setValue:self.dataToSend forKey:P_PAYLOAD];
   
-  NSLog(@"self.dataQueue: %@", self.dataQueue);
-  NSLog(@"dataToSend: %@", self.dataToSend);
-  NSLog(@"payload: %@", payload);
+  [Yozio log:@"self.dataQueue: %@", self.dataQueue];
+  [Yozio log:@"dataToSend: %@", self.dataToSend];
+  [Yozio log:@"payload: %@", payload];
   
   [payload autorelease];
   return [payload JSONString];
@@ -479,16 +482,16 @@ static Yozio *instance = nil;
 
 - (void)saveUnsentData
 {
-  NSLog(@"saveUnsentData");
+  [Yozio log:@"saveUnsentData"];
   if (![NSKeyedArchiver archiveRootObject:self.dataQueue toFile:FILE_PATH]) 
   {
-    NSLog(@"Unable to archive data!!!");
+    [Yozio log:@"Unable to archive data!!!"];
   }
 }
 
 - (void)loadUnsentData
 {
-  NSLog(@"loadUnsentData");
+  [Yozio log:@"loadUnsentData"];
   self.dataQueue = [NSKeyedUnarchiver unarchiveObjectWithFile:FILE_PATH];
   if (!self.dataQueue) 
   {
@@ -529,8 +532,8 @@ static Yozio *instance = nil;
       return nil;
     }
   } else if (loadErrorCode != errSecSuccess) {
-    NSLog(@"Error loading UUID from keychain.");
-    NSLog(@"%@", [loadError localizedDescription]);
+    [Yozio log:@"Error loading UUID from keychain."];
+    [Yozio log:@"%@", [loadError localizedDescription]];
     return nil;
   }
   self.deviceId = uuid;
@@ -546,8 +549,8 @@ static Yozio *instance = nil;
                     updateExisting:true
                              error:&storeError];
   if ([storeError code] != errSecSuccess) {
-    NSLog(@"Error storing UUID to keychain.");
-    NSLog(@"%@", [storeError localizedDescription]);
+    [Yozio log:@"Error storing UUID to keychain."];
+    [Yozio log:@"%@", [storeError localizedDescription]];
     return NO;
   }
   return YES;
@@ -609,6 +612,18 @@ static Yozio *instance = nil;
       return REACHABILITY_WIFI;
     default:
       return REACHABILITY_UNKNOWN;
+  }
+}
+
++ (void)log:(NSString *)format, ...
+{
+  if (YOZIO_LOG) {
+    va_list argList;
+    va_start(argList, format);
+    NSString *formatStr = [[NSString alloc] initWithFormat:format arguments:argList];
+    va_end(argList);
+    NSLog(@"%@", formatStr);
+    [formatStr release];
   }
 }
   
