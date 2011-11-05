@@ -3,11 +3,13 @@
 //
 
 #import "Yozio.h"
-#import "Timer.h"
 #import "JSONKit.h"
+#import "Reachability.h"
 #import "SFHFKeychainUtils.h"
+#import "Timer.h"
 #import <UIKit/UIKit.h>
 
+// TODO(jt): fine tune these numbers
 #define FLUSH_DATA_COUNT 5
 #define TIMER_DATA_COUNT 10
 #define COLLECT_DATA_COUNT 15
@@ -20,7 +22,7 @@
 #define FILE_PATH [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
 #define UUID_KEYCHAIN_USERNAME @"UUID"
 #define KEYCHAIN_SERVICE @"yozio"
-// Orientations.
+// Orientations strings.
 #define ORIENT_PORTRAIT @"portrait"
 #define ORIENT_PORTRAIT_UPSIDE_DOWN @"flippedPortrait"
 #define ORIENT_LANDSCAPE_LEFT @"landscapeLeft"
@@ -28,7 +30,10 @@
 #define ORIENT_FACE_UP @"faceUp"
 #define ORIENT_FACE_DOWN @"faceDown"
 #define ORIENT_UNKNOWN @"unknown"
-
+// Reachibility strings.
+#define REACHABILITY_WWAN @"wwan"
+#define REACHABILITY_WIFI @"wifi"
+#define REACHABILITY_UNKNOWN @"unknown"
 
 // Private method declarations.
 @interface Yozio()
@@ -53,6 +58,7 @@
   NSMutableDictionary *timers;
   NSMutableData *receivedData;
   NSURLConnection *connection;
+  Reachability *reachability;
 }
 
 // User variables that need to be set by user.
@@ -76,6 +82,7 @@
 @property(nonatomic, retain) NSMutableDictionary* timers;
 @property(nonatomic, retain) NSMutableData *receivedData;
 @property(nonatomic, retain) NSURLConnection *connection;
+@property(nonatomic, retain) Reachability *reachability;
 
 // Notification observer methods.
 - (void)applicationDidEnterBackground:(NSNotificationCenter *)notification;
@@ -104,6 +111,7 @@
 - (NSString *)makeUUID;
 - (NSString *)deviceOrientation;
 - (NSString *)uiOrientation;
+- (NSString *)networkInterface;
 @end
 
 
@@ -126,6 +134,7 @@
 @synthesize timers;
 @synthesize receivedData;
 @synthesize connection;
+@synthesize reachability;
 
 
 static Yozio *instance = nil; 
@@ -156,6 +165,7 @@ static Yozio *instance = nil;
   self.dataQueue = [NSMutableArray array];
   self.dataCount = 0;
   self.timers = [NSMutableDictionary dictionary];
+  self.reachability = [Reachability reachabilityForInternetConnection];
   
   NSLog(@"%@", device);
   return self;
@@ -413,10 +423,10 @@ static Yozio *instance = nil;
   [payload setValue:[NSNumber numberWithInteger:[self.dataToSend count]] forKey:@"count"];
   [payload setValue:[self deviceOrientation] forKey:@"orientation"];
   [payload setValue:[self uiOrientation] forKey:@"uiOrientation"];
+  [payload setValue:[self networkInterface] forKey:@"network"];
   [payload setValue:countryName forKey:@"country"];
   [payload setValue:[[NSLocale preferredLanguages] objectAtIndex:0] forKey:@"language"];
   [payload setValue:timezone forKey:@"timezone"];
-  // TODO(jt): network interface (wifi, 3g)
   [payload setValue:self.dataToSend forKey:@"payload"];
   
   NSLog(@"self.dataQueue: %@", self.dataQueue);
@@ -557,6 +567,18 @@ static Yozio *instance = nil;
       return ORIENT_LANDSCAPE_RIGHT;
     default:
       return ORIENT_UNKNOWN;
+  }
+}
+
+- (NSString *)networkInterface {
+  NetworkStatus status = [reachability currentReachabilityStatus];
+  switch (status) {
+    case ReachableViaWWAN:
+      return REACHABILITY_WWAN;
+    case ReachableViaWiFi:
+      return REACHABILITY_WIFI;
+    default:
+      return REACHABILITY_UNKNOWN;
   }
 }
   
