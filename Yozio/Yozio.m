@@ -420,15 +420,15 @@ static Yozio *instance = nil;
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
   
   NSString *dataStr = [self buildPayload];
-  NSString *postBody = [NSString stringWithFormat:@"data=%@", dataStr];
-  NSString *escapedUrlString =
-  [postBody stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
-  NSMutableString *urlString = [[NSMutableString alloc] initWithString:self._serverUrl];
-  [urlString appendString:escapedUrlString];
-  [Yozio log:@"%@", urlString];
+  NSString *urlParams = [NSString stringWithFormat:@"data=%@", dataStr];
+  NSString *escapedUrlParams =
+      [urlParams stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+  NSString *urlString = [NSString stringWithFormat:@"%@/%@", self._serverUrl, escapedUrlParams];
   NSURL *url = [NSURL URLWithString:urlString];
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
 	[request setHTTPMethod:@"GET"];
+  
+  [Yozio log:@"%@", urlString];
   
 	self.connection = [NSURLConnection connectionWithRequest:request delegate:self];
 	[self.connection start];
@@ -561,8 +561,9 @@ static Yozio *instance = nil;
 - (NSString *)makeUUID
 {
   CFUUIDRef theUUID = CFUUIDCreate(NULL);
-  NSString *uuidString = (__bridge_transfer NSString *) CFUUIDCreateString(NULL, theUUID);
+  NSString *uuidString = (NSString *) CFUUIDCreateString(NULL, theUUID);
   CFRelease(theUUID);
+  [uuidString autorelease];
   return uuidString;
 }
 
