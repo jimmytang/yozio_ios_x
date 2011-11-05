@@ -37,8 +37,8 @@
  * @param serverUrl The server url we provided you for your application.
  * @param userId The id of the user currently using your application. If your application
  *               does not support users, pass in an empty string.
- * @param env The environment that the application is currently running in ( possible values are "production"
- *            or "sandbox").
+ * @param env The environment that the application is currently running in. Possible values are
+ *            "production" or "sandbox".
  * @param appVersion The current version of your application.
  *
  * @example [Yozio configure:@"http://m.snapette.yozio.com"
