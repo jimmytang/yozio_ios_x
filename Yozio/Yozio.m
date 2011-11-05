@@ -6,7 +6,6 @@
 #import "JSONKit.h"
 #import "Reachability.h"
 #import "SFHFKeychainUtils.h"
-#import "Timer.h"
 #import <UIKit/UIKit.h>
 
 // Payload keys.
@@ -214,22 +213,19 @@ static Yozio *instance = nil;
 
 + (void)startTimer:(NSString *)timerName
 {
-  Timer* timer = [[Timer alloc] init];
-  [timer start];
-  [instance.timers setValue:timer forKey:timerName];
+  [instance.timers setValue:[NSDate date] forKey:timerName];
 }
 
 + (void)endTimer:(NSString *)timerName category:(NSString *)category
 {
-  Timer* timer = [instance.timers valueForKey:timerName];
-  if (timer == nil) {
+  NSDate *startTime = [instance.timers valueForKey:timerName];
+  if (startTime == nil) {
     // We don't want developers to get away with bad instrumentation code, so raise an
     // exception and force them to deal with it.
     [NSException raise:@"Invalid timerName" format:@"timerName %@ is invalid", timerName];
   } else {
-    [timer stop];
-    float elapsedTime = [timer timeElapsed];
-    [timer release];
+    [instance.timers removeObjectForKey:timerName];
+    float elapsedTime = [[NSDate date] timeIntervalSinceDate:startTime];
     NSString *elapsedTimeStr = [NSString stringWithFormat:@"%.2f", elapsedTime];
     [instance collect:@"timer"
                   key:timerName
