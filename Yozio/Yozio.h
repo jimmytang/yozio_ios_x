@@ -17,7 +17,7 @@
  *     Import Yozio.h in any file you wish to use Yozio.
  *     In your application delegate's applicationDidFinishLaunching method, configure Yozio:
  *
- *         [Yozio configure:@"550e8400-e29b-41d4-a716-446655440000"
+ *         [Yozio configure:@"http://m.snapette.yozio.com"
  *                   userId:@"MyUserId"
  *                      env:@"production"
  *               appVersion:@"1.0.1"];
@@ -34,19 +34,19 @@
 /**
  * Configures Yozio with your application's information.
  *
- * @param appId The unique application uuid that we provided you.
+ * @param serverUrl The server url we provided you for your application.
  * @param userId The id of the user currently using your application. If your application
  *               does not support users, pass in an empty string.
  * @param env The environment that the application is currently running in (i.e. "production"
  *            or "sandbox").
  * @param appVersion The current version of your application.
  *
- * @example [Yozio configure:@"550e8400-e29b-41d4-a716-446655440000"
+ * @example [Yozio configure:@"http://m.snapette.yozio.com"
  *                   userId:@"MyUserId"
  *                      env:@"production"
  *               appVersion:@"1.0.1"];
  */
-+ (void)configure:(NSString *)appId
++ (void)configure:(NSString *)serverUrl
            userId:(NSString *)userId
               env:(NSString *)env
        appVersion:(NSString *)appVersion;

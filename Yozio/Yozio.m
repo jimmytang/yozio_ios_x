@@ -10,7 +10,6 @@
 #import <UIKit/UIKit.h>
 
 // Payload keys.
-#define P_APP_ID @"appId"
 #define P_USER_ID @"userId"
 #define P_ENVIRONMENT @"env"
 #define P_APP_VERSION @"appVersion"
@@ -62,12 +61,11 @@
 // Private method declarations.
 @interface Yozio()
 {
-  NSString *_appId;
+  NSString *_serverUrl;
   NSString *_userId;
   NSString *_env;
   NSString *_appVersion;
   
-  NSString *serverUrl;
   NSString *digest;
   NSString *deviceId;
   NSString *hardware;
@@ -86,12 +84,11 @@
 }
 
 // User variables that need to be set by user.
-@property(nonatomic, retain) NSString* _appId;
+@property(nonatomic, retain) NSString* _serverUrl;
 @property(nonatomic, retain) NSString* _userId;
 @property(nonatomic, retain) NSString* _env;
 @property(nonatomic, retain) NSString* _appVersion;
 // User variables that can be figured out.
-@property(nonatomic, retain) NSString* serverUrl;
 @property(nonatomic, retain) NSString* digest;
 @property(nonatomic, retain) NSString* deviceId;
 @property(nonatomic, retain) NSString* hardware;
@@ -140,11 +137,10 @@
 
 
 @implementation Yozio
-@synthesize _appId;
 @synthesize _userId;
 @synthesize _env;
 @synthesize _appVersion;
-@synthesize serverUrl;
+@synthesize _serverUrl;
 @synthesize digest;
 @synthesize deviceId;
 @synthesize hardware;
@@ -177,7 +173,6 @@ static Yozio *instance = nil;
   
   self = [super init];
   UIDevice* device = [UIDevice currentDevice];
-  self.serverUrl = @"http://localhost:3000/listener/listener/p.gif?";
   // TODO(jt): get real digest
   self.digest = @"";
   self.hardware = device.model;
@@ -200,12 +195,12 @@ static Yozio *instance = nil;
  * Pulbic API.
  *******************************************/
 
-+ (void)configure:(NSString *)appId
++ (void)configure:(NSString *)serverUrl
            userId:(NSString *)userId
               env:(NSString *)env
        appVersion:(NSString *)appVersion
 {
-  instance._appId = appId;
+  instance._serverUrl = serverUrl;
   instance._userId = userId;
   instance._env = env;
   instance._appVersion = appVersion;
@@ -412,7 +407,7 @@ static Yozio *instance = nil;
   NSString *postBody = [NSString stringWithFormat:@"data=%@", dataStr];
   NSString *escapedUrlString =
   [postBody stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
-  NSMutableString *urlString = [[NSMutableString alloc] initWithString:self.serverUrl];
+  NSMutableString *urlString = [[NSMutableString alloc] initWithString:self._serverUrl];
   [urlString appendString:escapedUrlString];
   NSLog(@"%@", urlString);
   NSURL *url = [NSURL URLWithString:urlString];
@@ -433,7 +428,6 @@ static Yozio *instance = nil;
   NSInteger timezoneOffset = [[NSTimeZone systemTimeZone] secondsFromGMT]/3600;
   NSNumber *timezone = [NSNumber numberWithInteger:timezoneOffset];
   
-  [payload setValue:self._appId forKey:P_APP_ID];
   [payload setValue:self._userId forKey:P_USER_ID];
   [payload setValue:self._env forKey:P_ENVIRONMENT];
   [payload setValue:self._appVersion forKey:P_APP_VERSION];
