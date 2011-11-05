@@ -216,7 +216,7 @@ static Yozio *instance = nil;
   
   instance.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_INTERVAL_SEC
                                                      target:instance
-                                                   selector:@selector(checkDataQueueSize)
+                                                   selector:@selector(doFlush)
                                                    userInfo:nil
                                                     repeats:YES];
   instance.dataQueue = [NSMutableArray array];
