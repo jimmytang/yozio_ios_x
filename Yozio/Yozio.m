@@ -557,7 +557,7 @@ static Yozio *instance = nil;
   return YES;
 }
 
-// Code taken from http://www.tuaw.com/2011/08/21/dev-juice-help-me-generate-unique-identifiers/
+// Code taken from http://www.jayfuerstenberg.com/blog/overcoming-udid-deprecation-by-using-guids
 - (NSString *)makeUUID
 {
   CFUUIDRef theUUID = CFUUIDCreate(NULL);
