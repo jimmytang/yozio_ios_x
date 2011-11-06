@@ -7,103 +7,164 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0E5968FA1462456C00433554 /* SFHFKeychainUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E5968F81462456C00433554 /* SFHFKeychainUtils.h */; };
-		0E5968FB1462456C00433554 /* SFHFKeychainUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E5968F91462456C00433554 /* SFHFKeychainUtils.m */; };
-		0E596903146260DE00433554 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E59690114625F3000433554 /* Security.framework */; };
-		F7BF4FAB1457B8B1009A8A10 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7BF4FAA1457B8B1009A8A10 /* Foundation.framework */; };
-		F7BF4FCB1457B93F009A8A10 /* Yozio-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = F7BF4FC41457B93F009A8A10 /* Yozio-Prefix.pch */; };
-		F7BF4FCC1457B93F009A8A10 /* Yozio.h in Headers */ = {isa = PBXBuildFile; fileRef = F7BF4FC51457B93F009A8A10 /* Yozio.h */; };
-		F7BF4FCD1457B93F009A8A10 /* Yozio.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BF4FC61457B93F009A8A10 /* Yozio.m */; };
-		F7E5ABEC145D37DC0034CC70 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = F7E5ABE0145D37DC0034CC70 /* JSONKit.m */; };
-		F7E5ABEE145D37DC0034CC70 /* Timer.m in Sources */ = {isa = PBXBuildFile; fileRef = F7E5ABE3145D37DC0034CC70 /* Timer.m */; };
+		0E3960521465155A0087D86A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E3960511465155A0087D86A /* Foundation.framework */; };
+		0E3960581465155A0087D86A /* Yozio.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E3960571465155A0087D86A /* Yozio.m */; };
+		0E3960601465155A0087D86A /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E39605F1465155A0087D86A /* SenTestingKit.framework */; };
+		0E3960621465155A0087D86A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E3960611465155A0087D86A /* UIKit.framework */; };
+		0E3960631465155A0087D86A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E3960511465155A0087D86A /* Foundation.framework */; };
+		0E3960661465155A0087D86A /* libYozio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E39604E1465155A0087D86A /* libYozio.a */; };
+		0E39606C1465155A0087D86A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0E39606A1465155A0087D86A /* InfoPlist.strings */; };
+		0E39606F1465155A0087D86A /* YozioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E39606E1465155A0087D86A /* YozioTests.m */; };
+		0E3960A9146517DF0087D86A /* JSONKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E3960A2146517DF0087D86A /* JSONKit.h */; };
+		0E3960AA146517DF0087D86A /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E3960A3146517DF0087D86A /* JSONKit.m */; };
+		0E3960AB146517DF0087D86A /* Reachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E3960A5146517DF0087D86A /* Reachability.h */; };
+		0E3960AC146517DF0087D86A /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E3960A6146517DF0087D86A /* Reachability.m */; };
+		0E3960AD146517DF0087D86A /* SFHFKeychainUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E3960A7146517DF0087D86A /* SFHFKeychainUtils.h */; };
+		0E3960AE146517DF0087D86A /* SFHFKeychainUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E3960A8146517DF0087D86A /* SFHFKeychainUtils.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		0E3960641465155A0087D86A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0E3960451465155A0087D86A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0E39604D1465155A0087D86A;
+			remoteInfo = Yozio;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
-		0E5968F81462456C00433554 /* SFHFKeychainUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFHFKeychainUtils.h; sourceTree = "<group>"; };
-		0E5968F91462456C00433554 /* SFHFKeychainUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFHFKeychainUtils.m; sourceTree = "<group>"; };
-		0E59690114625F3000433554 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
-		F7BF4FA71457B8B1009A8A10 /* libYozio.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libYozio.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		F7BF4FAA1457B8B1009A8A10 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		F7BF4FC41457B93F009A8A10 /* Yozio-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Yozio-Prefix.pch"; sourceTree = "<group>"; };
-		F7BF4FC51457B93F009A8A10 /* Yozio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Yozio.h; sourceTree = "<group>"; };
-		F7BF4FC61457B93F009A8A10 /* Yozio.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Yozio.m; sourceTree = "<group>"; };
-		F7E5ABDE145D37DC0034CC70 /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGELOG.md; sourceTree = "<group>"; };
-		F7E5ABDF145D37DC0034CC70 /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKit.h; sourceTree = "<group>"; };
-		F7E5ABE0145D37DC0034CC70 /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKit.m; sourceTree = "<group>"; };
-		F7E5ABE1145D37DC0034CC70 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
-		F7E5ABE2145D37DC0034CC70 /* Timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Timer.h; sourceTree = "<group>"; };
-		F7E5ABE3145D37DC0034CC70 /* Timer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Timer.m; sourceTree = "<group>"; };
+		0E39604E1465155A0087D86A /* libYozio.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libYozio.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E3960511465155A0087D86A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		0E3960551465155A0087D86A /* Yozio-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Yozio-Prefix.pch"; sourceTree = "<group>"; };
+		0E3960561465155A0087D86A /* Yozio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Yozio.h; sourceTree = "<group>"; };
+		0E3960571465155A0087D86A /* Yozio.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Yozio.m; sourceTree = "<group>"; };
+		0E39605E1465155A0087D86A /* YozioTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YozioTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E39605F1465155A0087D86A /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		0E3960611465155A0087D86A /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		0E3960691465155A0087D86A /* YozioTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "YozioTests-Info.plist"; sourceTree = "<group>"; };
+		0E39606B1465155A0087D86A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		0E39606D1465155A0087D86A /* YozioTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YozioTests.h; sourceTree = "<group>"; };
+		0E39606E1465155A0087D86A /* YozioTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YozioTests.m; sourceTree = "<group>"; };
+		0E3960A1146517DF0087D86A /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGELOG.md; sourceTree = "<group>"; };
+		0E3960A2146517DF0087D86A /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKit.h; sourceTree = "<group>"; };
+		0E3960A3146517DF0087D86A /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKit.m; sourceTree = "<group>"; };
+		0E3960A4146517DF0087D86A /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		0E3960A5146517DF0087D86A /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		0E3960A6146517DF0087D86A /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		0E3960A7146517DF0087D86A /* SFHFKeychainUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFHFKeychainUtils.h; sourceTree = "<group>"; };
+		0E3960A8146517DF0087D86A /* SFHFKeychainUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFHFKeychainUtils.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		F7BF4FA41457B8B1009A8A10 /* Frameworks */ = {
+		0E39604B1465155A0087D86A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7BF4FAB1457B8B1009A8A10 /* Foundation.framework in Frameworks */,
-				0E596903146260DE00433554 /* Security.framework in Frameworks */,
+				0E3960521465155A0087D86A /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0E39605A1465155A0087D86A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0E3960601465155A0087D86A /* SenTestingKit.framework in Frameworks */,
+				0E3960621465155A0087D86A /* UIKit.framework in Frameworks */,
+				0E3960631465155A0087D86A /* Foundation.framework in Frameworks */,
+				0E3960661465155A0087D86A /* libYozio.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		F7BF4F9C1457B8B0009A8A10 = {
+		0E3960431465155A0087D86A = {
 			isa = PBXGroup;
 			children = (
-				F7BF4FBB1457B93F009A8A10 /* Yozio */,
-				F7BF4FA91457B8B1009A8A10 /* Frameworks */,
-				F7BF4FA81457B8B1009A8A10 /* Products */,
+				0E3960531465155A0087D86A /* Yozio */,
+				0E3960671465155A0087D86A /* YozioTests */,
+				0E3960501465155A0087D86A /* Frameworks */,
+				0E39604F1465155A0087D86A /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		F7BF4FA81457B8B1009A8A10 /* Products */ = {
+		0E39604F1465155A0087D86A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F7BF4FA71457B8B1009A8A10 /* libYozio.a */,
+				0E39604E1465155A0087D86A /* libYozio.a */,
+				0E39605E1465155A0087D86A /* YozioTests.octest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		F7BF4FA91457B8B1009A8A10 /* Frameworks */ = {
+		0E3960501465155A0087D86A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				0E59690114625F3000433554 /* Security.framework */,
-				F7BF4FAA1457B8B1009A8A10 /* Foundation.framework */,
+				0E3960511465155A0087D86A /* Foundation.framework */,
+				0E39605F1465155A0087D86A /* SenTestingKit.framework */,
+				0E3960611465155A0087D86A /* UIKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		F7BF4FBB1457B93F009A8A10 /* Yozio */ = {
+		0E3960531465155A0087D86A /* Yozio */ = {
 			isa = PBXGroup;
 			children = (
-				F7E5ABDC145D37DC0034CC70 /* lib */,
-				F7BF4FC41457B93F009A8A10 /* Yozio-Prefix.pch */,
-				F7BF4FC51457B93F009A8A10 /* Yozio.h */,
-				F7BF4FC61457B93F009A8A10 /* Yozio.m */,
+				0E39609F146517DF0087D86A /* lib */,
+				0E3960561465155A0087D86A /* Yozio.h */,
+				0E3960571465155A0087D86A /* Yozio.m */,
+				0E3960541465155A0087D86A /* Supporting Files */,
 			);
 			path = Yozio;
 			sourceTree = "<group>";
 		};
-		F7E5ABDC145D37DC0034CC70 /* lib */ = {
+		0E3960541465155A0087D86A /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				0E5968F81462456C00433554 /* SFHFKeychainUtils.h */,
-				0E5968F91462456C00433554 /* SFHFKeychainUtils.m */,
-				F7E5ABDD145D37DC0034CC70 /* johnezang-JSONKit-465adc1 */,
-				F7E5ABE2145D37DC0034CC70 /* Timer.h */,
-				F7E5ABE3145D37DC0034CC70 /* Timer.m */,
+				0E3960551465155A0087D86A /* Yozio-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		0E3960671465155A0087D86A /* YozioTests */ = {
+			isa = PBXGroup;
+			children = (
+				0E39606D1465155A0087D86A /* YozioTests.h */,
+				0E39606E1465155A0087D86A /* YozioTests.m */,
+				0E3960681465155A0087D86A /* Supporting Files */,
+			);
+			path = YozioTests;
+			sourceTree = "<group>";
+		};
+		0E3960681465155A0087D86A /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				0E3960691465155A0087D86A /* YozioTests-Info.plist */,
+				0E39606A1465155A0087D86A /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		0E39609F146517DF0087D86A /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				0E3960A0146517DF0087D86A /* johnezang-JSONKit-465adc1 */,
+				0E3960A5146517DF0087D86A /* Reachability.h */,
+				0E3960A6146517DF0087D86A /* Reachability.m */,
+				0E3960A7146517DF0087D86A /* SFHFKeychainUtils.h */,
+				0E3960A8146517DF0087D86A /* SFHFKeychainUtils.m */,
 			);
 			path = lib;
 			sourceTree = "<group>";
 		};
-		F7E5ABDD145D37DC0034CC70 /* johnezang-JSONKit-465adc1 */ = {
+		0E3960A0146517DF0087D86A /* johnezang-JSONKit-465adc1 */ = {
 			isa = PBXGroup;
 			children = (
-				F7E5ABDE145D37DC0034CC70 /* CHANGELOG.md */,
-				F7E5ABDF145D37DC0034CC70 /* JSONKit.h */,
-				F7E5ABE0145D37DC0034CC70 /* JSONKit.m */,
-				F7E5ABE1145D37DC0034CC70 /* README.md */,
+				0E3960A1146517DF0087D86A /* CHANGELOG.md */,
+				0E3960A2146517DF0087D86A /* JSONKit.h */,
+				0E3960A3146517DF0087D86A /* JSONKit.m */,
+				0E3960A4146517DF0087D86A /* README.md */,
 			);
 			path = "johnezang-JSONKit-465adc1";
 			sourceTree = "<group>";
@@ -111,26 +172,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		F7BF4FA51457B8B1009A8A10 /* Headers */ = {
+		0E39604C1465155A0087D86A /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7BF4FCB1457B93F009A8A10 /* Yozio-Prefix.pch in Headers */,
-				F7BF4FCC1457B93F009A8A10 /* Yozio.h in Headers */,
-				0E5968FA1462456C00433554 /* SFHFKeychainUtils.h in Headers */,
+				0E3960A9146517DF0087D86A /* JSONKit.h in Headers */,
+				0E3960AB146517DF0087D86A /* Reachability.h in Headers */,
+				0E3960AD146517DF0087D86A /* SFHFKeychainUtils.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		F7BF4FA61457B8B1009A8A10 /* Yozio */ = {
+		0E39604D1465155A0087D86A /* Yozio */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F7BF4FB41457B8B1009A8A10 /* Build configuration list for PBXNativeTarget "Yozio" */;
+			buildConfigurationList = 0E3960721465155A0087D86A /* Build configuration list for PBXNativeTarget "Yozio" */;
 			buildPhases = (
-				F7BF4FA31457B8B1009A8A10 /* Sources */,
-				F7BF4FA41457B8B1009A8A10 /* Frameworks */,
-				F7BF4FA51457B8B1009A8A10 /* Headers */,
+				0E39604A1465155A0087D86A /* Sources */,
+				0E39604B1465155A0087D86A /* Frameworks */,
+				0E39604C1465155A0087D86A /* Headers */,
 			);
 			buildRules = (
 			);
@@ -138,56 +199,129 @@
 			);
 			name = Yozio;
 			productName = Yozio;
-			productReference = F7BF4FA71457B8B1009A8A10 /* libYozio.a */;
+			productReference = 0E39604E1465155A0087D86A /* libYozio.a */;
 			productType = "com.apple.product-type.library.static";
+		};
+		0E39605D1465155A0087D86A /* YozioTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0E3960751465155A0087D86A /* Build configuration list for PBXNativeTarget "YozioTests" */;
+			buildPhases = (
+				0E3960591465155A0087D86A /* Sources */,
+				0E39605A1465155A0087D86A /* Frameworks */,
+				0E39605B1465155A0087D86A /* Resources */,
+				0E39605C1465155A0087D86A /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0E3960651465155A0087D86A /* PBXTargetDependency */,
+			);
+			name = YozioTests;
+			productName = YozioTests;
+			productReference = 0E39605E1465155A0087D86A /* YozioTests.octest */;
+			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		F7BF4F9E1457B8B0009A8A10 /* Project object */ = {
+		0E3960451465155A0087D86A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0420;
-				ORGANIZATIONNAME = "UC Berkeley";
+				ORGANIZATIONNAME = "University of California at Berkeley";
 			};
-			buildConfigurationList = F7BF4FA11457B8B0009A8A10 /* Build configuration list for PBXProject "Yozio" */;
+			buildConfigurationList = 0E3960481465155A0087D86A /* Build configuration list for PBXProject "Yozio" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = F7BF4F9C1457B8B0009A8A10;
-			productRefGroup = F7BF4FA81457B8B1009A8A10 /* Products */;
+			mainGroup = 0E3960431465155A0087D86A;
+			productRefGroup = 0E39604F1465155A0087D86A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F7BF4FA61457B8B1009A8A10 /* Yozio */,
+				0E39604D1465155A0087D86A /* Yozio */,
+				0E39605D1465155A0087D86A /* YozioTests */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		0E39605B1465155A0087D86A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0E39606C1465155A0087D86A /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		0E39605C1465155A0087D86A /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
-		F7BF4FA31457B8B1009A8A10 /* Sources */ = {
+		0E39604A1465155A0087D86A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7BF4FCD1457B93F009A8A10 /* Yozio.m in Sources */,
-				F7E5ABEC145D37DC0034CC70 /* JSONKit.m in Sources */,
-				F7E5ABEE145D37DC0034CC70 /* Timer.m in Sources */,
-				0E5968FB1462456C00433554 /* SFHFKeychainUtils.m in Sources */,
+				0E3960581465155A0087D86A /* Yozio.m in Sources */,
+				0E3960AA146517DF0087D86A /* JSONKit.m in Sources */,
+				0E3960AC146517DF0087D86A /* Reachability.m in Sources */,
+				0E3960AE146517DF0087D86A /* SFHFKeychainUtils.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0E3960591465155A0087D86A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0E39606F1465155A0087D86A /* YozioTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		0E3960651465155A0087D86A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0E39604D1465155A0087D86A /* Yozio */;
+			targetProxy = 0E3960641465155A0087D86A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		0E39606A1465155A0087D86A /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				0E39606B1465155A0087D86A /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
-		F7BF4FB21457B8B1009A8A10 /* Debug */ = {
+		0E3960701465155A0087D86A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CLANG_ENABLE_OBJC_ARC = NO;
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -201,79 +335,117 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
-				ONLY_ACTIVE_ARCH = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
 		};
-		F7BF4FB31457B8B1009A8A10 /* Release */ = {
+		0E3960711465155A0087D86A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CLANG_ENABLE_OBJC_ARC = NO;
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
-				ONLY_ACTIVE_ARCH = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		F7BF4FB51457B8B1009A8A10 /* Debug */ = {
+		0E3960731465155A0087D86A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DSTROOT = /tmp/Yozio.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Yozio/Yozio-Prefix.pch";
-				ONLY_ACTIVE_ARCH = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
-		F7BF4FB61457B8B1009A8A10 /* Release */ = {
+		0E3960741465155A0087D86A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DSTROOT = /tmp/Yozio.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Yozio/Yozio-Prefix.pch";
-				ONLY_ACTIVE_ARCH = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
 		};
+		0E3960761465155A0087D86A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Yozio/Yozio-Prefix.pch";
+				INFOPLIST_FILE = "YozioTests/YozioTests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		0E3960771465155A0087D86A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Yozio/Yozio-Prefix.pch";
+				INFOPLIST_FILE = "YozioTests/YozioTests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F7BF4FA11457B8B0009A8A10 /* Build configuration list for PBXProject "Yozio" */ = {
+		0E3960481465155A0087D86A /* Build configuration list for PBXProject "Yozio" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F7BF4FB21457B8B1009A8A10 /* Debug */,
-				F7BF4FB31457B8B1009A8A10 /* Release */,
+				0E3960701465155A0087D86A /* Debug */,
+				0E3960711465155A0087D86A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F7BF4FB41457B8B1009A8A10 /* Build configuration list for PBXNativeTarget "Yozio" */ = {
+		0E3960721465155A0087D86A /* Build configuration list for PBXNativeTarget "Yozio" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F7BF4FB51457B8B1009A8A10 /* Debug */,
-				F7BF4FB61457B8B1009A8A10 /* Release */,
+				0E3960731465155A0087D86A /* Debug */,
+				0E3960741465155A0087D86A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0E3960751465155A0087D86A /* Build configuration list for PBXNativeTarget "YozioTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0E3960761465155A0087D86A /* Debug */,
+				0E3960771465155A0087D86A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = F7BF4F9E1457B8B0009A8A10 /* Project object */;
+	rootObject = 0E3960451465155A0087D86A /* Project object */;
 }
