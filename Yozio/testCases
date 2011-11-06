@@ -1,0 +1,14 @@
+
+testConfigure
+
+// Test instrumentatino of each type results in the correct hash.
+test___Entry
+
+// Test that data entries aren't added after limits have been reached.
+test___DataLimit
+
+testFlushInterval
+
+testFlushAfterDataLimit
+
+testPayload
