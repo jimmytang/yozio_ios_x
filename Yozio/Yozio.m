@@ -149,6 +149,7 @@
 - (NSString *)uiOrientation;
 - (NSString *)networkInterface;
 + (void)log:(NSString *)format, ...;
++ (Yozio *)getInstance; // Used for testing.
 @end
 
 
@@ -190,6 +191,10 @@ static Yozio *instance = nil;
   return self;
 }
 
++ (Yozio *)getInstance
+{
+  return instance;
+}
 
 /*******************************************
  * Pulbic API.
