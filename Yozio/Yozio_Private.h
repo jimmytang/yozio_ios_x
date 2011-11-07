@@ -9,9 +9,7 @@
 // Private method declarations.
 
 #import "Yozio.h"
-#import "JSONKit.h"
 #import "Reachability.h"
-#import "SFHFKeychainUtils.h"
 
 @interface Yozio()
 {
@@ -19,6 +17,7 @@
   NSString *_userId;
   NSString *_env;
   NSString *_appVersion;
+  SEL _customExceptionHandler;
   
   NSString *digest;
   NSString *deviceId;
@@ -43,6 +42,7 @@
 @property(nonatomic, retain) NSString *_userId;
 @property(nonatomic, retain) NSString *_env;
 @property(nonatomic, retain) NSString *_appVersion;
+@property(nonatomic, assign) SEL _customExceptionHandler;
 // User variables that can be figured out.
 @property(nonatomic, retain) NSString *digest;
 @property(nonatomic, retain) NSString *deviceId;
