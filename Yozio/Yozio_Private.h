@@ -25,21 +25,29 @@
 #define P_SESSION_ID @"sessionId"
 #define P_SCHEMA_VERSION @"schemaVersion"
 #define P_EXPERIMENTS @"experiments"
-#define P_DEVICE_ORIENTATION @"orientation"
-#define P_UI_ORIENTATION @"uiOrientation"
 #define P_COUNTRY @"country"
 #define P_LANGUAGE @"language"
 #define P_TIMEZONE @"timezone"
 #define P_COUNT @"count"
 #define P_PAYLOAD @"payload"
 
+// Payload data entry keys.
+#define D_TYPE @"type"
+#define D_KEY @"key"
+#define D_VALUE @"value"
+#define D_CATEGORY @"category"
+#define D_DEVICE_ORIENTATION @"orientation"
+#define D_UI_ORIENTATION @"uiOrientation"
+#define D_TIMESTAMP @"timestamp"
+#define D_ID @"id"
+
 // Instrumentation entry types.
-#define E_TIMER @"timer"
-#define E_FUNNEL @"funnel"
-#define E_REVENUE @"revenue"
-#define E_ACTION @"action"
-#define E_ERROR @"error"
-#define E_COLLECT @"misc"
+#define T_TIMER @"timer"
+#define T_FUNNEL @"funnel"
+#define T_REVENUE @"revenue"
+#define T_ACTION @"action"
+#define T_ERROR @"error"
+#define T_COLLECT @"misc"
 
 // Orientations strings.
 #define ORIENT_PORTRAIT @"portrait"

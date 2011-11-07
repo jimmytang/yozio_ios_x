@@ -67,7 +67,7 @@ static Yozio *instance = nil;
   instance._appVersion = appVersion;
   
   UIDevice* device = [UIDevice currentDevice];
-  // TODO(jt): get real digest
+  // TODO(jt): compute real digest from a shared key later
   instance.digest = @"";
   instance.hardware = device.model;
   instance.os = [device systemVersion];
@@ -103,7 +103,7 @@ static Yozio *instance = nil;
     [instance.timers removeObjectForKey:timerName];
     float elapsedTime = [[NSDate date] timeIntervalSinceDate:startTime];
     NSString *elapsedTimeStr = [NSString stringWithFormat:@"%.2f", elapsedTime];
-    [instance collect:E_TIMER
+    [instance collect:T_TIMER
                   key:timerName
                 value:elapsedTimeStr
              category:category
@@ -113,7 +113,7 @@ static Yozio *instance = nil;
 
 + (void)funnel:(NSString *)funnelName value:(NSString *)value category:(NSString *)category
 {
-  [instance collect:E_FUNNEL
+  [instance collect:T_FUNNEL
                 key:funnelName
               value:value
            category:category
@@ -123,7 +123,7 @@ static Yozio *instance = nil;
 + (void)revenue:(NSString *)itemName cost:(double)cost category:(NSString *)category
 {
   NSString *stringCost = [NSString stringWithFormat:@"%d", cost];
-  [instance collect:E_REVENUE
+  [instance collect:T_REVENUE
                 key:itemName
               value:stringCost
            category:category
@@ -132,7 +132,7 @@ static Yozio *instance = nil;
 
 + (void)action:(NSString *)actionName context:(NSString *)context category:(NSString *)category
 {
-  [instance collect:E_ACTION
+  [instance collect:T_ACTION
                 key:context
               value:actionName
            category:category
@@ -141,7 +141,7 @@ static Yozio *instance = nil;
 
 + (void)error:(NSString *)errorName message:(NSString *)message category:(NSString *)category
 {
-  [instance collect:E_ERROR
+  [instance collect:T_ERROR
                 key:errorName
               value:message
            category:category
@@ -157,7 +157,7 @@ static Yozio *instance = nil;
 
 + (void)collect:(NSString *)key value:(NSString *)value category:(NSString *)category
 {
-  [instance collect:E_COLLECT
+  [instance collect:T_COLLECT
                 key:key
               value:value
            category:category
@@ -176,8 +176,8 @@ static Yozio *instance = nil;
 
 - (void)applicationDidEnterBackground:(NSNotificationCenter *)notification
 {
-  //  TODO(jt): implement me
-  //  TODO(jt): need to cancel connection in beginBackgroundTaskWithExpirationHandler?
+  // TODO(jt): flush data in the background
+  // TODO(jt): need to cancel connection in beginBackgroundTaskWithExpirationHandler?
 }
 
 - (void)applicationWillEnterForeground:(NSNotificationCenter *)notification
@@ -250,12 +250,14 @@ static Yozio *instance = nil;
   if ([self.dataQueue count] < maxQueue)
   {
     NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                  type, @"type",
-                                  key, @"key",
-                                  value, @"value",
-                                  category, @"category",
-                                  [self timeStampString], @"timestamp",
-                                  [NSNumber numberWithInteger:dataCount], @"id",
+                                  type, D_TYPE,
+                                  key, D_KEY,
+                                  value, D_VALUE,
+                                  category, D_CATEGORY,
+                                  [self deviceOrientation], D_DEVICE_ORIENTATION,
+                                  [self uiOrientation], D_UI_ORIENTATION,
+                                  [self timeStampString], D_TIMESTAMP,
+                                  [NSNumber numberWithInteger:dataCount], D_ID,
                                   nil];
     [self.dataQueue addObject:d];
   }
@@ -322,9 +324,6 @@ static Yozio *instance = nil;
   [payload setValue:self.sessionId forKey:P_SESSION_ID];
   [payload setValue:self.schemaVersion forKey:P_SCHEMA_VERSION];
   [payload setValue:self.experiments forKey:P_EXPERIMENTS];
-  // TODO(jt): move orientation into event instead of here
-  [payload setValue:[self deviceOrientation] forKey:P_DEVICE_ORIENTATION];
-  [payload setValue:[self uiOrientation] forKey:P_UI_ORIENTATION];
   [payload setValue:countryName forKey:P_COUNTRY];
   [payload setValue:[[NSLocale preferredLanguages] objectAtIndex:0] forKey:P_LANGUAGE];
   [payload setValue:timezone forKey:P_TIMEZONE];
