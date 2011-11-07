@@ -17,7 +17,6 @@
 @synthesize _userId;
 @synthesize _env;
 @synthesize _appVersion;
-@synthesize digest;
 @synthesize deviceId;
 @synthesize hardware;
 @synthesize os;
@@ -67,8 +66,6 @@ static Yozio *instance = nil;
   instance._appVersion = appVersion;
   
   UIDevice* device = [UIDevice currentDevice];
-  // TODO(jt): compute real digest from a shared key later
-  instance.digest = @"";
   instance.hardware = device.model;
   instance.os = [device systemVersion];
   instance.sessionId = [instance makeUUID];
@@ -256,6 +253,10 @@ static Yozio *instance = nil;
                                   category, D_CATEGORY,
                                   [self deviceOrientation], D_DEVICE_ORIENTATION,
                                   [self uiOrientation], D_UI_ORIENTATION,
+                                  self._userId, D_USER_ID,
+                                  self._appVersion, D_APP_VERSION,
+                                  self.sessionId, D_SESSION_ID,
+                                  self.experiments, D_EXPERIMENTS,
                                   [self timeStampString], D_TIMESTAMP,
                                   [NSNumber numberWithInteger:dataCount], D_ID,
                                   nil];
@@ -306,7 +307,8 @@ static Yozio *instance = nil;
 
 - (NSString *)buildPayload
 {
-  NSMutableDictionary* payload = [NSMutableDictionary dictionary];
+  // TODO(jt): compute real digest from shared key
+  NSString *digest = @"";
   NSLocale *locale = [NSLocale currentLocale];
   NSString *countryCode = [locale objectForKey: NSLocaleCountryCode];
   NSString *countryName = [locale displayNameForKey:NSLocaleCountryCode value:countryCode];
@@ -314,16 +316,13 @@ static Yozio *instance = nil;
   NSInteger timezoneOffset = [[NSTimeZone systemTimeZone] secondsFromGMT]/3600;
   NSNumber *timezone = [NSNumber numberWithInteger:timezoneOffset];
   
-  [payload setValue:self._userId forKey:P_USER_ID];
+  NSMutableDictionary* payload = [NSMutableDictionary dictionary];
+  [payload setValue:digest forKey:P_DIGEST];
   [payload setValue:self._env forKey:P_ENVIRONMENT];
-  [payload setValue:self._appVersion forKey:P_APP_VERSION];
-  [payload setValue:self.digest forKey:P_DIGEST];
   [payload setValue:[self loadOrCreateDeviceId] forKey:P_DEVICE_ID];
   [payload setValue:self.hardware forKey:P_HARDWARE];
   [payload setValue:self.os forKey:P_OPERATING_SYSTEM];
-  [payload setValue:self.sessionId forKey:P_SESSION_ID];
   [payload setValue:self.schemaVersion forKey:P_SCHEMA_VERSION];
-  [payload setValue:self.experiments forKey:P_EXPERIMENTS];
   [payload setValue:countryName forKey:P_COUNTRY];
   [payload setValue:[[NSLocale preferredLanguages] objectAtIndex:0] forKey:P_LANGUAGE];
   [payload setValue:timezone forKey:P_TIMEZONE];
