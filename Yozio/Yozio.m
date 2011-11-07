@@ -114,7 +114,7 @@ static Yozio *instance = nil;
 }
 
 /*******************************************
- * Pulbic API.
+ * Public API.
  *******************************************/
 
 + (void)configure:(NSString *)serverUrl

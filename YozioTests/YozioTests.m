@@ -6,7 +6,7 @@
 //  Copyright (c) 2011 University of California at Berkeley. All rights reserved.
 //
 
-#import "Yozio.h"
+#import "Yozio_Private.h"
 #import "YozioTests.h"
 
 
@@ -15,7 +15,10 @@
 - (void)setUp
 {
   [super setUp];
-  // Set-up code here.
+  [Yozio configure:@"http://m.snapette.yozio.com"
+            userId:@"MyUserId"
+               env:@"production"
+        appVersion:@"1.0.1"];
 }
 
 - (void)tearDown
@@ -25,41 +28,114 @@
     [super tearDown];
 }
 
-- (void)test_startTimer_Entry
+- (void)testStartTimerEntry
 {
 //  mock [NSDate date]
 //  [Yozio startTimer:@"MyTimer"];
 //  Yozio * instance = [Yozio getInstance];  
 }
 
-- (void)test_funnel_Entry
+- (void)testFunnelEntry
 {
-  [Yozio initialize];
-  [Yozio funnel:@"Checkout" value:@"Start Checkout" category:@"MyCategory"];
+  NSString *type = @"funnel";
+  NSString *key = @"Checkout";
+  NSString *value = @"Start Checkout";
+  NSString *category = @"MyCategory";
+  [Yozio funnel:key value:value category:category];
   Yozio *instance = [Yozio getInstance];  
-  NSLog(@"XXXX-instance:%@", instance);
-  NSLog(@"XXXX:%@", [[instance dataQueue] class]);
-  STAssertEquals([[[instance dataQueue] lastObject] valueForKey:@"type"], @"funnel", @"Wrong type");
+  NSMutableDictionary *expected = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
+                           type, @"type", 
+                           key, @"key", 
+                           value, @"value", 
+                           category, @"category", 
+                           nil];
+  NSMutableDictionary *actual = [[instance dataQueue] lastObject];
+  [self assertDataEqual:expected actual:actual];
+}
+- (void)testRevenueEntry
+{
+  NSString *type = @"revenue";
+  NSString *key = @"PowerShield";
+  double value = 20.5;
+  NSString *category = @"Defence";
+  [Yozio revenue:key cost:value category:category];
+  Yozio *instance = [Yozio getInstance];  
+  NSString *stringValue = [NSString stringWithFormat:@"%d", value];
+  NSMutableDictionary *expected = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
+                                   type, @"type", 
+                                   key, @"key", 
+                                   stringValue, @"value", 
+                                   category, @"category", 
+                                   nil];
+  NSMutableDictionary *actual = [[instance dataQueue] lastObject];
+  [self assertDataEqual:expected actual:actual];  
 }
 
-- (void)test_revenue_Entry
+- (void)testActionEntry
 {
-//  STFail(@"Unit tests are not implemented yet in YozioTests");
+  NSString *type = @"action";
+  NSString *key = @"jump";
+  NSString *value = @"Level 1";
+  NSString *category = @"play";
+  [Yozio action:key context:value category:category];
+  Yozio *instance = [Yozio getInstance];  
+  NSMutableDictionary *expected = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
+                                   type, @"type", 
+                                   value, @"key", 
+                                   key, @"value", 
+                                   category, @"category", 
+                                   nil];
+  NSMutableDictionary *actual = [[instance dataQueue] lastObject];
+  [self assertDataEqual:expected actual:actual];
 }
 
-- (void)test_action_Entry
+- (void)testErrorEntry
 {
-//  STFail(@"Unit tests are not implemented yet in YozioTests");
+  NSString *type = @"error";
+  NSString *key = @"Save Error";
+  NSString *value = @"error message";
+  NSString *category = @"persistence";
+  [Yozio error:key message:value category:category];
+  Yozio *instance = [Yozio getInstance];  
+  NSMutableDictionary *expected = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
+                                   type, @"type", 
+                                   key, @"key", 
+                                   value, @"value", 
+                                   category, @"category", 
+                                   nil];
+  NSMutableDictionary *actual = [[instance dataQueue] lastObject];
+  [self assertDataEqual:expected actual:actual];
 }
 
-- (void)test_error_Entry
+- (void)testCollectEntry
 {
-//  STFail(@"Unit tests are not implemented yet in YozioTests");
+  NSString *type = @"misc";
+  NSString *key = @"SomeEvent";
+  NSString *value = @"SomeValue";
+  NSString *category = @"MyCategory";
+  [Yozio collect:key value:value category:category];
+  Yozio *instance = [Yozio getInstance];  
+  NSMutableDictionary *expected = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
+                                   type, @"type", 
+                                   key, @"key", 
+                                   value, @"value", 
+                                   category, @"category", 
+                                   nil];
+  NSMutableDictionary *actual = [[instance dataQueue] lastObject];
+  [self assertDataEqual:expected actual:actual];
 }
 
-- (void)test_collect_Entry
+// Test Helper Methods
+
+- (void)assertDataEqual:(NSMutableDictionary *)expected
+                 actual:(NSMutableDictionary *)actual
 {
-//  STFail(@"Unit tests are not implemented yet in YozioTests");
+  NSLog(@"expected: %@", expected);
+  NSLog(@"actual: %@", actual);
+  STAssertEqualObjects([expected valueForKey:@"type"], [actual valueForKey:@"type"], @"Wrong type");
+  STAssertEqualObjects([expected valueForKey:@"key"], [actual valueForKey:@"key"], @"Wrong key");
+  STAssertEqualObjects([expected valueForKey:@"value"], [actual valueForKey:@"value"], @"Wrong value");
+  STAssertEqualObjects([expected valueForKey:@"category"], [actual valueForKey:@"category"], @"Wrong category");
 }
 
 @end
