@@ -61,6 +61,7 @@
 #define REACHABILITY_UNKNOWN @"unknown"
 
 // TODO(jt): fine tune these numbers
+// TODO(jt): make these numbers configurable instead of macros
 
 // The number of items in the queue before forcing a flush.
 #define FLUSH_DATA_COUNT 15
