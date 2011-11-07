@@ -8,7 +8,6 @@
 #define __YOZIO_PRIVATE__ 1
 
 #import "Yozio.h"
-#import "Reachability.h"
 
 #define UNCAUGHT_EXCEPTION_CATEGORY @"uncaught"
 
@@ -28,7 +27,6 @@
 #define P_EXPERIMENTS @"experiments"
 #define P_DEVICE_ORIENTATION @"orientation"
 #define P_UI_ORIENTATION @"uiOrientation"
-#define P_NETWORK_INTERFACE @"network"
 #define P_COUNTRY @"country"
 #define P_LANGUAGE @"language"
 #define P_TIMEZONE @"timezone"
@@ -51,10 +49,6 @@
 #define ORIENT_FACE_UP @"faceUp"
 #define ORIENT_FACE_DOWN @"faceDown"
 #define ORIENT_UNKNOWN @"unknown"
-// Reachibility strings.
-#define REACHABILITY_WWAN @"wwan"
-#define REACHABILITY_WIFI @"wifi"
-#define REACHABILITY_UNKNOWN @"unknown"
 
 // TODO(jt): fine tune these numbers
 // TODO(jt): make these numbers configurable instead of macros
@@ -98,7 +92,6 @@
   NSMutableDictionary *timers;
   NSMutableData *receivedData;
   NSURLConnection *connection;
-  Reachability *reachability;
 }
 
 // User variables that need to be set by user.
@@ -122,7 +115,6 @@
 @property(nonatomic, retain) NSMutableDictionary *timers;
 @property(nonatomic, retain) NSMutableData *receivedData;
 @property(nonatomic, retain) NSURLConnection *connection;
-@property(nonatomic, retain) Reachability *reachability;
 
 // Notification observer methods.
 - (void)applicationDidEnterBackground:(NSNotificationCenter *)notification;
@@ -151,7 +143,6 @@
 - (NSString *)makeUUID;
 - (NSString *)deviceOrientation;
 - (NSString *)uiOrientation;
-- (NSString *)networkInterface;
 + (void)log:(NSString *)format, ...;
 + (Yozio *)getInstance; // Used for testing.
 

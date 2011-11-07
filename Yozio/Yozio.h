@@ -10,8 +10,6 @@
 @interface Yozio : NSObject
 
 /**
- * TODO(jt): update doc to include libraries needed by Reachability.h if we end up using it.
- *
  * Setup:
  *     Link the libraries "libYozio.a" and "Security.framework" to your binary.
  *     To do this in Xcode 4, click on your project in the Project navigator and choose your target.

@@ -4,7 +4,6 @@
 
 #import "Yozio_Private.h"
 #import "JSONKit.h"
-#import "Reachability.h"
 #import "UncaughtExceptionHandler.h"
 #import "SFHFKeychainUtils.h"
 #import <UIKit/UIKit.h>
@@ -32,7 +31,6 @@
 @synthesize timers;
 @synthesize receivedData;
 @synthesize connection;
-@synthesize reachability;
 
 static Yozio *instance = nil; 
 
@@ -85,7 +83,6 @@ static Yozio *instance = nil;
   instance.dataQueue = [NSMutableArray array];
   instance.dataCount = 0;
   instance.timers = [NSMutableDictionary dictionary];
-  instance.reachability = [Reachability reachabilityForInternetConnection];
   
   InstallUncaughtExceptionHandler(exceptionHandler);
 }
@@ -328,8 +325,6 @@ static Yozio *instance = nil;
   // TODO(jt): move orientation into event instead of here
   [payload setValue:[self deviceOrientation] forKey:P_DEVICE_ORIENTATION];
   [payload setValue:[self uiOrientation] forKey:P_UI_ORIENTATION];
-  // TODO(jt): dont use NETWORK_INTERFACE for now.
-  [payload setValue:[self networkInterface] forKey:P_NETWORK_INTERFACE];
   [payload setValue:countryName forKey:P_COUNTRY];
   [payload setValue:[[NSLocale preferredLanguages] objectAtIndex:0] forKey:P_LANGUAGE];
   [payload setValue:timezone forKey:P_TIMEZONE];
@@ -474,19 +469,6 @@ static Yozio *instance = nil;
       return ORIENT_LANDSCAPE_RIGHT;
     default:
       return ORIENT_UNKNOWN;
-  }
-}
-
-- (NSString *)networkInterface
-{
-  NetworkStatus status = [reachability currentReachabilityStatus];
-  switch (status) {
-    case ReachableViaWWAN:
-      return REACHABILITY_WWAN;
-    case ReachableViaWiFi:
-      return REACHABILITY_WIFI;
-    default:
-      return REACHABILITY_UNKNOWN;
   }
 }
 
