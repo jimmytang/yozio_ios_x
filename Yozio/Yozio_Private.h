@@ -16,6 +16,69 @@
 
 #define UNCAUGHT_EXCEPTION_CATEGORY @"uncaught"
 
+// Set to true to show log messages.
+#define YOZIO_LOG true
+
+// Payload keys.
+#define P_USER_ID @"userId"
+#define P_ENVIRONMENT @"env"
+#define P_APP_VERSION @"appVersion"
+#define P_DIGEST @"digest"
+#define P_DEVICE_ID @"deviceId"
+#define P_HARDWARE @"hardware"
+#define P_OPERATING_SYSTEM @"os"
+#define P_SESSION_ID @"sessionId"
+#define P_SCHEMA_VERSION @"schemaVersion"
+#define P_EXPERIMENTS @"experiments"
+#define P_DEVICE_ORIENTATION @"orientation"
+#define P_UI_ORIENTATION @"uiOrientation"
+#define P_NETWORK_INTERFACE @"network"
+#define P_COUNTRY @"country"
+#define P_LANGUAGE @"language"
+#define P_TIMEZONE @"timezone"
+#define P_COUNT @"count"
+#define P_PAYLOAD @"payload"
+
+// Instrumentation entry types.
+#define E_TIMER @"timer"
+#define E_FUNNEL @"funnel"
+#define E_REVENUE @"revenue"
+#define E_ACTION @"action"
+#define E_ERROR @"error"
+#define E_COLLECT @"misc"
+
+// Orientations strings.
+#define ORIENT_PORTRAIT @"portrait"
+#define ORIENT_PORTRAIT_UPSIDE_DOWN @"flippedPortrait"
+#define ORIENT_LANDSCAPE_LEFT @"landscapeLeft"
+#define ORIENT_LANDSCAPE_RIGHT @"landscapeRight"
+#define ORIENT_FACE_UP @"faceUp"
+#define ORIENT_FACE_DOWN @"faceDown"
+#define ORIENT_UNKNOWN @"unknown"
+// Reachibility strings.
+#define REACHABILITY_WWAN @"wwan"
+#define REACHABILITY_WIFI @"wifi"
+#define REACHABILITY_UNKNOWN @"unknown"
+
+// TODO(jt): fine tune these numbers
+
+// The number of items in the queue before forcing a flush.
+#define FLUSH_DATA_COUNT 15
+// XX_DATA_LIMIT describes the required number of items in the queue before that instrumentation
+// event type starts being dropped.
+#define TIMER_DATA_LIMIT 30
+#define COLLECT_DATA_LIMIT 30
+#define ACTION_DATA_LIMIT 30
+#define FUNNEL_DATA_LIMIT 60
+#define REVENUE_DATA_LIMIT 120
+#define ERROR_DATA_LIMIT 30
+// Time interval before automatically flushing the data queue.
+#define FLUSH_INTERVAL_SEC 30
+
+#define FILE_PATH [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
+#define UUID_KEYCHAIN_USERNAME @"UUID"
+#define KEYCHAIN_SERVICE @"yozio"
+
 @interface Yozio()
 {
   NSString *_serverUrl;

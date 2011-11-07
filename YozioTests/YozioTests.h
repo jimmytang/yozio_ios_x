@@ -10,4 +10,7 @@
 
 @interface YozioTests : SenTestCase
 
+- (void)assertDataEqual:(NSMutableDictionary *)expected
+                 actual:(NSMutableDictionary *)actual;
+
 @end
