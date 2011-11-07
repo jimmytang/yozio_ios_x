@@ -2,6 +2,9 @@
 //  Copyright 2011 Yozio. All rights reserved.
 //
 
+#if !defined(__YOZIO__)
+#define __YOZIO__ 1
+
 #import <Foundation/Foundation.h>
 
 @interface Yozio : NSObject
@@ -53,13 +56,13 @@
  *              userId:@"MyUserId"
  *              env:@"production"
  *              appVersion:@"1.0.1"
- *              exceptionHandler:@selector(myExceptionHandler)];
+ *              exceptionHandler:&myExceptionHandler];
  */
 + (void)configure:(NSString *)serverUrl
     userId:(NSString *)userId
     env:(NSString *)env
     appVersion:(NSString *)appVersion
-    exceptionHandler:(SEL)exceptionHandler;
+    exceptionHandler:(NSUncaughtExceptionHandler *)exceptionHandler;
 
 
 /**
@@ -198,3 +201,5 @@
 + (void)flush;
 
 @end
+
+#endif /* ! __YOZIO__ */

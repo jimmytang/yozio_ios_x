@@ -8,8 +8,13 @@
 
 // Private method declarations.
 
+#if !defined(__YOZIO_PRIVATE__)
+#define __YOZIO_PRIVATE__ 1
+
 #import "Yozio.h"
 #import "Reachability.h"
+
+#define UNCAUGHT_EXCEPTION_CATEGORY @"uncaught"
 
 @interface Yozio()
 {
@@ -17,7 +22,6 @@
   NSString *_userId;
   NSString *_env;
   NSString *_appVersion;
-  SEL _customExceptionHandler;
   
   NSString *digest;
   NSString *deviceId;
@@ -42,7 +46,6 @@
 @property(nonatomic, retain) NSString *_userId;
 @property(nonatomic, retain) NSString *_env;
 @property(nonatomic, retain) NSString *_appVersion;
-@property(nonatomic, assign) SEL _customExceptionHandler;
 // User variables that can be figured out.
 @property(nonatomic, retain) NSString *digest;
 @property(nonatomic, retain) NSString *deviceId;
@@ -91,4 +94,7 @@
 - (NSString *)networkInterface;
 + (void)log:(NSString *)format, ...;
 + (Yozio *)getInstance; // Used for testing.
+
 @end
+
+#endif /* ! __YOZIO_PRIVATE__ */

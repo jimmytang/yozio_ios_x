@@ -6,7 +6,7 @@
 //  Copyright (c) 2011 University of California at Berkeley. All rights reserved.
 //
 
-#import "Yozio.h"
+#import "Yozio_Private.h"
 #import "YozioTests.h"
 
 

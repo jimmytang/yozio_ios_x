@@ -5,6 +5,7 @@
 #import "Yozio_Private.h"
 #import "JSONKit.h"
 #import "Reachability.h"
+#import "UncaughtExceptionHandler.h"
 #import "SFHFKeychainUtils.h"
 #import <UIKit/UIKit.h>
 
@@ -75,11 +76,11 @@
 // Private method declarations.
 
 @implementation Yozio
+
 @synthesize _serverUrl;
 @synthesize _userId;
 @synthesize _env;
 @synthesize _appVersion;
-@synthesize _customExceptionHandler;
 @synthesize digest;
 @synthesize deviceId;
 @synthesize hardware;
@@ -96,11 +97,9 @@
 @synthesize connection;
 @synthesize reachability;
 
-
 static Yozio *instance = nil; 
 
-+ (void)initialize
-{
++ (void)initialize {
   if (instance == nil) {
     instance = [[self alloc] init];
   }
@@ -125,13 +124,12 @@ static Yozio *instance = nil;
     userId:(NSString *)userId
     env:(NSString *)env
     appVersion:(NSString *)appVersion
-    exceptionHandler:(SEL)exceptionHandler
+    exceptionHandler:(NSUncaughtExceptionHandler *)exceptionHandler
 {
   instance._serverUrl = serverUrl;
   instance._userId = userId;
   instance._env = env;
   instance._appVersion = appVersion;
-  instance._customExceptionHandler = exceptionHandler;
   
   UIDevice* device = [UIDevice currentDevice];
   // TODO(jt): get real digest
@@ -152,7 +150,7 @@ static Yozio *instance = nil;
   instance.timers = [NSMutableDictionary dictionary];
   instance.reachability = [Reachability reachabilityForInternetConnection];
   
-  // TODO(jt): set uncaught exception handler
+  InstallUncaughtExceptionHandler(exceptionHandler);
 }
 
 + (void)startTimer:(NSString *)timerName
@@ -218,7 +216,11 @@ static Yozio *instance = nil;
 
 + (void)exception:(NSException *)exception category:(NSString *)category
 {
-  // TODO(jt): implement me
+  NSString *name = [exception name];
+  NSString *reason = [exception reason];
+  NSArray *stack = [[exception userInfo] valueForKey:UNCAUGHT_EXCEPTION_HANDLER_ADDRESSES_KEY];
+  NSString *message = [NSString stringWithFormat:@"%@\n%@", reason, stack];
+  [Yozio error:name message:message category:category];
 }
 
 + (void)collect:(NSString *)key value:(NSString *)value category:(NSString *)category
@@ -566,12 +568,3 @@ static Yozio *instance = nil;
 }
 
 @end
-
-void uncaughtExceptionHandler(NSException *exception)
-{
-  [[Yozio getInstance] _customExceptionHandler];
-  if (instance._customExceptionHandler != nil) {
-    // TODO(jt): call customeExceptionHandler with exception.
-  }
-  // TODO(jt): implement me
-}
