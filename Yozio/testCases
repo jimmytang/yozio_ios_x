@@ -2,10 +2,13 @@
 testConfigure
 
 // Test instrumentatino of each type results in the correct hash.
-test___Entry
+//test___Entry (Done)
+// need mocking to stub out the call to [NSDate date] to make it cleaner. Right now its just using a helper method.
 
 // Test that data entries aren't added after limits have been reached.
 test___DataLimit
+//need mocking to stub out the call to flush. Otherwise it tries to flush out and results in a different type of exception
+
 
 testFlushInterval
 
