@@ -213,9 +213,9 @@ static Yozio *instance = nil;
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
   [Yozio log:@"didReceiveData"];
-  [Yozio log:@"%@", data];
+  [Yozio log:@"new data: %@", data];
   [self.receivedData appendData:data];
-  [Yozio log:@"%@", self.receivedData];
+  [Yozio log:@"received Data: %@", self.receivedData];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
@@ -267,10 +267,8 @@ static Yozio *instance = nil;
 - (void)checkDataQueueSize
 {
   [Yozio log:@"checkDataQueueSize"];
-  [Yozio log:@"%i",[self.dataQueue count]];
-  if ([self.dataQueue count] > 0 && [self.dataQueue count] % FLUSH_DATA_COUNT == 0) 
-  {
-    [Yozio log:@"flushing"];
+  [Yozio log:@"data queue size: %i",[self.dataQueue count]];
+  if ([self.dataQueue count] > 0 && [self.dataQueue count] % FLUSH_DATA_COUNT == 0) {
     [self doFlush]; 
   }
 }
@@ -279,13 +277,15 @@ static Yozio *instance = nil;
 {
   if ([self.dataQueue count] == 0 || self.connection != nil) {
     // No events or already pushing data.
-    [Yozio log:@"%@", self.connection];
+    [Yozio log:@"No data to flush or already flushing."];
     return;
   } else if ([self.dataQueue count] > FLUSH_DATA_COUNT) {
     self.dataToSend = [self.dataQueue subarrayWithRange:NSMakeRange(0, FLUSH_DATA_COUNT)];
   } else {
     self.dataToSend = [NSArray arrayWithArray:self.dataQueue];
   }
+  
+  [Yozio log:@"flushing"];
   
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
   
@@ -298,7 +298,7 @@ static Yozio *instance = nil;
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
 	[request setHTTPMethod:@"GET"];
   
-  [Yozio log:@"%@", urlString];
+  [Yozio log:@"Final get request url: %@", urlString];
   
 	self.connection = [NSURLConnection connectionWithRequest:request delegate:self];
 	[self.connection start];
@@ -352,9 +352,8 @@ static Yozio *instance = nil;
 - (void)saveUnsentData
 {
   [Yozio log:@"saveUnsentData"];
-  if (![NSKeyedArchiver archiveRootObject:self.dataQueue toFile:FILE_PATH]) 
-  {
-    [Yozio log:@"Unable to archive data!!!"];
+  if (![NSKeyedArchiver archiveRootObject:self.dataQueue toFile:FILE_PATH])  {
+    [Yozio log:@"Unable to archive data!"];
   }
 }
 
@@ -362,8 +361,7 @@ static Yozio *instance = nil;
 {
   [Yozio log:@"loadUnsentData"];
   self.dataQueue = [NSKeyedUnarchiver unarchiveObjectWithFile:FILE_PATH];
-  if (!self.dataQueue) 
-  {
+  if (!self.dataQueue)  {
     self.dataQueue = [NSMutableArray array];    
   }
 }
