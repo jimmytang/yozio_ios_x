@@ -3,6 +3,9 @@
 //
 
 #import "Yozio_Private.h"
+#import "JSONKit.h"
+#import "Reachability.h"
+#import "SFHFKeychainUtils.h"
 #import <UIKit/UIKit.h>
 
 // Set to true to show log messages.
@@ -50,6 +53,7 @@
 #define REACHABILITY_UNKNOWN @"unknown"
 
 // TODO(jt): fine tune these numbers
+// TODO(jt): make these numbers configurable instead of macros
 
 // The number of items in the queue before forcing a flush.
 #define FLUSH_DATA_COUNT 15
@@ -71,10 +75,11 @@
 // Private method declarations.
 
 @implementation Yozio
+@synthesize _serverUrl;
 @synthesize _userId;
 @synthesize _env;
 @synthesize _appVersion;
-@synthesize _serverUrl;
+@synthesize _customExceptionHandler;
 @synthesize digest;
 @synthesize deviceId;
 @synthesize hardware;
@@ -96,8 +101,7 @@ static Yozio *instance = nil;
 
 + (void)initialize
 {
-  if (instance == nil)
-  {
+  if (instance == nil) {
     instance = [[self alloc] init];
   }
 }
@@ -118,14 +122,16 @@ static Yozio *instance = nil;
  *******************************************/
 
 + (void)configure:(NSString *)serverUrl
-           userId:(NSString *)userId
-              env:(NSString *)env
-       appVersion:(NSString *)appVersion
+    userId:(NSString *)userId
+    env:(NSString *)env
+    appVersion:(NSString *)appVersion
+    exceptionHandler:(SEL)exceptionHandler
 {
   instance._serverUrl = serverUrl;
   instance._userId = userId;
   instance._env = env;
   instance._appVersion = appVersion;
+  instance._customExceptionHandler = exceptionHandler;
   
   UIDevice* device = [UIDevice currentDevice];
   // TODO(jt): get real digest
@@ -145,6 +151,8 @@ static Yozio *instance = nil;
   instance.dataCount = 0;
   instance.timers = [NSMutableDictionary dictionary];
   instance.reachability = [Reachability reachabilityForInternetConnection];
+  
+  // TODO(jt): set uncaught exception handler
 }
 
 + (void)startTimer:(NSString *)timerName
@@ -206,6 +214,11 @@ static Yozio *instance = nil;
               value:message
            category:category
            maxQueue:ERROR_DATA_LIMIT];
+}
+
++ (void)exception:(NSException *)exception category:(NSString *)category
+{
+  // TODO(jt): implement me
 }
 
 + (void)collect:(NSString *)key value:(NSString *)value category:(NSString *)category
@@ -375,8 +388,10 @@ static Yozio *instance = nil;
   [payload setValue:self.sessionId forKey:P_SESSION_ID];
   [payload setValue:self.schemaVersion forKey:P_SCHEMA_VERSION];
   [payload setValue:self.experiments forKey:P_EXPERIMENTS];
+  // TODO(jt): move orientation into event instead of here
   [payload setValue:[self deviceOrientation] forKey:P_DEVICE_ORIENTATION];
   [payload setValue:[self uiOrientation] forKey:P_UI_ORIENTATION];
+  // TODO(jt): dont use NETWORK_INTERFACE for now.
   [payload setValue:[self networkInterface] forKey:P_NETWORK_INTERFACE];
   [payload setValue:countryName forKey:P_COUNTRY];
   [payload setValue:[[NSLocale preferredLanguages] objectAtIndex:0] forKey:P_LANGUAGE];
@@ -549,5 +564,14 @@ static Yozio *instance = nil;
     [formatStr release];
   }
 }
-  
+
 @end
+
+void uncaughtExceptionHandler(NSException *exception)
+{
+  [[Yozio getInstance] _customExceptionHandler];
+  if (instance._customExceptionHandler != nil) {
+    // TODO(jt): call customeExceptionHandler with exception.
+  }
+  // TODO(jt): implement me
+}

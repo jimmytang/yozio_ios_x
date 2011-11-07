@@ -7,9 +7,11 @@
 @interface Yozio : NSObject
 
 /**
+ * TODO(jt): update doc to include libraries needed by Reachability.h if we end up using it.
+ *
  * Setup:
  *     Link the libraries "libYozio.a" and "Security.framework" to your binary.
- *     To do this in Xcode, click on your project in the Project navigator and choose your target.
+ *     To do this in Xcode 4, click on your project in the Project navigator and choose your target.
  *     Click on the "Build Phases" tab and add "libYozio.a" and "Security.framework" to the
  *     "Link Binary With Libraries" section.
  *
@@ -18,9 +20,13 @@
  *     In your application delegate's applicationDidFinishLaunching method, configure Yozio:
  *
  *         [Yozio configure:@"http://m.snapette.yozio.com"
- *                   userId:@"MyUserId"
- *                      env:@"production"
- *               appVersion:@"1.0.1"];
+ *              userId:@"MyUserId"
+ *              env:@"production"
+ *              appVersion:@"1.0.1"
+ *              exceptionHandler:@selector(myExceptionHandler)];
+ *
+ *     If you already set a global uncaught exception (NSSetUncaughtExceptionHandler), remove that
+ *     code and pass your exception handler into the configure method.
  *
  *     Add instrumentation code at any point by calling any of the instrumentation methods.
  *
@@ -40,16 +46,20 @@
  * @param env The environment that the application is currently running in. Possible values are
  *            "production" or "sandbox".
  * @param appVersion The current version of your application.
+ * @param exceptionHandler A custom global uncaught exception handler for your application.
+ *                         If you do not need to process uncaught exceptions, pass in nil.
  *
  * @example [Yozio configure:@"http://m.snapette.yozio.com"
- *                   userId:@"MyUserId"
- *                      env:@"production"
- *               appVersion:@"1.0.1"];
+ *              userId:@"MyUserId"
+ *              env:@"production"
+ *              appVersion:@"1.0.1"
+ *              exceptionHandler:@selector(myExceptionHandler)];
  */
 + (void)configure:(NSString *)serverUrl
-           userId:(NSString *)userId
-              env:(NSString *)env
-       appVersion:(NSString *)appVersion;
+    userId:(NSString *)userId
+    env:(NSString *)env
+    appVersion:(NSString *)appVersion
+    exceptionHandler:(SEL)exceptionHandler;
 
 
 /**
@@ -146,6 +156,27 @@
  *          [Yozio error:@"Save Error" message:errorMsg category:@"persistence"];
  */
 + (void)error:(NSString *)errorName message:(NSString *)message category:(NSString *)category;
+
+
+/**
+ * Convenience method for instrumenting caught exceptions.
+ * Calling this exception is the equivalent of calling the error method with:
+ *
+ *    [Yozio error:exceptionName message:exceptionMessageAndStackTrace category:category]
+ *
+ * @param exception The caught exception to instrument.
+ * @param category The category to group this event under.
+ *
+ * @example @try {
+ *            @throw [NSException exceptionWithName:@"MyException"
+ *                                           reason:@"This is a test exception"
+ *                                         userInfo:nil];
+ *          }
+ *          @catch (id theException) {
+ *            [Yozio exception:theException category:@"MyCategory"];
+ *          }
+ */
++ (void)exception:(NSException *)exception category:(NSString *)category;
 
 
 /**
