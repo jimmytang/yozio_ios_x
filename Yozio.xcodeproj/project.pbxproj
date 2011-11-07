@@ -10,9 +10,7 @@
 		0E3960521465155A0087D86A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E3960511465155A0087D86A /* Foundation.framework */; };
 		0E3960581465155A0087D86A /* Yozio.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E3960571465155A0087D86A /* Yozio.m */; };
 		0E3960601465155A0087D86A /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E39605F1465155A0087D86A /* SenTestingKit.framework */; };
-		0E3960621465155A0087D86A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E3960611465155A0087D86A /* UIKit.framework */; };
 		0E3960631465155A0087D86A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E3960511465155A0087D86A /* Foundation.framework */; };
-		0E3960661465155A0087D86A /* libYozio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E39604E1465155A0087D86A /* libYozio.a */; };
 		0E39606C1465155A0087D86A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0E39606A1465155A0087D86A /* InfoPlist.strings */; };
 		0E39606F1465155A0087D86A /* YozioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E39606E1465155A0087D86A /* YozioTests.m */; };
 		0E3960A9146517DF0087D86A /* JSONKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E3960A2146517DF0087D86A /* JSONKit.h */; };
@@ -21,6 +19,14 @@
 		0E3960AC146517DF0087D86A /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E3960A6146517DF0087D86A /* Reachability.m */; };
 		0E3960AD146517DF0087D86A /* SFHFKeychainUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E3960A7146517DF0087D86A /* SFHFKeychainUtils.h */; };
 		0E3960AE146517DF0087D86A /* SFHFKeychainUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E3960A8146517DF0087D86A /* SFHFKeychainUtils.m */; };
+		F7E2B6B814674F7B009A79A4 /* libYozio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E39604E1465155A0087D86A /* libYozio.a */; };
+		F7E2B6BA1467504A009A79A4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7E2B6B91467504A009A79A4 /* UIKit.framework */; };
+		F7E2B6BF146750D3009A79A4 /* Yozio.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E3960561465155A0087D86A /* Yozio.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F7E2B6C5146751CE009A79A4 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7E2B6C4146751CE009A79A4 /* Security.framework */; };
+		F7E2B6C7146751F8009A79A4 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7E2B6C6146751F8009A79A4 /* SystemConfiguration.framework */; };
+		F7E2B6C814675209009A79A4 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7E2B6C6146751F8009A79A4 /* SystemConfiguration.framework */; };
+		F7E2B6C91467521F009A79A4 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7E2B6C4146751CE009A79A4 /* Security.framework */; };
+		F7E2B6D0146757E0009A79A4 /* Yozio_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = F7E2B6CF146757E0009A79A4 /* Yozio_Private.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,7 +47,6 @@
 		0E3960571465155A0087D86A /* Yozio.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Yozio.m; sourceTree = "<group>"; };
 		0E39605E1465155A0087D86A /* YozioTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YozioTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E39605F1465155A0087D86A /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
-		0E3960611465155A0087D86A /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		0E3960691465155A0087D86A /* YozioTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "YozioTests-Info.plist"; sourceTree = "<group>"; };
 		0E39606B1465155A0087D86A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		0E39606D1465155A0087D86A /* YozioTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YozioTests.h; sourceTree = "<group>"; };
@@ -54,6 +59,12 @@
 		0E3960A6146517DF0087D86A /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		0E3960A7146517DF0087D86A /* SFHFKeychainUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFHFKeychainUtils.h; sourceTree = "<group>"; };
 		0E3960A8146517DF0087D86A /* SFHFKeychainUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFHFKeychainUtils.m; sourceTree = "<group>"; };
+		F746009D14673E1F00D5B9C4 /* testCases */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = testCases; path = Yozio/testCases; sourceTree = "<group>"; };
+		F7E2B6B514674D97009A79A4 /* libYozio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libYozio.a; path = "../../Library/Developer/Xcode/DerivedData/Yozio-ejxjnsrjokivjgdvwxdostpgklhv/Build/Products/Debug-iphonesimulator/libYozio.a"; sourceTree = "<group>"; };
+		F7E2B6B91467504A009A79A4 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		F7E2B6C4146751CE009A79A4 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		F7E2B6C6146751F8009A79A4 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		F7E2B6CF146757E0009A79A4 /* Yozio_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Yozio_Private.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +72,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F7E2B6C7146751F8009A79A4 /* SystemConfiguration.framework in Frameworks */,
+				F7E2B6C5146751CE009A79A4 /* Security.framework in Frameworks */,
 				0E3960521465155A0087D86A /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -69,10 +82,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F7E2B6C91467521F009A79A4 /* Security.framework in Frameworks */,
+				F7E2B6C814675209009A79A4 /* SystemConfiguration.framework in Frameworks */,
+				F7E2B6BA1467504A009A79A4 /* UIKit.framework in Frameworks */,
+				F7E2B6B814674F7B009A79A4 /* libYozio.a in Frameworks */,
 				0E3960601465155A0087D86A /* SenTestingKit.framework in Frameworks */,
-				0E3960621465155A0087D86A /* UIKit.framework in Frameworks */,
 				0E3960631465155A0087D86A /* Foundation.framework in Frameworks */,
-				0E3960661465155A0087D86A /* libYozio.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,6 +97,8 @@
 		0E3960431465155A0087D86A = {
 			isa = PBXGroup;
 			children = (
+				F7E2B6B514674D97009A79A4 /* libYozio.a */,
+				F746009D14673E1F00D5B9C4 /* testCases */,
 				0E3960531465155A0087D86A /* Yozio */,
 				0E3960671465155A0087D86A /* YozioTests */,
 				0E3960501465155A0087D86A /* Frameworks */,
@@ -101,9 +118,11 @@
 		0E3960501465155A0087D86A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F7E2B6C6146751F8009A79A4 /* SystemConfiguration.framework */,
+				F7E2B6C4146751CE009A79A4 /* Security.framework */,
+				F7E2B6B91467504A009A79A4 /* UIKit.framework */,
 				0E3960511465155A0087D86A /* Foundation.framework */,
 				0E39605F1465155A0087D86A /* SenTestingKit.framework */,
-				0E3960611465155A0087D86A /* UIKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -115,6 +134,7 @@
 				0E3960561465155A0087D86A /* Yozio.h */,
 				0E3960571465155A0087D86A /* Yozio.m */,
 				0E3960541465155A0087D86A /* Supporting Files */,
+				F7E2B6CF146757E0009A79A4 /* Yozio_Private.h */,
 			);
 			path = Yozio;
 			sourceTree = "<group>";
@@ -176,9 +196,11 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F7E2B6BF146750D3009A79A4 /* Yozio.h in Headers */,
 				0E3960A9146517DF0087D86A /* JSONKit.h in Headers */,
 				0E3960AB146517DF0087D86A /* Reachability.h in Headers */,
 				0E3960AD146517DF0087D86A /* SFHFKeychainUtils.h in Headers */,
+				F7E2B6D0146757E0009A79A4 /* Yozio_Private.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -364,6 +386,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Yozio/Yozio-Prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -377,6 +400,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Yozio/Yozio-Prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -394,6 +418,11 @@
 				GCC_PREFIX_HEADER = "Yozio/Yozio-Prefix.pch";
 				INFOPLIST_FILE = "YozioTests/YozioTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../Library/Developer/Xcode/DerivedData/Yozio-ejxjnsrjokivjgdvwxdostpgklhv/Build/Products/Debug-iphonesimulator\"",
+				);
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = octest;
 			};
@@ -410,6 +439,11 @@
 				GCC_PREFIX_HEADER = "Yozio/Yozio-Prefix.pch";
 				INFOPLIST_FILE = "YozioTests/YozioTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../Library/Developer/Xcode/DerivedData/Yozio-ejxjnsrjokivjgdvwxdostpgklhv/Build/Products/Debug-iphonesimulator\"",
+				);
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = octest;
 			};
