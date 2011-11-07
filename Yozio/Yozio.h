@@ -24,7 +24,7 @@
  *              userId:@"MyUserId"
  *              env:@"production"
  *              appVersion:@"1.0.1"
- *              exceptionHandler:@selector(myExceptionHandler)];
+ *              exceptionHandler:&myExceptionHandler];
  *
  *     If you already set a global uncaught exception (NSSetUncaughtExceptionHandler), remove that
  *     code and pass your exception handler into the configure method.
