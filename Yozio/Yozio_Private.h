@@ -1,9 +1,5 @@
 //
 //  Yozio_Private.h
-//  Yozio
-//
-//  Created by Jimmy Tang on 11/6/11.
-//  Copyright (c) 2011 University of California at Berkeley. All rights reserved.
 //
 
 // Private method declarations.
