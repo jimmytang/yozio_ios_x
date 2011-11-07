@@ -165,15 +165,14 @@
  * Convenience method for instrumenting caught exceptions.
  * Calling this exception is the equivalent of calling the error method with:
  *
- *    [Yozio error:exceptionName message:exceptionMessageAndStackTrace category:category]
+ *    [Yozio error:exceptionName message:exceptionReason category:category]
  *
  * @param exception The caught exception to instrument.
  * @param category The category to group this event under.
  *
  * @example @try {
- *            @throw [NSException exceptionWithName:@"MyException"
- *                                           reason:@"This is a test exception"
- *                                         userInfo:nil];
+ *            [NSException raise:@"MyException"
+ *                        reason:@"Some exception reason"];
  *          }
  *          @catch (id theException) {
  *            [Yozio exception:theException category:@"MyCategory"];

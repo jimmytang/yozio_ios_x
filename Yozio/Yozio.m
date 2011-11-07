@@ -216,11 +216,9 @@ static Yozio *instance = nil;
 
 + (void)exception:(NSException *)exception category:(NSString *)category
 {
-  NSString *name = [exception name];
-  NSString *reason = [exception reason];
-  NSArray *stack = [[exception userInfo] valueForKey:UNCAUGHT_EXCEPTION_HANDLER_ADDRESSES_KEY];
-  NSString *message = [NSString stringWithFormat:@"%@\n%@", reason, stack];
-  [Yozio error:name message:message category:category];
+  [Yozio error:[exception name]
+       message:[exception reason]
+      category:category];
 }
 
 + (void)collect:(NSString *)key value:(NSString *)value category:(NSString *)category
