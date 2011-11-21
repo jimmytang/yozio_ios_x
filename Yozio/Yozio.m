@@ -261,13 +261,15 @@ static Yozio *instance = nil;
                                   [NSNumber numberWithInteger:dataCount], D_ID,
                                   nil];
     [self.dataQueue addObject:d];
+    [Yozio log:@"Added: %@", d];
   }
+
+  [Yozio log:@"Added: %@, %@, %@, %@", type, key, value, category];
   [self checkDataQueueSize];
 }
 
 - (void)checkDataQueueSize
 {
-  [Yozio log:@"checkDataQueueSize"];
   [Yozio log:@"data queue size: %i",[self.dataQueue count]];
   if ([self.dataQueue count] > 0 && [self.dataQueue count] % FLUSH_DATA_COUNT == 0) {
     [self doFlush]; 
@@ -332,6 +334,8 @@ static Yozio *instance = nil;
   [Yozio log:@"self.dataQueue: %@", self.dataQueue];
   [Yozio log:@"dataToSend: %@", self.dataToSend];
   [Yozio log:@"payload: %@", payload];
+  NSLog(@"%@",[payload JSONString]);
+  
   
   return [payload JSONString];
 }
