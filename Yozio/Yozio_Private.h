@@ -12,51 +12,51 @@
 #define UNCAUGHT_EXCEPTION_CATEGORY @"uncaught"
 
 // Set to true to show log messages.
-#define YOZIO_LOG true
+#define YOZIO_LOG false
 
 // Payload keys.
-#define P_ENVIRONMENT @"env"
-#define P_DIGEST @"digest"
-#define P_DEVICE_ID @"deviceId"
-#define P_HARDWARE @"hardware"
+#define P_ENVIRONMENT @"e"
+#define P_DIGEST @"di"
+#define P_DEVICE_ID @"de"
+#define P_HARDWARE @"h"
 #define P_OPERATING_SYSTEM @"os"
-#define P_SCHEMA_VERSION @"schemaVersion"
-#define P_COUNTRY @"country"
-#define P_LANGUAGE @"language"
-#define P_TIMEZONE @"timezone"
-#define P_COUNT @"count"
-#define P_PAYLOAD @"payload"
+#define P_SCHEMA_VERSION @"s"
+#define P_COUNTRY @"c"
+#define P_LANGUAGE @"l"
+#define P_TIMEZONE @"t"
+#define P_COUNT @"ct"
+#define P_PAYLOAD @"p"
 
 // Payload data entry keys.
-#define D_TYPE @"type"
-#define D_KEY @"key"
-#define D_VALUE @"value"
-#define D_CATEGORY @"category"
-#define D_DEVICE_ORIENTATION @"orientation"
-#define D_UI_ORIENTATION @"uiOrientation"
-#define D_USER_ID @"userId"
-#define D_APP_VERSION @"appVersion"
-#define D_SESSION_ID @"sessionId"
-#define D_EXPERIMENTS @"experiments"
-#define D_TIMESTAMP @"timestamp"
+#define D_TYPE @"t"
+#define D_KEY @"k"
+#define D_VALUE @"v"
+#define D_CATEGORY @"c"
+#define D_DEVICE_ORIENTATION @"o"
+#define D_UI_ORIENTATION @"uo"
+#define D_USER_ID @"u"
+#define D_APP_VERSION @"a"
+#define D_SESSION_ID @"s"
+#define D_EXPERIMENTS @"e"
+#define D_TIMESTAMP @"ts"
 #define D_ID @"id"
 
 // Instrumentation entry types.
-#define T_TIMER @"timer"
-#define T_FUNNEL @"funnel"
-#define T_REVENUE @"revenue"
-#define T_ACTION @"action"
-#define T_ERROR @"error"
-#define T_COLLECT @"misc"
+#define T_TIMER @"t"
+#define T_FUNNEL @"f"
+#define T_REVENUE @"r"
+#define T_ACTION @"a"
+#define T_ERROR @"e"
+#define T_COLLECT @"m"
 
 // Orientations strings.
-#define ORIENT_PORTRAIT @"portrait"
-#define ORIENT_PORTRAIT_UPSIDE_DOWN @"flippedPortrait"
-#define ORIENT_LANDSCAPE_LEFT @"landscapeLeft"
-#define ORIENT_LANDSCAPE_RIGHT @"landscapeRight"
-#define ORIENT_FACE_UP @"faceUp"
-#define ORIENT_FACE_DOWN @"faceDown"
-#define ORIENT_UNKNOWN @"unknown"
+#define ORIENT_PORTRAIT @"p"
+#define ORIENT_PORTRAIT_UPSIDE_DOWN @"pu"
+#define ORIENT_LANDSCAPE_LEFT @"ll"
+#define ORIENT_LANDSCAPE_RIGHT @"lr"
+#define ORIENT_FACE_UP @"fu"
+#define ORIENT_FACE_DOWN @"fd"
+#define ORIENT_UNKNOWN @"u"
 
 // TODO(jt): make these numbers configurable instead of macros
 // The number of items in the queue before forcing a flush.
@@ -97,6 +97,9 @@
   NSMutableDictionary *timers;
   NSMutableData *receivedData;
   NSURLConnection *connection;
+  
+  // Cached variables.
+  NSDateFormatter *dateFormatter;
 }
 
 // User variables that need to be set by user.
@@ -119,6 +122,8 @@
 @property(nonatomic, retain) NSMutableDictionary *timers;
 @property(nonatomic, retain) NSMutableData *receivedData;
 @property(nonatomic, retain) NSURLConnection *connection;
+// Cached variables.
+@property(nonatomic, retain) NSDateFormatter *dateFormatter;
 
 // Notification observer methods.
 - (void)applicationDidEnterBackground:(NSNotificationCenter *)notification;
