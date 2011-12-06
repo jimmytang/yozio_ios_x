@@ -166,6 +166,12 @@ static Yozio *instance = nil;
   [instance doFlush];
 }
 
++ (NSDictionary *)experimentData:(NSString *)experimentName
+{
+  // TODO(jt): implement me
+  return NULL;
+}
+
 
 /*******************************************
  * Notification observer methods.
@@ -355,7 +361,7 @@ static Yozio *instance = nil;
 - (void)saveUnsentData
 {
   [Yozio log:@"saveUnsentData"];
-  if (![NSKeyedArchiver archiveRootObject:self.dataQueue toFile:FILE_PATH])  {
+  if (![NSKeyedArchiver archiveRootObject:self.dataQueue toFile:DATA_QUEUE_FILE]) {
     [Yozio log:@"Unable to archive data!"];
   }
 }
@@ -363,7 +369,26 @@ static Yozio *instance = nil;
 - (void)loadUnsentData
 {
   [Yozio log:@"loadUnsentData"];
-  self.dataQueue = [NSKeyedUnarchiver unarchiveObjectWithFile:FILE_PATH];
+  self.dataQueue = [NSKeyedUnarchiver unarchiveObjectWithFile:DATA_QUEUE_FILE];
+  if (!self.dataQueue)  {
+    self.dataQueue = [NSMutableArray array];    
+  }
+}
+
+- (void)saveExperimentData
+{
+  [Yozio log:@"saveExperimentData"];
+  // TODO(jt): save experiment variable instead of deadQueue
+  if (![NSKeyedArchiver archiveRootObject:self.dataQueue toFile:EXPERIMENT_FILE]) {
+    [Yozio log:@"Unable to save experiment data!"];
+  }
+}
+
+- (void)loadExperimentData
+{
+  [Yozio log:@"loadExperimentData"];
+  // TODO(jt): load into experiment variable insetad of dataQueue
+  self.dataQueue = [NSKeyedUnarchiver unarchiveObjectWithFile:EXPERIMENT_FILE];
   if (!self.dataQueue)  {
     self.dataQueue = [NSMutableArray array];    
   }

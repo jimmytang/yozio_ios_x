@@ -72,7 +72,8 @@
 // Time interval before automatically flushing the data queue.
 #define FLUSH_INTERVAL_SEC 15
 
-#define FILE_PATH [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
+#define DATA_QUEUE_FILE [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
+#define EXPERIMENT_FILE [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_ExperimentData.plist"]
 #define UUID_KEYCHAIN_USERNAME @"UUID"
 #define KEYCHAIN_SERVICE @"yozio"
 
@@ -141,6 +142,8 @@
 - (NSString *)timeStampString;
 - (void)saveUnsentData;
 - (void)loadUnsentData;
+- (void)saveExperimentData;
+- (void)loadExperimentData;
 - (void)connectionComplete;
 - (NSString *)loadOrCreateDeviceId;
 - (BOOL)storeDeviceId:(NSString *)uuid;

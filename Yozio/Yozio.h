@@ -197,6 +197,12 @@
  */
 + (void)flush;
 
+
+/**
+ * TODO(jt): document this
+ */
++ (NSDictionary *)experimentData:(NSString *)experimentName;
+
 @end
 
 #endif /* ! __YOZIO__ */
