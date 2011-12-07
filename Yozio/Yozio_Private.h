@@ -12,7 +12,7 @@
 #define UNCAUGHT_EXCEPTION_CATEGORY @"uncaught"
 
 // Set to true to show log messages.
-#define YOZIO_LOG false
+#define YOZIO_LOG true
 
 // Payload keys.
 #define P_ENVIRONMENT @"e"
@@ -96,8 +96,6 @@
   NSArray *dataToSend;
   NSInteger dataCount;
   NSMutableDictionary *timers;
-  NSMutableData *receivedData;
-  NSURLConnection *connection;
   
   // Cached variables.
   NSDateFormatter *dateFormatter;
@@ -121,8 +119,6 @@
 @property(nonatomic, retain) NSArray *dataToSend;
 @property(nonatomic, assign) NSInteger dataCount;
 @property(nonatomic, retain) NSMutableDictionary *timers;
-@property(nonatomic, retain) NSMutableData *receivedData;
-@property(nonatomic, retain) NSURLConnection *connection;
 // Cached variables.
 @property(nonatomic, retain) NSDateFormatter *dateFormatter;
 
@@ -130,11 +126,6 @@
 - (void)applicationDidEnterBackground:(NSNotificationCenter *)notification;
 - (void)applicationWillEnterForeground:(NSNotificationCenter *)notification;
 - (void)applicationWillTerminate:(NSNotificationCenter *)notification;
-// NSURLConnection delegate methods.
-- (void)connection:(NSURLConnection *) didReceiveResponse:(NSHTTPURLResponse *) response;
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data;
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error;
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection;
 // Helper methods.
 - (void)collect:(NSString *)type
             key:(NSString *)key
@@ -149,7 +140,6 @@
 - (void)loadUnsentData;
 - (void)saveExperimentData;
 - (void)loadExperimentData;
-- (void)connectionComplete;
 - (NSString *)loadOrCreateDeviceId;
 - (BOOL)storeDeviceId:(NSString *)uuid;
 - (NSString *)makeUUID;

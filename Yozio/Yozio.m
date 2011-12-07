@@ -2,14 +2,13 @@
 //  Copyright 2011 Yozio. All rights reserved.
 //
 
-#import "Yozio_Private.h"
-#import "JSONKit.h"
-#import "UncaughtExceptionHandler.h"
-#import "SFHFKeychainUtils.h"
 #import <UIKit/UIKit.h>
+#import "JSONKit.h"
+#import "Seriously.h"
+#import "SFHFKeychainUtils.h"
+#import "UncaughtExceptionHandler.h"
+#import "Yozio_Private.h"
 
-
-// Private method declarations.
 
 @implementation Yozio
 
@@ -28,13 +27,17 @@
 @synthesize dataToSend;
 @synthesize dataCount;
 @synthesize timers;
-@synthesize receivedData;
-@synthesize connection;
 @synthesize dateFormatter;
+
+
+/*******************************************
+ * Initialization.
+ *******************************************/
 
 static Yozio *instance = nil; 
 
-+ (void)initialize {
++ (void)initialize
+{
   if (instance == nil) {
     instance = [[self alloc] init];
   }
@@ -46,10 +49,12 @@ static Yozio *instance = nil;
   return self;
 }
 
+// Used for testing.
 + (Yozio *)getInstance
 {
   return instance;
 }
+
 
 /*******************************************
  * Public API.
@@ -85,9 +90,11 @@ static Yozio *instance = nil;
   // Cached variables.
   [instance loadOrCreateDeviceId];
   NSTimeZone *gmt = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
-  instance.dateFormatter = [[NSDateFormatter alloc] init];
-  instance.dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss SSS";
+  NSDateFormatter *tmpDateFormatter = [[NSDateFormatter alloc] init];
+  instance.dateFormatter = tmpDateFormatter;
+  [instance.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss SSS"];
   [instance.dateFormatter setTimeZone:gmt];
+  [tmpDateFormatter release];
   
   InstallUncaughtExceptionHandler(exceptionHandler);
 }
@@ -206,47 +213,6 @@ static Yozio *instance = nil;
 
 
 /*******************************************
- * NSURLConnection delegate methods.
- *******************************************/
-
-- (void)connection:(NSURLConnection *) didReceiveResponse:(NSHTTPURLResponse *) response
-{
-  [Yozio log:@"didReceiveResponse"];
-  NSInteger statusCode = [response statusCode];
-  if (statusCode == 200) {
-    [Yozio log:@"200: OK"];
-    self.receivedData = [NSMutableData data];
-  } else {
-    [Yozio log:@"Bad response %d", statusCode];
-  }
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
-  [Yozio log:@"didReceiveData"];
-  [Yozio log:@"new data: %@", data];
-  [self.receivedData appendData:data];
-  [Yozio log:@"received Data: %@", self.receivedData];
-}
-
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
-{
-  [Yozio log:@"didFailWithError"];
-  [self connectionComplete];
-}
-
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection
-{
-  [Yozio log:@"connectionDidFinishLoading"];
-  [Yozio log:@"receivedData: %@", self.receivedData];
-  [Yozio log:@"Before remove: %@", self.dataQueue];
-  [self.dataQueue removeObjectsInArray:self.dataToSend];
-  [Yozio log:@"After remove: %@", self.dataQueue];
-  [self connectionComplete];
-}
-
-
-/*******************************************
  * Helper methods.
  *******************************************/
 
@@ -292,7 +258,7 @@ static Yozio *instance = nil;
 
 - (void)doFlush
 {
-  if ([self.dataQueue count] == 0 || self.connection != nil) {
+  if ([self.dataQueue count] == 0 || [self.dataToSend count] > 0) {
     // No events or already pushing data.
     [Yozio log:@"No data to flush or already flushing."];
     return;
@@ -301,24 +267,30 @@ static Yozio *instance = nil;
   } else {
     self.dataToSend = [NSArray arrayWithArray:self.dataQueue];
   }
-  
-  [Yozio log:@"flushing"];
-  
-  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-  
+  [Yozio log:@"Flushing..."];
   NSString *dataStr = [self buildPayload];
   NSString *urlParams = [NSString stringWithFormat:@"data=%@", dataStr];
   NSString *escapedUrlParams =
       [urlParams stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
   NSString *urlString = [NSString stringWithFormat:@"%@/%@", self._serverUrl, escapedUrlParams];
-  NSURL *url = [NSURL URLWithString:urlString];
-	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-	[request setHTTPMethod:@"GET"];
-  
   [Yozio log:@"Final get request url: %@", urlString];
   
-	self.connection = [NSURLConnection connectionWithRequest:request delegate:self];
-	[self.connection start];
+  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+  [Seriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+    if (error) {
+      [Yozio log:@"Flush error %@", error];
+    } else {
+      if ([response statusCode] == 200) {
+        [Yozio log:@"Before remove: %@", self.dataQueue];
+        [self.dataQueue removeObjectsInArray:self.dataToSend];
+        [Yozio log:@"After remove: %@", self.dataQueue];
+        //  TODO(jt): stop background task if running in background
+      }
+    }
+    [Yozio log:@"flush request complete"];
+    self.dataToSend = nil;
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+  }];
 }
 
 - (NSString *)buildPayload
@@ -347,8 +319,6 @@ static Yozio *instance = nil;
   [payload setValue:[NSNumber numberWithInteger:[self.dataToSend count]] forKey:P_COUNT];
   [payload setValue:self.dataToSend forKey:P_PAYLOAD];
   
-  [Yozio log:@"self.dataQueue: %@", self.dataQueue];
-  [Yozio log:@"dataToSend: %@", self.dataToSend];
   [Yozio log:@"payload: %@", payload];
   
   return [payload JSONString];
@@ -394,15 +364,6 @@ static Yozio *instance = nil;
   if (!self.dataQueue)  {
     self.dataQueue = [NSMutableArray array];    
   }
-}
-
-- (void)connectionComplete
-{
-  self.receivedData = nil;
-  self.dataToSend = nil;
-  self.connection = nil;
-  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-  //  TODO(jt): stop background task if running in background
 }
 
 /**
