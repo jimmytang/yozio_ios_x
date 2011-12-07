@@ -30,6 +30,7 @@
 @synthesize timers;
 @synthesize receivedData;
 @synthesize connection;
+@synthesize dateFormatter;
 
 static Yozio *instance = nil; 
 
@@ -80,6 +81,13 @@ static Yozio *instance = nil;
   instance.dataQueue = [NSMutableArray array];
   instance.dataCount = 0;
   instance.timers = [NSMutableDictionary dictionary];
+  
+  // Cached variables.
+  [instance loadOrCreateDeviceId];
+  NSTimeZone *gmt = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+  instance.dateFormatter = [[NSDateFormatter alloc] init];
+  instance.dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss SSS";
+  [instance.dateFormatter setTimeZone:gmt];
   
   InstallUncaughtExceptionHandler(exceptionHandler);
 }
@@ -320,6 +328,7 @@ static Yozio *instance = nil;
   NSLocale *locale = [NSLocale currentLocale];
   NSString *countryCode = [locale objectForKey: NSLocaleCountryCode];
   NSString *countryName = [locale displayNameForKey:NSLocaleCountryCode value:countryCode];
+  // TODO(jt): cache timezone calculation (assume users will be in same time zone for each session)
   [NSTimeZone resetSystemTimeZone];
   NSInteger timezoneOffset = [[NSTimeZone systemTimeZone] secondsFromGMT]/3600;
   NSNumber *timezone = [NSNumber numberWithInteger:timezoneOffset];
@@ -332,6 +341,7 @@ static Yozio *instance = nil;
   [payload setValue:self.os forKey:P_OPERATING_SYSTEM];
   [payload setValue:self.schemaVersion forKey:P_SCHEMA_VERSION];
   [payload setValue:countryName forKey:P_COUNTRY];
+  // TODO(jt): cache language
   [payload setValue:[[NSLocale preferredLanguages] objectAtIndex:0] forKey:P_LANGUAGE];
   [payload setValue:timezone forKey:P_TIMEZONE];
   [payload setValue:[NSNumber numberWithInteger:[self.dataToSend count]] forKey:P_COUNT];
@@ -340,21 +350,13 @@ static Yozio *instance = nil;
   [Yozio log:@"self.dataQueue: %@", self.dataQueue];
   [Yozio log:@"dataToSend: %@", self.dataToSend];
   [Yozio log:@"payload: %@", payload];
-  NSLog(@"%@",[payload JSONString]);
-  
   
   return [payload JSONString];
 }
 
 - (NSString *)timeStampString
 {
-  NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-  dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss SSS";
-  
-  NSTimeZone *gmt = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
-  [dateFormatter setTimeZone:gmt];
   NSString *timeStamp = [dateFormatter stringFromDate:[NSDate date]];
-  [dateFormatter release];
   return timeStamp;
 }
 
@@ -414,14 +416,16 @@ static Yozio *instance = nil;
   if (self.deviceId != nil) {
     return self.deviceId;
   }
+  
   NSError *loadError = nil;
   NSString *uuid = [SFHFKeychainUtils getPasswordForUsername:UUID_KEYCHAIN_USERNAME
                                               andServiceName:KEYCHAIN_SERVICE
                                                        error:&loadError];
   NSInteger loadErrorCode = [loadError code];
-  if (loadErrorCode == errSecItemNotFound) {
+  if (loadErrorCode == errSecItemNotFound || uuid == nil) {
     // No deviceId stored in keychain yet.
     uuid = [self makeUUID];
+    [Yozio log:@"Generated device id: %@", uuid];
     if (![self storeDeviceId:uuid]) {
       return nil;
     }
