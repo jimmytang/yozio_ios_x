@@ -27,6 +27,7 @@
 @synthesize dataToSend;
 @synthesize dataCount;
 @synthesize timers;
+@synthesize experimentsData;
 @synthesize dateFormatter;
 
 
@@ -55,6 +56,18 @@ static Yozio *instance = nil;
   return instance;
 }
 
++ (void)log:(NSString *)format, ...
+{
+  if (YOZIO_LOG) {
+    va_list argList;
+    va_start(argList, format);
+    NSString *formatStr = [[NSString alloc] initWithFormat:format arguments:argList];
+    va_end(argList);
+    NSLog(@"%@", formatStr);
+    [formatStr release];
+  }
+}
+
 
 /*******************************************
  * Public API.
@@ -76,7 +89,6 @@ static Yozio *instance = nil;
   instance.os = [device systemVersion];
   instance.sessionId = [instance makeUUID];
   instance.schemaVersion = @"";
-  instance.experiments = @"";
   
   instance.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_INTERVAL_SEC
                                                      target:instance
@@ -86,6 +98,12 @@ static Yozio *instance = nil;
   instance.dataQueue = [NSMutableArray array];
   instance.dataCount = 0;
   instance.timers = [NSMutableDictionary dictionary];
+  
+  // Initialize experiments map.
+  [instance loadExperimentsData];
+  [instance updateExperimentsData];
+  // TODO(jt): create experiments string experimentName:variation,...
+  instance.experiments = @"";
   
   // Cached variables.
   [instance loadOrCreateDeviceId];
@@ -183,7 +201,10 @@ static Yozio *instance = nil;
 
 + (NSDictionary *)experimentData:(NSString *)experimentName
 {
-  // TODO(jt): implement me
+  NSDictionary *expData = [instance.experimentsData objectForKey:experimentName];
+  if (expData != NULL) {
+    return [expData objectForKey:EXP_CONFIG];
+  }
   return NULL;
 }
 
@@ -209,11 +230,12 @@ static Yozio *instance = nil;
 - (void)applicationWillTerminate:(NSNotificationCenter *)notification
 {
   [self saveUnsentData];
+  [self saveExperimentsData];
 }
 
 
 /*******************************************
- * Helper methods.
+ * Data collection helper methods.
  *******************************************/
 
 - (void)collect:(NSString *)type
@@ -224,8 +246,7 @@ static Yozio *instance = nil;
 {
   // Increment dataCount even if we don't add to data queue so we know how much data we missed.
   dataCount++;
-  if ([self.dataQueue count] < maxQueue)
-  {
+  if ([self.dataQueue count] < maxQueue) {
     NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                   type, D_TYPE,
                                   key, D_KEY,
@@ -243,7 +264,6 @@ static Yozio *instance = nil;
     [self.dataQueue addObject:d];
     [Yozio log:@"Added: %@", d];
   }
-
   [Yozio log:@"Added: %@, %@, %@, %@", type, key, value, category];
   [self checkDataQueueSize];
 }
@@ -320,7 +340,6 @@ static Yozio *instance = nil;
   [payload setValue:self.dataToSend forKey:P_PAYLOAD];
   
   [Yozio log:@"payload: %@", payload];
-  
   return [payload JSONString];
 }
 
@@ -342,25 +361,6 @@ static Yozio *instance = nil;
 {
   [Yozio log:@"loadUnsentData"];
   self.dataQueue = [NSKeyedUnarchiver unarchiveObjectWithFile:DATA_QUEUE_FILE];
-  if (!self.dataQueue)  {
-    self.dataQueue = [NSMutableArray array];    
-  }
-}
-
-- (void)saveExperimentData
-{
-  [Yozio log:@"saveExperimentData"];
-  // TODO(jt): save experiment variable instead of deadQueue
-  if (![NSKeyedArchiver archiveRootObject:self.dataQueue toFile:EXPERIMENT_FILE]) {
-    [Yozio log:@"Unable to save experiment data!"];
-  }
-}
-
-- (void)loadExperimentData
-{
-  [Yozio log:@"loadExperimentData"];
-  // TODO(jt): load into experiment variable insetad of dataQueue
-  self.dataQueue = [NSKeyedUnarchiver unarchiveObjectWithFile:EXPERIMENT_FILE];
   if (!self.dataQueue)  {
     self.dataQueue = [NSMutableArray array];    
   }
@@ -462,16 +462,102 @@ static Yozio *instance = nil;
   }
 }
 
-+ (void)log:(NSString *)format, ...
+
+/*******************************************
+ * Experiments related helper methods.
+ *******************************************/
+
+- (void)saveExperimentsData
 {
-  if (YOZIO_LOG) {
-    va_list argList;
-    va_start(argList, format);
-    NSString *formatStr = [[NSString alloc] initWithFormat:format arguments:argList];
-    va_end(argList);
-    NSLog(@"%@", formatStr);
-    [formatStr release];
+  [Yozio log:@"saveExperimentsData"];
+  if (![NSKeyedArchiver archiveRootObject:self.experimentsData toFile:EXPERIMENT_FILE]) {
+    [Yozio log:@"Unable to save experiment data!"];
   }
+}
+
+- (void)loadExperimentsData
+{
+  [Yozio log:@"loadExperimentsData"];
+  self.experimentsData = [NSKeyedUnarchiver unarchiveObjectWithFile:EXPERIMENT_FILE];
+  if (!self.experimentsData)  {
+    self.experimentsData = [NSMutableDictionary dictionary];
+  }
+}
+
+/**
+ * Updates self.experimentsData with data from server.
+ * Deletes experiments that have expired.
+ * Adds 'startDate' to newly downloaded length based experiments.
+ */
+- (void)updateExperimentsData
+{
+  NSString *urlParams = @""; // TODO(jt)
+  NSString *escapedUrlParams =
+  [urlParams stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+  NSString *urlString = [NSString stringWithFormat:@"%@/%@", self._serverUrl, escapedUrlParams];
+  [Yozio log:@"Final getExperimentsData request url: %@", urlString];
+  
+  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+  [Seriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+    if (error) {
+      [Yozio log:@"getExperimentsData error %@", error];
+    } else {
+      if ([response statusCode] == 200) {
+        NSDictionary *newExperimentsData = body;
+        [Yozio log:@"experimentsData before update: %@", self.experimentsData];
+        for (id key in newExperimentsData) {
+          // Ensure that new data is mutable.
+          // TODO(jt): how to end experiments early?
+          NSDictionary *expData = [newExperimentsData objectForKey:key];
+          NSMutableDictionary *mutableExpData =
+          [NSMutableDictionary dictionaryWithDictionary:expData];
+          [self.experimentsData setObject:mutableExpData forKey:key];
+        }
+        [Yozio log:@"experimentsData after update: %@", self.experimentsData];
+      }
+    }
+    [Yozio log:@"getExperimentsData request complete"];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+    
+    // Loop through all experiments and remove ones that are expired.
+    NSDate *curDate = [NSDate date];
+    NSDateFormatter *expDateFormatter = [[NSDateFormatter alloc] init];
+    // TODO(jt): finalize endDate string format
+    [expDateFormatter setDateFormat:@"EE, d LLLL yyyy HH:mm:ss Z"];
+    NSMutableArray* toDelete = [NSMutableArray array];
+    for (id key in self.experimentsData) {
+      NSMutableDictionary *expData = [self.experimentsData objectForKey:key];
+      NSString *endDateStr = [expData objectForKey:EXP_END_DATE];
+      if (endDateStr != NULL) {
+        // Experiment expires on a specific date.
+        NSDate *endDate = [expDateFormatter dateFromString:endDateStr];
+        if ([curDate laterDate:endDate] == curDate) {
+          [toDelete addObject:key];
+          continue;
+        }
+      } else {
+        // Experiment expires after a certain length.
+        NSDate *startDate = [expData objectForKey:EXP_START_DATE];
+        if (startDate != NULL) {
+          NSNumber *expLen = [expData objectForKey:EXP_LENGTH];
+          NSTimeInterval lenOffset = [expLen integerValue] * 24 * 3600;
+          NSDate *lenEndDate = [startDate dateByAddingTimeInterval:lenOffset];
+          if ([curDate laterDate:lenEndDate] == curDate) {
+            [toDelete addObject:key];
+            continue;
+          }
+        } else {
+          // Newly downloaded experiment. Need to set startDate.
+          [expData setObject:curDate forKey:EXP_START_DATE];
+        }
+      }
+    }
+    [expDateFormatter release];
+    // Delete expired experiments.
+    for (id key in toDelete) {
+      [self.experimentsData removeObjectForKey:key];
+    }
+  }];
 }
 
 @end
