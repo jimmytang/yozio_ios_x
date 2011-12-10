@@ -510,10 +510,16 @@ static Yozio *instance = nil;
           // Ensure that new data is mutable.
           NSDictionary *expData = [newExperimentsData objectForKey:key];
           NSMutableDictionary *mutableExpData =
-            [NSMutableDictionary dictionaryWithDictionary:expData];
-          // Preserve startDate.
-          NSDate *startDate = [[self.experimentsData objectForKey:key] objectForKey:EXP_START_DATE];
-          if (startDate != NULL) {
+              [NSMutableDictionary dictionaryWithDictionary:expData];
+          // Set start date if experiment is length based.
+          NSNumber *expLen = [mutableExpData objectForKey:EXP_LENGTH];
+          if (expLen != NULL) {
+            // Preserve previous startDate value if it exists.
+            NSDate *startDate =
+                [[self.experimentsData objectForKey:key] objectForKey:EXP_START_DATE];
+            if (startDate == NULL) {
+              startDate = [NSDate date];
+            }
             [mutableExpData setObject:startDate forKey:EXP_START_DATE];
           }
           // Replace object with mutable version.
@@ -525,45 +531,41 @@ static Yozio *instance = nil;
     }
     [Yozio log:@"getExperimentsData request complete"];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-    
-    // Loop through all experiments and remove ones that are expired.
-    NSDate *curDate = [NSDate date];
-    NSDateFormatter *expDateFormatter = [[NSDateFormatter alloc] init];
-    [expDateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-    NSMutableArray* toDelete = [NSMutableArray array];
-    for (id key in self.experimentsData) {
-      NSMutableDictionary *expData = [self.experimentsData objectForKey:key];
-      NSString *endDateStr = [expData objectForKey:EXP_END_DATE];
-      if (endDateStr != NULL) {
-        // Experiment expires on a specific date.
-        NSDate *endDate = [expDateFormatter dateFromString:endDateStr];
-        if ([curDate laterDate:endDate] == curDate) {
-          [toDelete addObject:key];
-          continue;
-        }
-      } else {
-        // Experiment expires after a certain length.
-        NSDate *startDate = [expData objectForKey:EXP_START_DATE];
-        if (startDate != NULL) {
-          NSNumber *expLen = [expData objectForKey:EXP_LENGTH];
-          NSTimeInterval lenOffset = [expLen integerValue] * 24 * 3600;
-          NSDate *lenEndDate = [startDate dateByAddingTimeInterval:lenOffset];
-          if ([curDate laterDate:lenEndDate] == curDate) {
-            [toDelete addObject:key];
-            continue;
-          }
-        } else {
-          // Newly downloaded experiment. Need to set startDate.
-          [expData setObject:curDate forKey:EXP_START_DATE];
-        }
+    [self removeExpiredExperiments];
+  }];
+}
+
+- (void)removeExpiredExperiments
+{
+  NSDate *curDate = [NSDate date];
+  NSDateFormatter *expDateFormatter = [[NSDateFormatter alloc] init];
+  [expDateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+  NSMutableArray* toDelete = [NSMutableArray array];
+  for (id key in self.experimentsData) {
+    NSMutableDictionary *expData = [self.experimentsData objectForKey:key];
+    NSString *endDateStr = [expData objectForKey:EXP_END_DATE];
+    if (endDateStr != NULL) {
+      // Experiment expires on a specific date.
+      NSDate *endDate = [expDateFormatter dateFromString:endDateStr];
+      if ([curDate laterDate:endDate] == curDate) {
+        [toDelete addObject:key];
+      }
+    } else {
+      // Experiment expires after a certain length.
+      NSDate *startDate = [expData objectForKey:EXP_START_DATE];
+      NSNumber *expLen = [expData objectForKey:EXP_LENGTH];
+      NSTimeInterval lenOffset = [expLen integerValue] * 24 * 3600;
+      NSDate *lenEndDate = [startDate dateByAddingTimeInterval:lenOffset];
+      if ([curDate laterDate:lenEndDate] == curDate) {
+        [toDelete addObject:key];
       }
     }
-    [expDateFormatter release];
-    // Delete expired experiments.
-    for (id key in toDelete) {
-      [self.experimentsData removeObjectForKey:key];
-    }
-  }];
+  }
+  [expDateFormatter release];
+  // Delete expired experiments.
+  for (id key in toDelete) {
+    [self.experimentsData removeObjectForKey:key];
+  }
 }
 
 @end

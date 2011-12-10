@@ -130,6 +130,8 @@
 // Cached variables.
 @property(nonatomic, retain) NSDateFormatter *dateFormatter;
 
++ (Yozio *)getInstance; // Used for testing.
++ (void)log:(NSString *)format, ...;
 // Notification observer methods.
 - (void)applicationDidEnterBackground:(NSNotificationCenter *)notification;
 - (void)applicationWillEnterForeground:(NSNotificationCenter *)notification;
@@ -146,16 +148,15 @@
 - (NSString *)timeStampString;
 - (void)saveUnsentData;
 - (void)loadUnsentData;
-- (void)saveExperimentsData;
-- (void)loadExperimentsData;
-- (void)updateExperimentsData;
 - (NSString *)loadOrCreateDeviceId;
 - (BOOL)storeDeviceId:(NSString *)uuid;
 - (NSString *)makeUUID;
 - (NSString *)deviceOrientation;
 - (NSString *)uiOrientation;
-+ (void)log:(NSString *)format, ...;
-+ (Yozio *)getInstance; // Used for testing.
+- (void)saveExperimentsData;
+- (void)loadExperimentsData;
+- (void)updateExperimentsData;
+- (void)removeExpiredExperiments;
 
 @end
 
