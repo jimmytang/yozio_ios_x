@@ -503,16 +503,23 @@ static Yozio *instance = nil;
       [Yozio log:@"getExperimentsData error %@", error];
     } else {
       if ([response statusCode] == 200) {
-        NSDictionary *newExperimentsData = body;
         [Yozio log:@"experimentsData before update: %@", self.experimentsData];
+        NSMutableDictionary *newExperimentsData =
+            [NSMutableDictionary dictionaryWithDictionary:body];
         for (id key in newExperimentsData) {
           // Ensure that new data is mutable.
-          // TODO(jt): how to end experiments early?
           NSDictionary *expData = [newExperimentsData objectForKey:key];
           NSMutableDictionary *mutableExpData =
-          [NSMutableDictionary dictionaryWithDictionary:expData];
-          [self.experimentsData setObject:mutableExpData forKey:key];
+            [NSMutableDictionary dictionaryWithDictionary:expData];
+          // Preserve startDate.
+          NSDate *startDate = [[self.experimentsData objectForKey:key] objectForKey:EXP_START_DATE];
+          if (startDate != NULL) {
+            [mutableExpData setObject:startDate forKey:EXP_START_DATE];
+          }
+          // Replace object with mutable version.
+          [newExperimentsData setObject:mutableExpData forKey:key];
         }
+        self.experimentsData = newExperimentsData;
         [Yozio log:@"experimentsData after update: %@", self.experimentsData];
       }
     }
