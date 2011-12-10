@@ -529,8 +529,7 @@ static Yozio *instance = nil;
     // Loop through all experiments and remove ones that are expired.
     NSDate *curDate = [NSDate date];
     NSDateFormatter *expDateFormatter = [[NSDateFormatter alloc] init];
-    // TODO(jt): finalize endDate string format
-    [expDateFormatter setDateFormat:@"EE, d LLLL yyyy HH:mm:ss Z"];
+    [expDateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     NSMutableArray* toDelete = [NSMutableArray array];
     for (id key in self.experimentsData) {
       NSMutableDictionary *expData = [self.experimentsData objectForKey:key];
