@@ -485,16 +485,14 @@ static Yozio *instance = nil;
 }
 
 /**
- * Updates self.experimentsData with data from server.
- * Deletes experiments that have expired.
- * Adds 'startDate' to newly downloaded length based experiments.
+ * Update self.experimentsData with data from server.
+ * When the GET request is complete:
+ *   Add 'startDate' to newly downloaded length based experiments.
+ *   Delete experiments that have expired.
  */
 - (void)updateExperimentsData
 {
-  NSString *urlParams = @""; // TODO(jt)
-  NSString *escapedUrlParams =
-  [urlParams stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
-  NSString *urlString = [NSString stringWithFormat:@"%@/%@", self._serverUrl, escapedUrlParams];
+  NSString *urlString = [NSString stringWithFormat:@"%@/%@", self._serverUrl, @"experimentsData"];
   [Yozio log:@"Final getExperimentsData request url: %@", urlString];
   
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
