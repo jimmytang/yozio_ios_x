@@ -215,7 +215,6 @@ static Yozio *instance = nil;
 - (void)applicationDidEnterBackground:(NSNotificationCenter *)notification
 {
   // TODO(jt): flush data in the background
-  // TODO(jt): need to cancel connection in beginBackgroundTaskWithExpirationHandler?
 }
 
 - (void)applicationWillEnterForeground:(NSNotificationCenter *)notification
@@ -303,7 +302,7 @@ static Yozio *instance = nil;
         [Yozio log:@"Before remove: %@", self.dataQueue];
         [self.dataQueue removeObjectsInArray:self.dataToSend];
         [Yozio log:@"After remove: %@", self.dataQueue];
-        //  TODO(jt): stop background task if running in background
+        // TODO(jt): stop background task if running in background
       }
     }
     [Yozio log:@"flush request complete"];
@@ -529,6 +528,7 @@ static Yozio *instance = nil;
     [Yozio log:@"getExperimentsData request complete"];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
     [self removeExpiredExperiments];
+    // TODO(jt): stop background task if running in background
   }];
 }
 
