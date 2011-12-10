@@ -21,7 +21,7 @@
 @synthesize os;
 @synthesize sessionId;
 @synthesize schemaVersion;
-@synthesize experiments;
+@synthesize experimentsStr;
 @synthesize flushTimer;
 @synthesize dataQueue;
 @synthesize dataToSend;
@@ -102,8 +102,7 @@ static Yozio *instance = nil;
   // Initialize experiments map.
   [instance loadExperimentsData];
   [instance updateExperimentsData];
-  // TODO(jt): create experiments string experimentName:variation,...
-  instance.experiments = @"";
+  instance.experimentsStr = [instance buildExperimentsString];
   
   // Cached variables.
   [instance loadOrCreateDeviceId];
@@ -257,7 +256,7 @@ static Yozio *instance = nil;
                                   self._userId, D_USER_ID,
                                   self._appVersion, D_APP_VERSION,
                                   self.sessionId, D_SESSION_ID,
-                                  self.experiments, D_EXPERIMENTS,
+                                  self.experimentsStr, D_EXPERIMENTS,
                                   [self timeStampString], D_TIMESTAMP,
                                   [NSNumber numberWithInteger:dataCount], D_ID,
                                   nil];
@@ -564,6 +563,17 @@ static Yozio *instance = nil;
   for (id key in toDelete) {
     [self.experimentsData removeObjectForKey:key];
   }
+}
+
+- (NSString *)buildExperimentsString
+{
+  NSMutableString *expStr = [NSMutableString string];
+  for (id key in self.experimentsData) {
+    NSDictionary *expData = [self.experimentsData objectForKey:key];
+    NSNumber *variation = [[expData objectForKey:EXP_CONFIG] objectForKey:EXP_VARIATION];
+    [expStr appendFormat:@"%@:%@", key, variation];
+  }
+  return expStr;
 }
 
 @end

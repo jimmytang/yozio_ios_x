@@ -77,6 +77,7 @@
 #define EXP_END_DATE @"endDate"
 #define EXP_START_DATE @"startDate"
 #define EXP_CONFIG @"config"
+#define EXP_VARIATION @"variation"
 
 #define DATA_QUEUE_FILE [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
 #define EXPERIMENT_FILE [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_ExperimentData.plist"]
@@ -95,7 +96,7 @@
   NSString *os;
   NSString *sessionId;
   NSString *schemaVersion;
-  NSString *experiments;
+  NSString *experimentsStr;
   
   NSTimer *flushTimer;
   NSMutableArray *dataQueue;
@@ -119,7 +120,7 @@
 @property(nonatomic, retain) NSString *os;
 @property(nonatomic, retain) NSString *sessionId;
 @property(nonatomic, retain) NSString *schemaVersion;
-@property(nonatomic, retain) NSString *experiments;
+@property(nonatomic, retain) NSString *experimentsStr;
 // Internal variables.
 @property(nonatomic, retain) NSTimer *flushTimer;
 @property(nonatomic, retain) NSMutableArray *dataQueue;
@@ -157,6 +158,7 @@
 - (void)loadExperimentsData;
 - (void)updateExperimentsData;
 - (void)removeExpiredExperiments;
+- (NSString *)buildExperimentsString;
 
 @end
 
