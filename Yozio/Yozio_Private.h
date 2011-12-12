@@ -137,7 +137,6 @@
 - (void)onApplicationDidEnterBackground:(NSNotification *)notification;
 // Helper methods.
 - (void)saveState;
-- (void)loadState;
 - (void)collect:(NSString *)type
             key:(NSString *)key
           value:(NSString *)value

@@ -88,8 +88,6 @@ static Yozio *instance = nil;
   instance.hardware = device.model;
   instance.os = [device systemVersion];
   instance.schemaVersion = @"";
-  [instance loadOrCreateDeviceId];
-  
   instance.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_INTERVAL_SEC
                                                          target:instance
                                                        selector:@selector(doFlush)
@@ -107,11 +105,11 @@ static Yozio *instance = nil;
   [instance.dateFormatter setTimeZone:gmt];
   [tmpDateFormatter release];
   
+  // Initialize device id.
+  [instance loadOrCreateDeviceId];
+  
   // Initialize config map. Must be called after loadOrCreateDeviceId.
   [instance updateConfig];
-  
-  // Instrument uncaught exceptions and signals.
-  InstallUncaughtExceptionHandler(exceptionHandler);
   
   // Load any previous data and try to flush it.
   // Perform this here instead of on applicationDidFinishLoading because instrumentation calls
@@ -121,6 +119,9 @@ static Yozio *instance = nil;
   
   // Start new session.
   instance.sessionId = [instance makeUUID];
+  
+  // Instrument uncaught exceptions and signals.
+  InstallUncaughtExceptionHandler(exceptionHandler);
   
   // Add notification observers.
   NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
@@ -460,7 +461,7 @@ static Yozio *instance = nil;
   return self.deviceId;
 }
 
-- (BOOL) storeDeviceId:(NSString *)uuid
+- (BOOL)storeDeviceId:(NSString *)uuid
 {
   NSError *storeError = nil;
   [SFHFKeychainUtils storeUsername:UUID_KEYCHAIN_USERNAME
