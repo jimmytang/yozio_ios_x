@@ -146,13 +146,13 @@
 - (void)doFlush;
 - (NSString *)buildPayload;
 - (NSString *)timeStampString;
+- (NSString *)deviceOrientation;
+- (NSString *)uiOrientation;
 - (void)saveUnsentData;
 - (void)loadUnsentData;
 - (NSString *)loadOrCreateDeviceId;
 - (BOOL)storeDeviceId:(NSString *)uuid;
 - (NSString *)makeUUID;
-- (NSString *)deviceOrientation;
-- (NSString *)uiOrientation;
 - (void)updateConfig;
 
 @end

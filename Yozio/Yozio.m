@@ -411,6 +411,43 @@ static Yozio *instance = nil;
   return timeStamp;
 }
 
+- (NSString*)deviceOrientation {
+  UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+  switch(orientation) {
+    case UIDeviceOrientationPortrait:
+      return ORIENT_PORTRAIT;
+    case UIDeviceOrientationPortraitUpsideDown:
+      return ORIENT_PORTRAIT_UPSIDE_DOWN;
+    case UIDeviceOrientationLandscapeLeft:
+      return ORIENT_LANDSCAPE_LEFT;
+    case UIDeviceOrientationLandscapeRight:
+      return ORIENT_LANDSCAPE_RIGHT;
+    case UIDeviceOrientationFaceUp:
+      return ORIENT_FACE_UP;
+    case UIDeviceOrientationFaceDown:
+      return ORIENT_FACE_DOWN;
+    default:
+      return ORIENT_UNKNOWN;
+  }
+}
+
+- (NSString *)uiOrientation
+{
+  UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+  switch (orientation) {
+    case UIInterfaceOrientationPortrait:
+      return ORIENT_PORTRAIT;
+    case UIInterfaceOrientationPortraitUpsideDown:
+      return ORIENT_PORTRAIT_UPSIDE_DOWN;
+    case UIInterfaceOrientationLandscapeLeft:
+      return ORIENT_LANDSCAPE_LEFT;
+    case UIInterfaceOrientationLandscapeRight:
+      return ORIENT_LANDSCAPE_RIGHT;
+    default:
+      return ORIENT_UNKNOWN;
+  }
+}
+
 - (void)saveUnsentData
 {
   [Yozio log:@"saveUnsentData: %@", self.dataQueue];
@@ -427,6 +464,11 @@ static Yozio *instance = nil;
   }
   [Yozio log:@"loadUnsentData: %@", self.dataQueue];
 }
+
+
+/*******************************************
+ * UUID related helper methods.
+ *******************************************/
 
 /**
  * Loads the deviceId from keychain. If one doesn't exist, create a new deviceId, store it in the
@@ -485,43 +527,6 @@ static Yozio *instance = nil;
   CFRelease(theUUID);
   [uuidString autorelease];
   return uuidString;
-}
-
-- (NSString*)deviceOrientation {
-  UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-  switch(orientation) {
-    case UIDeviceOrientationPortrait:
-      return ORIENT_PORTRAIT;
-    case UIDeviceOrientationPortraitUpsideDown:
-      return ORIENT_PORTRAIT_UPSIDE_DOWN;
-    case UIDeviceOrientationLandscapeLeft:
-      return ORIENT_LANDSCAPE_LEFT;
-    case UIDeviceOrientationLandscapeRight:
-      return ORIENT_LANDSCAPE_RIGHT;
-    case UIDeviceOrientationFaceUp:
-      return ORIENT_FACE_UP;
-    case UIDeviceOrientationFaceDown:
-      return ORIENT_FACE_DOWN;
-    default:
-      return ORIENT_UNKNOWN;
-  }
-}
-
-- (NSString *)uiOrientation
-{
-  UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-  switch (orientation) {
-    case UIInterfaceOrientationPortrait:
-      return ORIENT_PORTRAIT;
-    case UIInterfaceOrientationPortraitUpsideDown:
-      return ORIENT_PORTRAIT_UPSIDE_DOWN;
-    case UIInterfaceOrientationLandscapeLeft:
-      return ORIENT_LANDSCAPE_LEFT;
-    case UIInterfaceOrientationLandscapeRight:
-      return ORIENT_LANDSCAPE_RIGHT;
-    default:
-      return ORIENT_UNKNOWN;
-  }
 }
 
 
