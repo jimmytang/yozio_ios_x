@@ -18,7 +18,8 @@
   [Yozio configure:@"http://m.snapette.yozio.com"
             userId:@"MyUserId"
                env:@"production"
-        appVersion:@"1.0.1"];
+        appVersion:@"1.0.1"
+  exceptionHandler:NULL];
 }
 
 - (void)tearDown
