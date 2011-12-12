@@ -480,8 +480,13 @@ static Yozio *instance = nil;
  */
 - (void)updateConfig
 {
-  // TODO(jt): add deviceId as param
-  NSString *urlString = [NSString stringWithFormat:@"%@/%@", self._serverUrl, @"configuration"];
+  if (self.deviceId == NULL) {
+    [Yozio log:@"updateConfig NULL deviceId"];
+    return;
+  }
+  NSString *urlParams = [NSString stringWithFormat:@"deviceId=%@", self.deviceId];
+  NSString *urlString =
+      [NSString stringWithFormat:@"%@/%@?%@", self._serverUrl, @"configuration", urlParams];
   [Yozio log:@"Final configuration request url: %@", urlString];
   
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
