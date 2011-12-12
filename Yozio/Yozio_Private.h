@@ -72,15 +72,11 @@
 // Time interval before automatically flushing the data queue.
 #define FLUSH_INTERVAL_SEC 15
 
-// Experiments data keys.
-#define EXP_LENGTH @"length"
-#define EXP_END_DATE @"endDate"
-#define EXP_START_DATE @"startDate"
-#define EXP_CONFIG @"config"
-#define EXP_VARIATION @"variation"
+// Mobile configuration data keys.
+#define CONFIG_CONFIG @"config"
+#define CONFIG_EXPERIMENTS @"experiments"
 
 #define DATA_QUEUE_FILE [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
-#define EXPERIMENT_FILE [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_ExperimentData.plist"]
 #define UUID_KEYCHAIN_USERNAME @"UUID"
 #define KEYCHAIN_SERVICE @"yozio"
 
@@ -103,7 +99,7 @@
   NSArray *dataToSend;
   NSInteger dataCount;
   NSMutableDictionary *timers;
-  NSMutableDictionary *experimentsData;
+  NSMutableDictionary *config;
   
   // Cached variables.
   NSDateFormatter *dateFormatter;
@@ -127,7 +123,7 @@
 @property(nonatomic, retain) NSArray *dataToSend;
 @property(nonatomic, assign) NSInteger dataCount;
 @property(nonatomic, retain) NSMutableDictionary *timers;
-@property(nonatomic, retain) NSMutableDictionary *experimentsData;
+@property(nonatomic, retain) NSMutableDictionary *config;
 // Cached variables.
 @property(nonatomic, retain) NSDateFormatter *dateFormatter;
 
@@ -154,11 +150,7 @@
 - (NSString *)makeUUID;
 - (NSString *)deviceOrientation;
 - (NSString *)uiOrientation;
-- (void)saveExperimentsData;
-- (void)loadExperimentsData;
-- (void)updateExperimentsData;
-- (void)removeExpiredExperiments;
-- (NSString *)buildExperimentsString;
+- (void)updateConfig;
 
 @end
 

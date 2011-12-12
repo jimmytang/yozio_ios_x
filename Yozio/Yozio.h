@@ -201,7 +201,12 @@
 /**
  * TODO(jt): document this
  */
-+ (NSDictionary *)experimentData:(NSString *)experimentName;
++ (NSString *)stringForKey:(NSString *)key defaultValue:(NSString *)defaultValue;
+
+/**
+ * TODO(jt): document this
+ */
++ (NSInteger)intForKey:(NSString *)key defaultValue:(NSInteger)defaultValue;
 
 @end
 
