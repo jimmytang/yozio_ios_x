@@ -87,8 +87,8 @@ static Yozio *instance = nil;
   UIDevice* device = [UIDevice currentDevice];
   instance.hardware = device.model;
   instance.os = [device systemVersion];
-  instance.sessionId = [instance makeUUID];
   instance.schemaVersion = @"";
+  [instance loadOrCreateDeviceId];
   
   instance.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_INTERVAL_SEC
                                                          target:instance
@@ -99,11 +99,7 @@ static Yozio *instance = nil;
   instance.dataCount = 0;
   instance.timers = [NSMutableDictionary dictionary];
   
-  // Initialize config map.
-  [instance updateConfig];
-  
-  // Cached variables.
-  [instance loadOrCreateDeviceId];
+  // Initialize dateFormatter.
   NSTimeZone *gmt = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
   NSDateFormatter *tmpDateFormatter = [[NSDateFormatter alloc] init];
   instance.dateFormatter = tmpDateFormatter;
@@ -111,35 +107,43 @@ static Yozio *instance = nil;
   [instance.dateFormatter setTimeZone:gmt];
   [tmpDateFormatter release];
   
+  // Initialize config map. Must be called after loadOrCreateDeviceId.
+  [instance updateConfig];
+  
   // Instrument uncaught exceptions and signals.
   InstallUncaughtExceptionHandler(exceptionHandler);
+  
+  // Load any previous data and try to flush it.
+  // Perform this here instead of on applicationDidFinishLoading because instrumentation calls
+  // could be made before an applciation is finished loading.
+  [instance loadUnsentData];
+  [instance doFlush];
+  
+  // Start new session.
+  instance.sessionId = [instance makeUUID];
   
   // Add notification observers.
   NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
   [notificationCenter addObserver:self
-                         selector:@selector(applicationDidFinishLaunching:)
-                             name:UIApplicationDidFinishLaunchingNotification
-                           object:nil];
-  [notificationCenter addObserver:self
-                         selector:@selector(applicationWillTerminate:)
+                         selector:@selector(onApplicationWillTerminate:)
                              name:UIApplicationWillTerminateNotification
                            object:nil];
   [notificationCenter addObserver:self
-                         selector:@selector(applicationDidBecomeActive:)
+                         selector:@selector(onApplicationDidBecomeActive:)
                              name:UIApplicationDidBecomeActiveNotification
                            object:nil];
   [notificationCenter addObserver:self
-                         selector:@selector(applicationWillResignActive:)
+                         selector:@selector(onApplicationWillResignActive:)
                              name:UIApplicationWillResignActiveNotification
                            object:nil];
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_4_0
   if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]) {
     [notificationCenter addObserver:self
-                           selector:@selector(applicationWillEnterForeground:)
+                           selector:@selector(onApplicationWillEnterForeground:)
                                name:UIApplicationWillEnterForegroundNotification
                              object:nil];
     [notificationCenter addObserver:self
-                           selector:@selector(applicationDidEnterBackground:)
+                           selector:@selector(onApplicationDidEnterBackground:)
                                name:UIApplicationDidEnterBackgroundNotification
                              object:nil];
   }
@@ -154,7 +158,7 @@ static Yozio *instance = nil;
 + (void)endTimer:(NSString *)timerName category:(NSString *)category
 {
   NSDate *startTime = [instance.timers valueForKey:timerName];
-  if (startTime == nil) {
+  if (startTime == NULL) {
     // We don't want developers to get away with bad instrumentation code, so raise an
     // exception and force them to deal with it.
     [NSException raise:@"Invalid timerName" format:@"timerName %@ is invalid", timerName];
@@ -251,32 +255,25 @@ static Yozio *instance = nil;
  * Notification observer methods.
  *******************************************/
 
-- (void)applicationDidFinishLaunching:(NSNotification *)notification
-{
-  // Start a new session.
-  self.sessionId = [self makeUUID];
-  [self loadState];
-}
-
-- (void)applicationWillTerminate:(NSNotification *)notification
+- (void)onApplicationWillTerminate:(NSNotification *)notification
 {
   [self saveState];
 }
 
-- (void)applicationDidBecomeActive:(NSNotification *)notification
+- (void)onApplicationDidBecomeActive:(NSNotification *)notification
 {
 }
 
-- (void)applicationWillResignActive:(NSNotification *)notification
+- (void)onApplicationWillResignActive:(NSNotification *)notification
 {
 }
 
-- (void)applicationWillEnterForeground:(NSNotification *)notification
+- (void)onApplicationWillEnterForeground:(NSNotification *)notification
 {
   // TODO(jt): start new session here?
 }
 
-- (void)applicationDidEnterBackground:(NSNotification *)notification
+- (void)onApplicationDidEnterBackground:(NSNotification *)notification
 {
   // TODO(jt): flush data in background task
 }
@@ -292,13 +289,6 @@ static Yozio *instance = nil;
 - (void)saveState
 {
   [self saveUnsentData];
-}
-
-- (void)loadState
-{
-  [self loadUnsentData];
-  [self doFlush];
-  [instance updateConfig];
 }
 
 
@@ -330,9 +320,8 @@ static Yozio *instance = nil;
                                   [NSNumber numberWithInteger:dataCount], D_ID,
                                   nil];
     [self.dataQueue addObject:d];
-    [Yozio log:@"Added: %@", d];
+    [Yozio log:@"collect: %@", d];
   }
-  [Yozio log:@"Added: %@, %@, %@, %@", type, key, value, category];
   [self checkDataQueueSize];
 }
 
@@ -346,9 +335,11 @@ static Yozio *instance = nil;
 
 - (void)doFlush
 {
-  if ([self.dataQueue count] == 0 || [self.dataToSend count] > 0) {
-    // No events or already pushing data.
-    [Yozio log:@"No data to flush or already flushing."];
+  if ([self.dataQueue count] == 0) {
+    [Yozio log:@"No data to flush."];
+    return;
+  } else if (self.dataToSend != NULL) {
+    [Yozio log:@"Already flushing"];
     return;
   }
   if ([self.dataQueue count] > FLUSH_DATA_COUNT) {
@@ -378,7 +369,7 @@ static Yozio *instance = nil;
       }
     }
     [Yozio log:@"flush request complete"];
-    self.dataToSend = nil;
+    self.dataToSend = NULL;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
   }];
 }
@@ -421,7 +412,7 @@ static Yozio *instance = nil;
 
 - (void)saveUnsentData
 {
-  [Yozio log:@"saveUnsentData"];
+  [Yozio log:@"saveUnsentData: %@", self.dataQueue];
   if (![NSKeyedArchiver archiveRootObject:self.dataQueue toFile:DATA_QUEUE_FILE]) {
     [Yozio log:@"Unable to archive data!"];
   }
@@ -429,11 +420,11 @@ static Yozio *instance = nil;
 
 - (void)loadUnsentData
 {
-  [Yozio log:@"loadUnsentData"];
   self.dataQueue = [NSKeyedUnarchiver unarchiveObjectWithFile:DATA_QUEUE_FILE];
   if (!self.dataQueue)  {
     self.dataQueue = [NSMutableArray array];    
   }
+  [Yozio log:@"loadUnsentData: %@", self.dataQueue];
 }
 
 /**

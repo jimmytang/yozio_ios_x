@@ -130,12 +130,11 @@
 + (Yozio *)getInstance; // Used for testing.
 + (void)log:(NSString *)format, ...;
 // Notification observer methods.
-- (void)applicationDidFinishLaunching:(NSNotification *)notification;
-- (void)applicationWillTerminate:(NSNotification *)notification;
-- (void)applicationDidBecomeActive:(NSNotification *)notification;
-- (void)applicationWillResignActive:(NSNotification *)notification;
-- (void)applicationWillEnterForeground:(NSNotification *)notification;
-- (void)applicationDidEnterBackground:(NSNotification *)notification;
+- (void)onApplicationWillTerminate:(NSNotification *)notification;
+- (void)onApplicationDidBecomeActive:(NSNotification *)notification;
+- (void)onApplicationWillResignActive:(NSNotification *)notification;
+- (void)onApplicationWillEnterForeground:(NSNotification *)notification;
+- (void)onApplicationDidEnterBackground:(NSNotification *)notification;
 // Helper methods.
 - (void)saveState;
 - (void)loadState;
