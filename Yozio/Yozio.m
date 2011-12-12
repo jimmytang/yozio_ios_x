@@ -91,10 +91,10 @@ static Yozio *instance = nil;
   instance.schemaVersion = @"";
   
   instance.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_INTERVAL_SEC
-                                                     target:instance
-                                                   selector:@selector(doFlush)
-                                                   userInfo:nil
-                                                    repeats:YES];
+                                                         target:instance
+                                                       selector:@selector(doFlush)
+                                                       userInfo:nil
+                                                        repeats:YES];
   instance.dataQueue = [NSMutableArray array];
   instance.dataCount = 0;
   instance.timers = [NSMutableDictionary dictionary];
@@ -111,7 +111,39 @@ static Yozio *instance = nil;
   [instance.dateFormatter setTimeZone:gmt];
   [tmpDateFormatter release];
   
+  // Instrument uncaught exceptions and signals.
   InstallUncaughtExceptionHandler(exceptionHandler);
+  
+  // Add notification observers.
+  NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
+  [notificationCenter addObserver:self
+                         selector:@selector(applicationDidFinishLaunching:)
+                             name:UIApplicationDidFinishLaunchingNotification
+                           object:nil];
+  [notificationCenter addObserver:self
+                         selector:@selector(applicationWillTerminate:)
+                             name:UIApplicationWillTerminateNotification
+                           object:nil];
+  [notificationCenter addObserver:self
+                         selector:@selector(applicationDidBecomeActive:)
+                             name:UIApplicationDidBecomeActiveNotification
+                           object:nil];
+  [notificationCenter addObserver:self
+                         selector:@selector(applicationWillResignActive:)
+                             name:UIApplicationWillResignActiveNotification
+                           object:nil];
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_4_0
+  if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]) {
+    [notificationCenter addObserver:self
+                           selector:@selector(applicationWillEnterForeground:)
+                               name:UIApplicationWillEnterForegroundNotification
+                             object:nil];
+    [notificationCenter addObserver:self
+                           selector:@selector(applicationDidEnterBackground:)
+                               name:UIApplicationDidEnterBackgroundNotification
+                             object:nil];
+  }
+#endif
 }
 
 + (void)startTimer:(NSString *)timerName
@@ -219,25 +251,54 @@ static Yozio *instance = nil;
  * Notification observer methods.
  *******************************************/
 
-- (void)applicationDidEnterBackground:(NSNotificationCenter *)notification
-{
-  // TODO(jt): flush data in the background
-}
-
-- (void)applicationWillEnterForeground:(NSNotificationCenter *)notification
+- (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
   // Start a new session.
   self.sessionId = [self makeUUID];
-  [self loadUnsentData];
-  [self doFlush];
-  
-  // Update config map.
-  [instance updateConfig];
+  [self loadState];
 }
 
-- (void)applicationWillTerminate:(NSNotificationCenter *)notification
+- (void)applicationWillTerminate:(NSNotification *)notification
+{
+  [self saveState];
+}
+
+- (void)applicationDidBecomeActive:(NSNotification *)notification
+{
+}
+
+- (void)applicationWillResignActive:(NSNotification *)notification
+{
+}
+
+- (void)applicationWillEnterForeground:(NSNotification *)notification
+{
+  // TODO(jt): start new session here?
+}
+
+- (void)applicationDidEnterBackground:(NSNotification *)notification
+{
+  // TODO(jt): flush data in background task
+}
+
+// TODO(jt): listen to memory warnings and significant time change?
+// http://developer.apple.com/library/ios/#documentation/uikit/reference/UIApplicationDelegate_Protocol/Reference/Reference.html
+
+
+/*******************************************
+ * Application state related helper methods.
+ *******************************************/
+
+- (void)saveState
 {
   [self saveUnsentData];
+}
+
+- (void)loadState
+{
+  [self loadUnsentData];
+  [self doFlush];
+  [instance updateConfig];
 }
 
 
@@ -300,6 +361,7 @@ static Yozio *instance = nil;
   NSString *urlParams = [NSString stringWithFormat:@"data=%@", dataStr];
   NSString *escapedUrlParams =
       [urlParams stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+  // TODO(jt): should make a request to a resource, instead of root url.
   NSString *urlString = [NSString stringWithFormat:@"%@/%@", self._serverUrl, escapedUrlParams];
   [Yozio log:@"Final get request url: %@", urlString];
   
