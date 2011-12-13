@@ -64,6 +64,12 @@
 
 
 /**
+ * TODO(jt): document
+ */
++ (void)newSession;
+
+
+/**
  * Starts a new timer. This call by itself will not trigger an instrumentation event. You must
  * call endTimer with the same timerName to capture the timing information.
  *

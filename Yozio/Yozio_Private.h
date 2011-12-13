@@ -137,12 +137,11 @@
 + (void)log:(NSString *)format, ...;
 // Notification observer methods.
 - (void)onApplicationWillTerminate:(NSNotification *)notification;
-- (void)onApplicationDidBecomeActive:(NSNotification *)notification;
 - (void)onApplicationWillResignActive:(NSNotification *)notification;
 - (void)onApplicationWillEnterForeground:(NSNotification *)notification;
 - (void)onApplicationDidEnterBackground:(NSNotification *)notification;
 // Helper methods.
-- (void)saveState;
+- (BOOL)validateConfiguration;
 - (void)collect:(NSString *)type
             key:(NSString *)key
           value:(NSString *)value
@@ -154,6 +153,9 @@
 - (NSString *)timeStampString;
 - (NSString *)deviceOrientation;
 - (NSString *)uiOrientation;
+- (void)updateCountryName;
+- (void)updateLanguage;
+- (void)updateTimezone;
 - (void)saveUnsentData;
 - (void)loadUnsentData;
 - (NSString *)loadOrCreateDeviceId;

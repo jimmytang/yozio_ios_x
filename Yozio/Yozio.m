@@ -50,6 +50,50 @@ static Yozio *instance = nil;
 - (id)init
 {
   self = [super init];
+  
+  UIDevice* device = [UIDevice currentDevice];
+  instance.hardware = device.model;
+  instance.os = [device systemVersion];
+  // TODO(jt): schemaVersion
+  instance.schemaVersion = @"";
+  instance.dataQueue = [NSMutableArray array];
+  instance.dataCount = 0;
+  instance.timers = [NSMutableDictionary dictionary];
+  
+  // Initialize dateFormatter.
+  NSTimeZone *gmt = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+  NSDateFormatter *tmpDateFormatter = [[NSDateFormatter alloc] init];
+  instance.dateFormatter = tmpDateFormatter;
+  [instance.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss SSS"];
+  [instance.dateFormatter setTimeZone:gmt];
+  [tmpDateFormatter release];
+  
+  // Initialize device id.
+  [instance loadOrCreateDeviceId];
+  
+  // Add notification observers.
+  NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
+  [notificationCenter addObserver:self
+                         selector:@selector(onApplicationWillTerminate:)
+                             name:UIApplicationWillTerminateNotification
+                           object:nil];
+  [notificationCenter addObserver:self
+                         selector:@selector(onApplicationWillResignActive:)
+                             name:UIApplicationWillResignActiveNotification
+                           object:nil];
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_4_0
+  if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]) {
+    [notificationCenter addObserver:self
+                           selector:@selector(onApplicationWillEnterForeground:)
+                               name:UIApplicationWillEnterForegroundNotification
+                             object:nil];
+    [notificationCenter addObserver:self
+                           selector:@selector(onApplicationDidEnterBackground:)
+                               name:UIApplicationDidEnterBackgroundNotification
+                             object:nil];
+  }
+#endif
+  
   return self;
 }
 
@@ -82,89 +126,38 @@ static Yozio *instance = nil;
     appVersion:(NSString *)appVersion
     exceptionHandler:(NSUncaughtExceptionHandler *)exceptionHandler
 {
+  if (serverUrl == NULL) {
+    [NSException raise:NSInvalidArgumentException format:@"serverUrl cannot be NULL."];
+  }
   instance._serverUrl = serverUrl;
   instance._userId = userId;
   instance._env = env;
   instance._appVersion = appVersion;
+  InstallUncaughtExceptionHandler(exceptionHandler);
   
-  UIDevice* device = [UIDevice currentDevice];
-  instance.hardware = device.model;
-  instance.os = [device systemVersion];
-  instance.schemaVersion = @"";
-  instance.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_INTERVAL_SEC
-                                                         target:instance
-                                                       selector:@selector(doFlush)
-                                                       userInfo:nil
-                                                        repeats:YES];
-  instance.dataQueue = [NSMutableArray array];
-  instance.dataCount = 0;
-  instance.timers = [NSMutableDictionary dictionary];
-  
-  // Initialize country name.
-  NSLocale *locale = [NSLocale currentLocale];
-  NSString *countryCode = [locale objectForKey: NSLocaleCountryCode];
-  instance.countryName = [locale displayNameForKey:NSLocaleCountryCode value:countryCode];
-  
-  // Initialize language.
-  instance.language = [[NSLocale preferredLanguages] objectAtIndex:0];
-  
-  // Initialize timezone.
-  [NSTimeZone resetSystemTimeZone];
-  NSInteger timezoneOffset = [[NSTimeZone systemTimeZone] secondsFromGMT]/3600;
-  instance.timezone = [NSNumber numberWithInteger:timezoneOffset];
-  
-  // Initialize dateFormatter.
-  NSTimeZone *gmt = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
-  NSDateFormatter *tmpDateFormatter = [[NSDateFormatter alloc] init];
-  instance.dateFormatter = tmpDateFormatter;
-  [instance.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss SSS"];
-  [instance.dateFormatter setTimeZone:gmt];
-  [tmpDateFormatter release];
-  
-  // Initialize device id.
-  [instance loadOrCreateDeviceId];
-  
-  // Initialize config map. Must be called after loadOrCreateDeviceId.
+  [instance updateCountryName];
+  [instance updateLanguage];
+  [instance updateTimezone];
   [instance updateConfig];
+  
+  if (instance.flushTimer == NULL) {
+    instance.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_INTERVAL_SEC
+                                                           target:instance
+                                                         selector:@selector(doFlush)
+                                                         userInfo:nil
+                                                          repeats:YES];
+  }
   
   // Load any previous data and try to flush it.
   // Perform this here instead of on applicationDidFinishLoading because instrumentation calls
   // could be made before an applciation is finished loading.
   [instance loadUnsentData];
   [instance doFlush];
-  
-  // Start new session.
+}
+
++ (void)newSession
+{
   instance.sessionId = [instance makeUUID];
-  
-  // Instrument uncaught exceptions and signals.
-  InstallUncaughtExceptionHandler(exceptionHandler);
-  
-  // Add notification observers.
-  NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
-  [notificationCenter addObserver:instance
-                         selector:@selector(onApplicationWillTerminate:)
-                             name:UIApplicationWillTerminateNotification
-                           object:nil];
-  [notificationCenter addObserver:instance
-                         selector:@selector(onApplicationDidBecomeActive:)
-                             name:UIApplicationDidBecomeActiveNotification
-                           object:nil];
-  [notificationCenter addObserver:instance
-                         selector:@selector(onApplicationWillResignActive:)
-                             name:UIApplicationWillResignActiveNotification
-                           object:nil];
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_4_0
-  if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]) {
-    [notificationCenter addObserver:instance
-                           selector:@selector(onApplicationWillEnterForeground:)
-                               name:UIApplicationWillEnterForegroundNotification
-                             object:nil];
-    [notificationCenter addObserver:instance
-                           selector:@selector(onApplicationDidEnterBackground:)
-                               name:UIApplicationDidEnterBackgroundNotification
-                             object:nil];
-  }
-#endif
 }
 
 + (void)startTimer:(NSString *)timerName
@@ -175,11 +168,7 @@ static Yozio *instance = nil;
 + (void)endTimer:(NSString *)timerName category:(NSString *)category
 {
   NSDate *startTime = [instance.timers valueForKey:timerName];
-  if (startTime == NULL) {
-    // We don't want developers to get away with bad instrumentation code, so raise an
-    // exception and force them to deal with it.
-    [NSException raise:@"Invalid timerName" format:@"timerName %@ is invalid", timerName];
-  } else {
+  if (startTime != NULL) {
     [instance.timers removeObjectForKey:timerName];
     float elapsedTime = [[NSDate date] timeIntervalSinceDate:startTime];
     NSString *elapsedTimeStr = [NSString stringWithFormat:@"%.2f", elapsedTime];
@@ -274,19 +263,21 @@ static Yozio *instance = nil;
 
 - (void)onApplicationWillTerminate:(NSNotification *)notification
 {
-  [self saveState];
-}
-
-- (void)onApplicationDidBecomeActive:(NSNotification *)notification
-{
+  [self saveUnsentData];
 }
 
 - (void)onApplicationWillResignActive:(NSNotification *)notification
 {
+  // Clear all current timers to prevent skewed timings due to the app being inactive.
+  [self.timers removeAllObjects];
 }
 
 - (void)onApplicationWillEnterForeground:(NSNotification *)notification
 {
+  [instance updateCountryName];
+  [instance updateLanguage];
+  [instance updateTimezone];
+  [instance updateConfig];
 }
 
 - (void)onApplicationDidEnterBackground:(NSNotification *)notification
@@ -299,18 +290,25 @@ static Yozio *instance = nil;
 
 
 /*******************************************
- * Application state related helper methods.
- *******************************************/
-
-- (void)saveState
-{
-  [self saveUnsentData];
-}
-
-
-/*******************************************
  * Data collection helper methods.
  *******************************************/
+
+- (BOOL)validateConfiguration
+{
+  BOOL validServerUrl = self._serverUrl != NULL;
+  BOOL validSession = self.sessionId != NULL;
+  if (!validServerUrl) {
+    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    NSLog(@"Please call [Yozio configure] before instrumenting.");
+    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+  }
+  if (!validSession) {
+    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    NSLog(@"Please call [Yozio newSession] before instrumenting.");
+    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+  }
+  return validServerUrl && validSession;
+}
 
 - (void)collect:(NSString *)type
             key:(NSString *)key
@@ -318,6 +316,9 @@ static Yozio *instance = nil;
        category:(NSString *)category
        maxQueue:(NSInteger)maxQueue
 {
+  if (![self validateConfiguration]) {
+    return;
+  }
   // Increment dataCount even if we don't add to data queue so we know how much data we missed.
   dataCount++;
   if ([self.dataQueue count] < maxQueue) {
@@ -354,7 +355,8 @@ static Yozio *instance = nil;
   if ([self.dataQueue count] == 0) {
     [Yozio log:@"No data to flush."];
     return;
-  } else if (self.dataToSend != NULL) {
+  }
+  if (self.dataToSend != NULL) {
     [Yozio log:@"Already flushing"];
     return;
   }
@@ -453,6 +455,25 @@ static Yozio *instance = nil;
   }
 }
 
+- (void)updateCountryName
+{
+  NSLocale *locale = [NSLocale currentLocale];
+  NSString *countryCode = [locale objectForKey: NSLocaleCountryCode];
+  instance.countryName = [locale displayNameForKey:NSLocaleCountryCode value:countryCode];
+}
+
+- (void)updateLanguage
+{
+  instance.language = [[NSLocale preferredLanguages] objectAtIndex:0];
+}
+
+- (void)updateTimezone
+{
+  [NSTimeZone resetSystemTimeZone];
+  NSInteger timezoneOffset = [[NSTimeZone systemTimeZone] secondsFromGMT]/3600;
+  instance.timezone = [NSNumber numberWithInteger:timezoneOffset];
+}
+
 - (void)saveUnsentData
 {
   [Yozio log:@"saveUnsentData: %@", self.dataQueue];
@@ -544,6 +565,10 @@ static Yozio *instance = nil;
  */
 - (void)updateConfig
 {
+  if (self._serverUrl == NULL) {
+    [Yozio log:@"updateConfig NULL serverUrl"];
+    return;
+  }
   if (self.deviceId == NULL) {
     [Yozio log:@"updateConfig NULL deviceId"];
     return;
