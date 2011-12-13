@@ -368,10 +368,11 @@ static Yozio *instance = nil;
   [Yozio log:@"Flushing..."];
   NSString *dataStr = [self buildPayload];
   NSString *urlParams = [NSString stringWithFormat:@"data=%@", dataStr];
+  // TODO(jt): try to avoid having to escape urlParams if possible
   NSString *escapedUrlParams =
       [urlParams stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
-  // TODO(jt): should make a request to a resource, instead of root url.
-  NSString *urlString = [NSString stringWithFormat:@"%@/%@", self._serverUrl, escapedUrlParams];
+  NSString *urlString =
+      [NSString stringWithFormat:@"%@/%@?%@", self._serverUrl, @"p.gif", escapedUrlParams];
   [Yozio log:@"Final get request url: %@", urlString];
   
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
