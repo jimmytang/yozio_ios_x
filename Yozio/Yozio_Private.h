@@ -142,11 +142,11 @@
 - (void)onApplicationDidEnterBackground:(NSNotification *)notification;
 // Helper methods.
 - (BOOL)validateConfiguration;
-- (void)collect:(NSString *)type
-            key:(NSString *)key
-          value:(NSString *)value
-       category:(NSString *)category
-       maxQueue:(NSInteger)maxQueue;
+- (void)doCollect:(NSString *)type
+              key:(NSString *)key
+            value:(NSString *)value
+         category:(NSString *)category
+         maxQueue:(NSInteger)maxQueue;
 - (void)checkDataQueueSize;
 - (void)doFlush;
 - (NSString *)buildPayload;

@@ -172,49 +172,49 @@ static Yozio *instance = nil;
     [instance.timers removeObjectForKey:timerName];
     float elapsedTime = [[NSDate date] timeIntervalSinceDate:startTime];
     NSString *elapsedTimeStr = [NSString stringWithFormat:@"%.2f", elapsedTime];
-    [instance collect:T_TIMER
-                  key:timerName
-                value:elapsedTimeStr
-             category:category
-             maxQueue:TIMER_DATA_LIMIT];
+    [instance doCollect:T_TIMER
+                    key:timerName
+                  value:elapsedTimeStr
+               category:category
+               maxQueue:TIMER_DATA_LIMIT];
   }
 }
 
 + (void)funnel:(NSString *)funnelName value:(NSString *)value category:(NSString *)category
 {
-  [instance collect:T_FUNNEL
-                key:funnelName
-              value:value
-           category:category
-           maxQueue:FUNNEL_DATA_LIMIT];
+  [instance doCollect:T_FUNNEL
+                  key:funnelName
+                value:value
+             category:category
+             maxQueue:FUNNEL_DATA_LIMIT];
 }
 
 + (void)revenue:(NSString *)itemName cost:(double)cost category:(NSString *)category
 {
   NSString *stringCost = [NSString stringWithFormat:@"%d", cost];
-  [instance collect:T_REVENUE
-                key:itemName
-              value:stringCost
-           category:category
-           maxQueue:REVENUE_DATA_LIMIT];
+  [instance doCollect:T_REVENUE
+                  key:itemName
+                value:stringCost
+             category:category
+             maxQueue:REVENUE_DATA_LIMIT];
 }
 
 + (void)action:(NSString *)actionName context:(NSString *)context category:(NSString *)category
 {
-  [instance collect:T_ACTION
-                key:context
-              value:actionName
-           category:category
-           maxQueue:ACTION_DATA_LIMIT];
+  [instance doCollect:T_ACTION
+                  key:context
+                value:actionName
+             category:category
+             maxQueue:ACTION_DATA_LIMIT];
 }
 
 + (void)error:(NSString *)errorName message:(NSString *)message category:(NSString *)category
 {
-  [instance collect:T_ERROR
-                key:errorName
-              value:message
-           category:category
-           maxQueue:ERROR_DATA_LIMIT];
+  [instance doCollect:T_ERROR
+                  key:errorName
+                value:message
+             category:category
+             maxQueue:ERROR_DATA_LIMIT];
 }
 
 + (void)exception:(NSException *)exception category:(NSString *)category
@@ -226,11 +226,11 @@ static Yozio *instance = nil;
 
 + (void)collect:(NSString *)key value:(NSString *)value category:(NSString *)category
 {
-  [instance collect:T_COLLECT
-                key:key
-              value:value
-           category:category
-           maxQueue:COLLECT_DATA_LIMIT];
+  [instance doCollect:T_COLLECT
+                  key:key
+                value:value
+             category:category
+             maxQueue:COLLECT_DATA_LIMIT];
 }
 
 + (void)flush
@@ -310,11 +310,11 @@ static Yozio *instance = nil;
   return validServerUrl && validSession;
 }
 
-- (void)collect:(NSString *)type
-            key:(NSString *)key
-          value:(NSString *)value
-       category:(NSString *)category
-       maxQueue:(NSInteger)maxQueue
+- (void)doCollect:(NSString *)type
+              key:(NSString *)key
+            value:(NSString *)value
+         category:(NSString *)category
+         maxQueue:(NSInteger)maxQueue
 {
   if (![self validateConfiguration]) {
     return;
@@ -337,7 +337,7 @@ static Yozio *instance = nil;
                                   [NSNumber numberWithInteger:dataCount], D_ID,
                                   nil];
     [self.dataQueue addObject:d];
-    [Yozio log:@"collect: %@", d];
+    [Yozio log:@"doCollect: %@", d];
   }
   [self checkDataQueueSize];
 }
