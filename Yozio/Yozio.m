@@ -125,25 +125,25 @@ static Yozio *instance = nil;
   
   // Add notification observers.
   NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
-  [notificationCenter addObserver:self
+  [notificationCenter addObserver:instance
                          selector:@selector(onApplicationWillTerminate:)
                              name:UIApplicationWillTerminateNotification
                            object:nil];
-  [notificationCenter addObserver:self
+  [notificationCenter addObserver:instance
                          selector:@selector(onApplicationDidBecomeActive:)
                              name:UIApplicationDidBecomeActiveNotification
                            object:nil];
-  [notificationCenter addObserver:self
+  [notificationCenter addObserver:instance
                          selector:@selector(onApplicationWillResignActive:)
                              name:UIApplicationWillResignActiveNotification
                            object:nil];
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_4_0
   if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]) {
-    [notificationCenter addObserver:self
+    [notificationCenter addObserver:instance
                            selector:@selector(onApplicationWillEnterForeground:)
                                name:UIApplicationWillEnterForegroundNotification
                              object:nil];
-    [notificationCenter addObserver:self
+    [notificationCenter addObserver:instance
                            selector:@selector(onApplicationDidEnterBackground:)
                                name:UIApplicationDidEnterBackgroundNotification
                              object:nil];
