@@ -92,6 +92,9 @@
   NSString *os;
   NSString *sessionId;
   NSString *schemaVersion;
+  NSString *countryName;
+  NSString *language;
+  NSNumber *timezone;
   NSString *experimentsStr;
   
   NSTimer *flushTimer;
@@ -116,6 +119,9 @@
 @property(nonatomic, retain) NSString *os;
 @property(nonatomic, retain) NSString *sessionId;
 @property(nonatomic, retain) NSString *schemaVersion;
+@property(nonatomic, retain) NSString *countryName;
+@property(nonatomic, retain) NSString *language;
+@property(nonatomic, retain) NSNumber *timezone;
 @property(nonatomic, retain) NSString *experimentsStr;
 // Internal variables.
 @property(nonatomic, retain) NSTimer *flushTimer;

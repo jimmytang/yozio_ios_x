@@ -21,6 +21,9 @@
 @synthesize os;
 @synthesize sessionId;
 @synthesize schemaVersion;
+@synthesize countryName;
+@synthesize language;
+@synthesize timezone;
 @synthesize experimentsStr;
 @synthesize flushTimer;
 @synthesize dataQueue;
@@ -96,6 +99,19 @@ static Yozio *instance = nil;
   instance.dataQueue = [NSMutableArray array];
   instance.dataCount = 0;
   instance.timers = [NSMutableDictionary dictionary];
+  
+  // Initialize country name.
+  NSLocale *locale = [NSLocale currentLocale];
+  NSString *countryCode = [locale objectForKey: NSLocaleCountryCode];
+  instance.countryName = [locale displayNameForKey:NSLocaleCountryCode value:countryCode];
+  
+  // Initialize language.
+  instance.language = [[NSLocale preferredLanguages] objectAtIndex:0];
+  
+  // Initialize timezone.
+  [NSTimeZone resetSystemTimeZone];
+  NSInteger timezoneOffset = [[NSTimeZone systemTimeZone] secondsFromGMT]/3600;
+  instance.timezone = [NSNumber numberWithInteger:timezoneOffset];
   
   // Initialize dateFormatter.
   NSTimeZone *gmt = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
@@ -271,7 +287,6 @@ static Yozio *instance = nil;
 
 - (void)onApplicationWillEnterForeground:(NSNotification *)notification
 {
-  // TODO(jt): start new session here?
 }
 
 - (void)onApplicationDidEnterBackground:(NSNotification *)notification
@@ -379,14 +394,6 @@ static Yozio *instance = nil;
 {
   // TODO(jt): compute real digest from shared key
   NSString *digest = @"";
-  NSLocale *locale = [NSLocale currentLocale];
-  NSString *countryCode = [locale objectForKey: NSLocaleCountryCode];
-  NSString *countryName = [locale displayNameForKey:NSLocaleCountryCode value:countryCode];
-  // TODO(jt): cache timezone calculation (assume users will be in same time zone for each session)
-  [NSTimeZone resetSystemTimeZone];
-  NSInteger timezoneOffset = [[NSTimeZone systemTimeZone] secondsFromGMT]/3600;
-  NSNumber *timezone = [NSNumber numberWithInteger:timezoneOffset];
-  
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
   [payload setValue:digest forKey:P_DIGEST];
   [payload setValue:self._env forKey:P_ENVIRONMENT];
@@ -394,13 +401,11 @@ static Yozio *instance = nil;
   [payload setValue:self.hardware forKey:P_HARDWARE];
   [payload setValue:self.os forKey:P_OPERATING_SYSTEM];
   [payload setValue:self.schemaVersion forKey:P_SCHEMA_VERSION];
-  [payload setValue:countryName forKey:P_COUNTRY];
-  // TODO(jt): cache language
-  [payload setValue:[[NSLocale preferredLanguages] objectAtIndex:0] forKey:P_LANGUAGE];
-  [payload setValue:timezone forKey:P_TIMEZONE];
+  [payload setValue:self.countryName forKey:P_COUNTRY];
+  [payload setValue:self.language forKey:P_LANGUAGE];
+  [payload setValue:self.timezone forKey:P_TIMEZONE];
   [payload setValue:[NSNumber numberWithInteger:[self.dataToSend count]] forKey:P_COUNT];
   [payload setValue:self.dataToSend forKey:P_PAYLOAD];
-  
   [Yozio log:@"payload: %@", payload];
   return [payload JSONString];
 }
