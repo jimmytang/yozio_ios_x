@@ -20,7 +20,7 @@
  *     Import Yozio.h in any file you wish to use Yozio.
  *     In your application delegate's applicationDidFinishLaunching method, configure Yozio:
  *
- *         [Yozio configure:@"snapette"
+ *         [Yozio configure:@"myappname"
  *              userId:@"MyUserId"
  *              env:@"production"
  *              appVersion:@"1.0.1"
