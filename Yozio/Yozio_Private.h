@@ -82,7 +82,7 @@
 
 @interface Yozio()
 {
-  NSString *_serverUrl;
+  NSString *_appName;
   NSString *_userId;
   NSString *_env;
   NSString *_appVersion;
@@ -109,7 +109,7 @@
 }
 
 // User variables that need to be set by user.
-@property(nonatomic, retain) NSString *_serverUrl;
+@property(nonatomic, retain) NSString *_appName;
 @property(nonatomic, retain) NSString *_userId;
 @property(nonatomic, retain) NSString *_env;
 @property(nonatomic, retain) NSString *_appVersion;

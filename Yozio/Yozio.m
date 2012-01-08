@@ -12,7 +12,7 @@
 
 @implementation Yozio
 
-@synthesize _serverUrl;
+@synthesize _appName;
 @synthesize _userId;
 @synthesize _env;
 @synthesize _appVersion;
@@ -120,16 +120,16 @@ static Yozio *instance = nil;
  * Public API.
  *******************************************/
 
-+ (void)configure:(NSString *)serverUrl
++ (void)configure:(NSString *)appName
     userId:(NSString *)userId
     env:(NSString *)env
     appVersion:(NSString *)appVersion
     exceptionHandler:(NSUncaughtExceptionHandler *)exceptionHandler
 {
-  if (serverUrl == NULL) {
-    [NSException raise:NSInvalidArgumentException format:@"serverUrl cannot be NULL."];
+  if (appName == NULL) {
+    [NSException raise:NSInvalidArgumentException format:@"appName cannot be NULL."];
   }
-  instance._serverUrl = serverUrl;
+  instance._appName = appName;
   instance._userId = userId;
   instance._env = env;
   instance._appVersion = appVersion;
@@ -295,9 +295,9 @@ static Yozio *instance = nil;
 
 - (BOOL)validateConfiguration
 {
-  BOOL validServerUrl = self._serverUrl != NULL;
+  BOOL validAppName = self._appName != NULL;
   BOOL validSession = self.sessionId != NULL;
-  if (!validServerUrl) {
+  if (!validAppName) {
     NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     NSLog(@"Please call [Yozio configure] before instrumenting.");
     NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -307,7 +307,7 @@ static Yozio *instance = nil;
     NSLog(@"Please call [Yozio newSession] before instrumenting.");
     NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
   }
-  return validServerUrl && validSession;
+  return validAppName && validSession;
 }
 
 - (void)doCollect:(NSString *)type
@@ -372,7 +372,7 @@ static Yozio *instance = nil;
   NSString *escapedUrlParams =
       [urlParams stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
   NSString *urlString =
-      [NSString stringWithFormat:@"%@/%@?%@", self._serverUrl, @"p.gif", escapedUrlParams];
+      [NSString stringWithFormat:@"http://d.%@.yozio.com/p.gif?%@", self._appName, escapedUrlParams];
   [Yozio log:@"Final get request url: %@", urlString];
   
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
@@ -566,8 +566,8 @@ static Yozio *instance = nil;
  */
 - (void)updateConfig
 {
-  if (self._serverUrl == NULL) {
-    [Yozio log:@"updateConfig NULL serverUrl"];
+  if (self._appName == NULL) {
+    [Yozio log:@"updateConfig NULL appName"];
     return;
   }
   if (self.deviceId == NULL) {
@@ -576,7 +576,7 @@ static Yozio *instance = nil;
   }
   NSString *urlParams = [NSString stringWithFormat:@"deviceId=%@", self.deviceId];
   NSString *urlString =
-      [NSString stringWithFormat:@"%@/%@?%@", self._serverUrl, @"configuration", urlParams];
+      [NSString stringWithFormat:@"http://c.%@.yozio.com/configuration.json?%@", self._appName, urlParams];
   [Yozio log:@"Final configuration request url: %@", urlString];
   
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];

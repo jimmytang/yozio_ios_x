@@ -20,7 +20,7 @@
  *     Import Yozio.h in any file you wish to use Yozio.
  *     In your application delegate's applicationDidFinishLaunching method, configure Yozio:
  *
- *         [Yozio configure:@"http://m.snapette.yozio.com"
+ *         [Yozio configure:@"snapette"
  *              userId:@"MyUserId"
  *              env:@"production"
  *              appVersion:@"1.0.1"
@@ -41,7 +41,7 @@
 /**
  * Configures Yozio with your application's information.
  *
- * @param serverUrl The server url we provided you for your application.
+ * @param appName The application name we provided you for your application.
  * @param userId The id of the user currently using your application. If your application
  *               does not support users, pass in an empty string.
  * @param env The environment that the application is currently running in. Possible values are
@@ -50,13 +50,13 @@
  * @param exceptionHandler A custom global uncaught exception handler for your application.
  *                         If you do not need to process uncaught exceptions, pass in nil.
  *
- * @example [Yozio configure:@"http://m.snapette.yozio.com"
+ * @example [Yozio configure:@"appName"
  *              userId:@"MyUserId"
  *              env:@"production"
  *              appVersion:@"1.0.1"
  *              exceptionHandler:&myExceptionHandler];
  */
-+ (void)configure:(NSString *)serverUrl
++ (void)configure:(NSString *)appName
     userId:(NSString *)userId
     env:(NSString *)env
     appVersion:(NSString *)appVersion
