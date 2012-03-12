@@ -339,18 +339,25 @@ static Yozio *instance = nil;
     NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                   type, D_TYPE,
                                   name, D_NAME,
-                                  amount, D_REVENUE,
                                   @"", D_REVENUE_CURRENCY,
                                   category, D_CATEGORY,
                                   [self deviceOrientation], D_DEVICE_ORIENTATION,
                                   [self uiOrientation], D_UI_ORIENTATION,
                                   self._userId, D_USER_ID,
                                   self._appVersion, D_APP_VERSION,
-                                  self.sessionId, D_SESSION_ID,
-                                  self.experimentsStr, D_EXPERIMENTS,
                                   [self timeStampString], D_TIMESTAMP,
                                   [NSNumber numberWithInteger:dataCount], D_ID,
                                   nil];
+    if (amount) {
+      [d setValue:amount forKey:D_REVENUE]; 
+    }
+    if (self.experimentsStr) {
+      [d setValue:self.experimentsStr forKey:D_EXPERIMENTS]; 
+    }
+    if(self.sessionId) {
+      [d setValue:self.sessionId forKey:D_SESSION_ID]; 
+    }
+    
     [self.dataQueue addObject:d];
     [Yozio log:@"doCollect: %@", d];
   }
@@ -394,6 +401,7 @@ static Yozio *instance = nil;
     if (error) {
       [Yozio log:@"Flush error %@", error];
     } else {
+      
       if ([response statusCode] == 200) {
         [Yozio log:@"Before remove: %@", self.dataQueue];
         [self.dataQueue removeObject:self.dataToSend];
@@ -437,7 +445,12 @@ static Yozio *instance = nil;
 
 - (NSString *)timeStampString
 {
-  NSString *timeStamp = [dateFormatter stringFromDate:[NSDate date]];
+  NSTimeZone *gmt = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+  NSDateFormatter *tmpDateFormatter = [[NSDateFormatter alloc] init];
+  instance.dateFormatter = tmpDateFormatter;
+  [instance.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss SSS"];
+  [instance.dateFormatter setTimeZone:gmt];
+  NSString *timeStamp = [instance.dateFormatter stringFromDate:[NSDate date]];
   return timeStamp;
 }
 

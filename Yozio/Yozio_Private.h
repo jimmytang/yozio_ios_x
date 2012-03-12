@@ -9,7 +9,7 @@
 
 #import "Yozio.h"
 
-#define TRACKING_SERVER_URL @"p.yozio.com:8080"
+#define TRACKING_SERVER_URL @"ec2-50-18-34-219.us-west-1.compute.amazonaws.com:8080"
 #define CONFIGURATION_SERVER_URL @"c.yozio.com"
 
 
