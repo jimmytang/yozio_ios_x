@@ -13,7 +13,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0E39604D1465155A0087D86A"
+               BlueprintIdentifier = "0E7848A1146A7468004269C5"
                BuildableName = "libYozio.a"
                BlueprintName = "Yozio"
                ReferencedContainer = "container:Yozio.xcodeproj">
@@ -31,7 +31,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0E39605D1465155A0087D86A"
+               BlueprintIdentifier = "0E7848B1146A7468004269C5"
                BuildableName = "YozioTests.octest"
                BlueprintName = "YozioTests"
                ReferencedContainer = "container:Yozio.xcodeproj">
@@ -44,7 +44,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.GDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
       <AdditionalOptions>
