@@ -9,33 +9,47 @@
 
 #import "Yozio.h"
 
+#define TRACKING_SERVER_URL @"ec2-50-18-34-219.us-west-1.compute.amazonaws.com:8080"
+#define CONFIGURATION_SERVER_URL @"c.yozio.com"
+
+
+
+
+
 #define UNCAUGHT_EXCEPTION_CATEGORY @"uncaught"
 
 // Set to true to show log messages.
 #define YOZIO_LOG true
 
 // Payload keys.
-#define P_ENVIRONMENT @"e"
+#define P_APP_KEY @"ak"
+#define P_ENVIRONMENT @"env"
 #define P_DIGEST @"di"
 #define P_DEVICE_ID @"de"
 #define P_HARDWARE @"h"
 #define P_OPERATING_SYSTEM @"os"
-#define P_SCHEMA_VERSION @"s"
+#define P_SCHEMA_VERSION @"sv"
 #define P_COUNTRY @"c"
 #define P_LANGUAGE @"l"
-#define P_TIMEZONE @"t"
-#define P_COUNT @"ct"
-#define P_PAYLOAD @"p"
+#define P_TIMEZONE @"tz"
+#define P_TIME_PERIOD @"tp"
+#define P_CARRIER @"car"
+#define P_CAMPAIGN_SOURCE @"cs"
+#define P_CAMPAIGN_MEDIUM @"cm"
+#define P_CAMPAIGN_TERM @"ct"
+#define P_CAMPAIGN_CONTENT @"cc"
+#define P_CAMPAIGN_NAME @"cn"
 
 // Payload data entry keys.
 #define D_TYPE @"t"
-#define D_KEY @"k"
-#define D_VALUE @"v"
+#define D_NAME @"n"
+#define D_REVENUE @"r"
+#define D_REVENUE_CURRENCY @"rc"
 #define D_CATEGORY @"c"
 #define D_DEVICE_ORIENTATION @"o"
 #define D_UI_ORIENTATION @"uo"
 #define D_USER_ID @"u"
-#define D_APP_VERSION @"a"
+#define D_APP_VERSION @"v"
 #define D_SESSION_ID @"s"
 #define D_EXPERIMENTS @"e"
 #define D_TIMESTAMP @"ts"
@@ -60,7 +74,7 @@
 
 // TODO(jt): make these numbers configurable instead of macros
 // The number of items in the queue before forcing a flush.
-#define FLUSH_DATA_COUNT 15
+#define FLUSH_DATA_COUNT 1
 // XX_DATA_LIMIT describes the required number of items in the queue before that instrumentation
 // event type starts being dropped.
 #define TIMER_DATA_LIMIT 5000
@@ -82,11 +96,16 @@
 
 @interface Yozio()
 {
-  NSString *_appName;
+  NSString *_appKey;
   NSString *_userId;
   NSString *_env;
   NSString *_appVersion;
-  
+  NSString *_campaignSource;
+  NSString *_campaignMedium;
+  NSString *_campaignTerm;
+  NSString *_campaignContent;
+  NSString *_campaignName;
+
   NSString *deviceId;
   NSString *hardware;
   NSString *os;
@@ -99,7 +118,7 @@
   
   NSTimer *flushTimer;
   NSMutableArray *dataQueue;
-  NSArray *dataToSend;
+  NSMutableDictionary *dataToSend;
   NSInteger dataCount;
   NSMutableDictionary *timers;
   NSMutableDictionary *config;
@@ -109,10 +128,15 @@
 }
 
 // User variables that need to be set by user.
-@property(nonatomic, retain) NSString *_appName;
+@property(nonatomic, retain) NSString *_appKey;
 @property(nonatomic, retain) NSString *_userId;
 @property(nonatomic, retain) NSString *_env;
 @property(nonatomic, retain) NSString *_appVersion;
+@property(nonatomic, retain) NSString *_campaignSource;
+@property(nonatomic, retain) NSString *_campaignMedium;
+@property(nonatomic, retain) NSString *_campaignTerm;
+@property(nonatomic, retain) NSString *_campaignContent;
+@property(nonatomic, retain) NSString *_campaignName;
 // User variables that can be figured out.
 @property(nonatomic, retain) NSString *deviceId;
 @property(nonatomic, retain) NSString *hardware;
@@ -126,7 +150,7 @@
 // Internal variables.
 @property(nonatomic, retain) NSTimer *flushTimer;
 @property(nonatomic, retain) NSMutableArray *dataQueue;
-@property(nonatomic, retain) NSArray *dataToSend;
+@property(nonatomic, retain) NSMutableDictionary *dataToSend;
 @property(nonatomic, assign) NSInteger dataCount;
 @property(nonatomic, retain) NSMutableDictionary *timers;
 @property(nonatomic, retain) NSMutableDictionary *config;
@@ -143,8 +167,8 @@
 // Helper methods.
 - (BOOL)validateConfiguration;
 - (void)doCollect:(NSString *)type
-              key:(NSString *)key
-            value:(NSString *)value
+             name:(NSString *)name
+            amount:(NSString *)amount
          category:(NSString *)category
          maxQueue:(NSInteger)maxQueue;
 - (void)checkDataQueueSize;
