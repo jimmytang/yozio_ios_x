@@ -348,6 +348,7 @@ static Yozio *instance = nil;
                                   [self timeStampString], D_TIMESTAMP,
                                   [NSNumber numberWithInteger:dataCount], D_ID,
                                   nil];
+// these values are often NULL but NSDictionaries cannot take in NULL values. Make it pass in empty string.
     if (amount) {
       [d setValue:amount forKey:D_REVENUE]; 
     }
@@ -404,6 +405,7 @@ static Yozio *instance = nil;
       
       if ([response statusCode] == 200) {
         [Yozio log:@"Before remove: %@", self.dataQueue];
+
         [self.dataQueue removeObject:self.dataToSend];
         [Yozio log:@"After remove: %@", self.dataQueue];
         // TODO(jt): stop background task if running in background
