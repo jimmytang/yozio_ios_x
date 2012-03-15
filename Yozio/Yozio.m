@@ -43,7 +43,7 @@
  * Initialization.
  *******************************************/
 
-static Yozio *instance = nil; 
+static Yozio *instance = nil;
 
 + (void)initialize
 {
@@ -55,7 +55,7 @@ static Yozio *instance = nil;
 - (id)init
 {
   self = [super init];
-  
+
   UIDevice* device = [UIDevice currentDevice];
   instance.hardware = device.model;
   instance.os = [device systemVersion];
@@ -64,7 +64,7 @@ static Yozio *instance = nil;
   instance.dataQueue = [NSMutableArray array];
   instance.dataCount = 0;
   instance.timers = [NSMutableDictionary dictionary];
-  
+
   // Initialize dateFormatter.
   NSTimeZone *gmt = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
   NSDateFormatter *tmpDateFormatter = [[NSDateFormatter alloc] init];
@@ -72,10 +72,10 @@ static Yozio *instance = nil;
   [instance.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss SSS"];
   [instance.dateFormatter setTimeZone:gmt];
   [tmpDateFormatter release];
-  
+
   // Initialize device id.
   [instance loadOrCreateDeviceId];
-  
+
   // Add notification observers.
   NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
   [notificationCenter addObserver:self
@@ -98,7 +98,7 @@ static Yozio *instance = nil;
                              object:nil];
   }
 #endif
-  
+
   return self;
 }
 
@@ -149,12 +149,12 @@ static Yozio *instance = nil;
   instance._campaignContent = campaignContent;
   instance._campaignName = campaignName;
   InstallUncaughtExceptionHandler(exceptionHandler);
-  
+
   [instance updateCountryName];
   [instance updateLanguage];
   [instance updateTimezone];
   [instance updateConfig];
-  
+
   if (instance.flushTimer == NULL) {
     instance.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_INTERVAL_SEC
                                                            target:instance
@@ -162,12 +162,17 @@ static Yozio *instance = nil;
                                                          userInfo:nil
                                                           repeats:YES];
   }
-  
+
   // Load any previous data and try to flush it.
   // Perform this here instead of on applicationDidFinishLoading because instrumentation calls
-  // could be made before an applciation is finished loading.
+  // could be made before an application is finished loading.
   [instance loadUnsentData];
   [instance doFlush];
+}
+
++ (void)setUserId:(NSString *)userId
+{
+  instance._userId = userId;
 }
 
 + (void)newSession
@@ -350,15 +355,15 @@ static Yozio *instance = nil;
                                   nil];
 // these values are often NULL but NSDictionaries cannot take in NULL values. Make it pass in empty string.
     if (amount) {
-      [d setValue:amount forKey:D_REVENUE]; 
+      [d setValue:amount forKey:D_REVENUE];
     }
     if (self.experimentsStr) {
-      [d setValue:self.experimentsStr forKey:D_EXPERIMENTS]; 
+      [d setValue:self.experimentsStr forKey:D_EXPERIMENTS];
     }
     if(self.sessionId) {
-      [d setValue:self.sessionId forKey:D_SESSION_ID]; 
+      [d setValue:self.sessionId forKey:D_SESSION_ID];
     }
-    
+
     [self.dataQueue addObject:d];
     [Yozio log:@"doCollect: %@", d];
   }
@@ -369,7 +374,7 @@ static Yozio *instance = nil;
 {
   [Yozio log:@"data queue size: %i",[self.dataQueue count]];
   if ([self.dataQueue count] > 0 && [self.dataQueue count] % FLUSH_DATA_COUNT == 0) {
-    [self doFlush]; 
+    [self doFlush];
   }
 }
 
@@ -390,19 +395,19 @@ static Yozio *instance = nil;
   // TODO(jt): try to avoid having to escape urlParams if possible
   NSString *escapedUrlParams =
       [urlParams stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
- 
+
   NSString *urlString =
       [NSString stringWithFormat:@"http://%@/p.gif?%@", TRACKING_SERVER_URL, escapedUrlParams];
-  
-  
+
+
   [Yozio log:@"Final get request url: %@", urlString];
-  
+
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
   [Seriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
     if (error) {
       [Yozio log:@"Flush error %@", error];
     } else {
-      
+
       if ([response statusCode] == 200) {
         [Yozio log:@"Before remove: %@", self.dataQueue];
 
@@ -524,7 +529,7 @@ static Yozio *instance = nil;
 {
   self.dataQueue = [NSKeyedUnarchiver unarchiveObjectWithFile:DATA_QUEUE_FILE];
   if (!self.dataQueue)  {
-    self.dataQueue = [NSMutableArray array];    
+    self.dataQueue = [NSMutableArray array];
   }
   [Yozio log:@"loadUnsentData: %@", self.dataQueue];
 }
@@ -546,7 +551,7 @@ static Yozio *instance = nil;
     [Yozio log:@"deviceId: %@", self.deviceId];
     return self.deviceId;
   }
-  
+
   NSError *loadError = nil;
   NSString *uuid = [SFHFKeychainUtils getPasswordForUsername:UUID_KEYCHAIN_USERNAME
                                               andServiceName:KEYCHAIN_SERVICE
@@ -617,10 +622,10 @@ static Yozio *instance = nil;
   NSString *urlString =
       [NSString stringWithFormat:@"http://%@/configuration.json?%@", CONFIGURATION_SERVER_URL, urlParams];
 
-  
-  
+
+
   [Yozio log:@"Final configuration request url: %@", urlString];
-  
+
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
   [Seriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
     if (error) {

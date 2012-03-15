@@ -65,8 +65,8 @@
  *              campaignContent:"content",
  *              campaignName:"12873",
 
- 
- 
+
+
  *              exceptionHandler:&myExceptionHandler];
  */
 + (void)configure:(NSString *)appKey
@@ -81,6 +81,14 @@
 
     exceptionHandler:(NSUncaughtExceptionHandler *)exceptionHandler;
 
+/**
+ * Call this method when the userId becomes available.
+ *
+ * @param userId The id of the user currently using your application.
+ *
+ * @example [Yozio setUserId:@"MyUserId"
+ */
++ (void)setUserId:(NSString *)userId;
 
 /**
  * TODO(jt): document
@@ -132,7 +140,7 @@
  *
  *          ...later on...
  *
- *          // User enterd shipping and billing information
+ *          // User entered shipping and billing information
  *          [Yozio funnel:@"Checkout" category:@"MyCategory"];
  *
  *          ...later on...
@@ -170,7 +178,6 @@
  * Instruments an error in your application.
  *
  * @param errorName The name of the error.
- * @param message The message associated with the error.
  * @param category The category to group this event under.
  *
  * @example NSError *error = ...;
@@ -183,7 +190,7 @@
  * Convenience method for instrumenting caught exceptions.
  * Calling this exception is the equivalent of calling the error method with:
  *
- *    [Yozio error:exceptionName message:exceptionReason category:category]
+ *    [Yozio exception:theException category:@"MyCategory"]
  *
  * @param exception The caught exception to instrument.
  * @param category The category to group this event under.
@@ -207,7 +214,7 @@
  * @param amount The amount of the event to instrument.
  * @param category The category to group this event under.
  *
- * @example [Yozio collect:@"SomeEvent" value:@"SomeValue" category:@"MyCategory"];
+ * @example [Yozio collect:@"SomeEvent" amount:@"SomeValue" category:@"MyCategory"];
  */
 + (void)collect:(NSString *)name amount:(NSString *)amount category:(NSString *)category;
 
