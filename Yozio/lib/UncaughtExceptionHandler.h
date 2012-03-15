@@ -25,7 +25,12 @@
 /**
  * Call this method to set everything up.
  */
-void InstallUncaughtExceptionHandler(NSUncaughtExceptionHandler *customExceptionHandler);
+void InstallUncaughtExceptionHandler();
+
+/**
+ * Set a custom exception handler.
+ */
+void SetCustomExceptionHandler(NSUncaughtExceptionHandler *customExceptionHandler);
 
 /**
  * Private handler methods.

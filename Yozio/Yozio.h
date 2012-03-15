@@ -20,16 +20,15 @@
  *     Import Yozio.h in any file you wish to use Yozio.
  *     In your application delegate's applicationDidFinishLaunching method, configure Yozio:
  *
- *         [Yozio configure:@"myappKey"
- *              userId:@"MyUserId"
- *              env:@"production"
- *              appVersion:@"1.0.1"
- *              campaignSource:"google",
- *              campaignMedium:"cpc",
- *              campaignTerm:"twitter bird jump",
- *              campaignContent:"content",
- *              campaignName:"12873",
- *              exceptionHandler:&myExceptionHandler];
+ *         TODO(jt): use more realistic configure example
+ *         [Yozio configure:@"appKey" secretKey:@"mySecretKey"];
+ *
+ *     Optionally set additional application information.
+ *         [Yozio setApplicationVersion:@"1.0.1"];
+ *         TODO(jt): add other optional setters here
+ *         
+ *
+ *     TODO(jt): possibly add campaign example
  *
  *     If you already set a global uncaught exception (NSSetUncaughtExceptionHandler), remove that
  *     code and pass your exception handler into the configure method.
@@ -46,40 +45,62 @@
 /**
  * Configures Yozio with your application's information.
  *
- * @param appKey The application name we provided you for your application.
- * @param userId The id of the user currently using your application. If your application
- *               does not support users, pass in an empty string.
- * @param env The environment that the application is currently running in. Possible values are
- *            "production" or "sandbox".
- * @param appVersion The current version of your application.
- * @param exceptionHandler A custom global uncaught exception handler for your application.
- *                         If you do not need to process uncaught exceptions, pass in nil.
+ * @param appKey  The application name we provided you for your application.
+ * @param secretKey  The top secret key that only you know about. Don't share this with others!
  *
- * @example [Yozio configure:@"appKey"
- *              userId:@"MyUserId"
- *              env:@"production"
- *              appVersion:@"1.0.1"
- *              campaignSource:"google",
- *              campaignMedium:"cpc",
- *              campaignTerm:"twitter bird jump",
- *              campaignContent:"content",
- *              campaignName:"12873",
-
- 
- 
- *              exceptionHandler:&myExceptionHandler];
+ * TODO(jt): use more realistic configure example
+ * @example [Yozio configure:@"appKey" secretKey:@"mySecretKey"];
  */
-+ (void)configure:(NSString *)appKey
-           userId:(NSString *)userId
-              env:(NSString *)env
-       appVersion:(NSString *)appVersion
-  campaignSource :(NSString *)campaignSource
-  campaignMedium :(NSString *)campaignMedium
-    campaignTerm :(NSString *)campaignTerm
- campaignContent :(NSString *)campaignContent
-    campaignName :(NSString *)campaignName
++ (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey;
 
-    exceptionHandler:(NSUncaughtExceptionHandler *)exceptionHandler;
+
+/**
+ * Set the application version. This allows you to segment your instrumented data across your
+ * different application versions.
+ *
+ * @param appVersion  The version of your application.
+ *
+ * @example [Yozio setApplicationVersion:@"1.0.1"];
+ */
++ (void)setApplicationVersion:(NSString *)appVersion;
+
+
+/**
+ * TODO(jt): do we need this?
+ */
++ (void)setEnvironment:(NSString *)environment;
+
+
+/**
+ * Set the id of the user using the application. This is useful for applications where the
+ * application user can be identified by some sort of id (i.e. user name, email address, etc).
+ *
+ * @param userId  The id of the user currently using the application.
+ *
+ * @example [Yozio setUserId:self.userEmailAddress];
+ */
++ (void)setUserId:(NSString *)userId;
+
+
+/**
+ * TODO(jt): do we actually need this?
+ * TODO(jt): document this
+ */
++ (void)setCampaign:(NSString *)campaignName
+     campaignSource:(NSString *)campaignSource
+     campaignMedium:(NSString *)campaignMedium
+       campaignTerm:(NSString *)campaignTerm
+    campaignContent:(NSString *)campaignContent;
+
+
+/**
+ * Registers a global exception handler to handle uncaught exceptions in your application.
+ *
+ * @param exceptionHandler  The NSUncaughtExceptionHandler to handle all uncaught exceptions.
+ *
+ * @example [Yozio setUncaughtExceptionHandler:&myExceptionHandler];
+ */
++ (void)setUncaughtExceptionHandler:(NSUncaughtExceptionHandler *)exceptionHandler;
 
 
 /**
@@ -197,19 +218,6 @@
  *          }
  */
 + (void)exception:(NSException *)exception category:(NSString *)category;
-
-
-/**
- * A general instrumentation method. Used to instrument miscellaneous events. Only use this if
- * none of the other methods can be used.
- *
- * @param name The name of the event to instrument.
- * @param amount The amount of the event to instrument.
- * @param category The category to group this event under.
- *
- * @example [Yozio collect:@"SomeEvent" value:@"SomeValue" category:@"MyCategory"];
- */
-+ (void)collect:(NSString *)name amount:(NSString *)amount category:(NSString *)category;
 
 
 /**

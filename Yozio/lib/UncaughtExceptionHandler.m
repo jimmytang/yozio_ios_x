@@ -130,9 +130,9 @@ void SignalHandler(int signal)
 		waitUntilDone:YES];
 }
 
-void InstallUncaughtExceptionHandler(NSUncaughtExceptionHandler *customExceptionHandler)
+void InstallUncaughtExceptionHandler()
 {
-  _customExceptionHandler = customExceptionHandler;
+  _customExceptionHandler = nil;
 	NSSetUncaughtExceptionHandler(&HandleException);
 	signal(SIGABRT, SignalHandler);
 	signal(SIGILL, SignalHandler);
@@ -142,3 +142,7 @@ void InstallUncaughtExceptionHandler(NSUncaughtExceptionHandler *customException
 	signal(SIGPIPE, SignalHandler);
 }
 
+void SetCustomExceptionHandler(NSUncaughtExceptionHandler *customExceptionHandler)
+{
+  _customExceptionHandler = customExceptionHandler;
+}

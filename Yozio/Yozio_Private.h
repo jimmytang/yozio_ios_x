@@ -11,11 +11,6 @@
 
 #define TRACKING_SERVER_URL @"ec2-50-18-34-219.us-west-1.compute.amazonaws.com:8080"
 #define CONFIGURATION_SERVER_URL @"c.yozio.com"
-
-
-
-
-
 #define UNCAUGHT_EXCEPTION_CATEGORY @"uncaught"
 
 // Set to true to show log messages.
@@ -32,7 +27,6 @@
 #define P_COUNTRY @"c"
 #define P_LANGUAGE @"l"
 #define P_TIMEZONE @"tz"
-#define P_TIME_PERIOD @"tp"
 #define P_CARRIER @"car"
 #define P_CAMPAIGN_SOURCE @"cs"
 #define P_CAMPAIGN_MEDIUM @"cm"
@@ -43,13 +37,14 @@
 // Payload data entry keys.
 #define D_TYPE @"t"
 #define D_NAME @"n"
+#define D_CATEGORY @"c"
 #define D_REVENUE @"r"
 #define D_REVENUE_CURRENCY @"rc"
-#define D_CATEGORY @"c"
+#define D_TIME_INTERVAL @"ti"
 #define D_DEVICE_ORIENTATION @"o"
 #define D_UI_ORIENTATION @"uo"
-#define D_USER_ID @"u"
 #define D_APP_VERSION @"v"
+#define D_USER_ID @"u"
 #define D_SESSION_ID @"s"
 #define D_EXPERIMENTS @"e"
 #define D_TIMESTAMP @"ts"
@@ -97,6 +92,7 @@
 @interface Yozio()
 {
   NSString *_appKey;
+  NSString *_secretKey;
   NSString *_userId;
   NSString *_env;
   NSString *_appVersion;
@@ -129,6 +125,7 @@
 
 // User variables that need to be set by user.
 @property(nonatomic, retain) NSString *_appKey;
+@property(nonatomic, retain) NSString *_secretKey;
 @property(nonatomic, retain) NSString *_userId;
 @property(nonatomic, retain) NSString *_env;
 @property(nonatomic, retain) NSString *_appVersion;
@@ -168,8 +165,9 @@
 - (BOOL)validateConfiguration;
 - (void)doCollect:(NSString *)type
              name:(NSString *)name
-            amount:(NSString *)amount
          category:(NSString *)category
+           amount:(NSString *)amount
+     timeInterval:(NSString *)timeInterval
          maxQueue:(NSInteger)maxQueue;
 - (void)checkDataQueueSize;
 - (void)doFlush;

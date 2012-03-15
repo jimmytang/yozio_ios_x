@@ -13,6 +13,7 @@
 @implementation Yozio
 
 @synthesize _appKey;
+@synthesize _secretKey;
 @synthesize _userId;
 @synthesize _env;
 @synthesize _appVersion;
@@ -61,6 +62,17 @@ static Yozio *instance = nil;
   instance.os = [device systemVersion];
   // TODO(jt): schemaVersion
   instance.schemaVersion = @"";
+  instance.experimentsStr = @"";
+  instance.sessionId = @"";
+  instance._appVersion = @"";
+  instance._env = @"";
+  instance._userId = @"";
+  instance._campaignName = @"";
+  instance._campaignSource = @"";
+  instance._campaignMedium = @"";
+  instance._campaignTerm = @"";
+  instance._campaignContent = @"";
+  
   instance.dataQueue = [NSMutableArray array];
   instance.dataCount = 0;
   instance.timers = [NSMutableDictionary dictionary];
@@ -125,35 +137,23 @@ static Yozio *instance = nil;
  * Public API.
  *******************************************/
 
-+ (void)configure:(NSString *)appKey
-    userId:(NSString *)userId
-    env:(NSString *)env
-    appVersion:(NSString *)appVersion
-    campaignSource :(NSString *)campaignSource
-    campaignMedium :(NSString *)campaignMedium
-    campaignTerm :(NSString *)campaignTerm
-    campaignContent :(NSString *)campaignContent
-    campaignName :(NSString *)campaignName
-    exceptionHandler:(NSUncaughtExceptionHandler *)exceptionHandler
++ (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey
 {
   if (appKey == NULL) {
     [NSException raise:NSInvalidArgumentException format:@"appKey cannot be NULL."];
   }
+  if (secretKey == NULL) {
+    [NSException raise:NSInvalidArgumentException format:@"secretKey cannot be NULL."];
+  }
   instance._appKey = appKey;
-  instance._userId = userId;
-  instance._env = env;
-  instance._appVersion = appVersion;
-  instance._campaignSource = campaignSource;
-  instance._campaignMedium = campaignMedium;
-  instance._campaignTerm = campaignTerm;
-  instance._campaignContent = campaignContent;
-  instance._campaignName = campaignName;
-  InstallUncaughtExceptionHandler(exceptionHandler);
+  instance._secretKey = secretKey;
   
   [instance updateCountryName];
   [instance updateLanguage];
   [instance updateTimezone];
   [instance updateConfig];
+  
+  InstallUncaughtExceptionHandler();
   
   if (instance.flushTimer == NULL) {
     instance.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_INTERVAL_SEC
@@ -170,6 +170,66 @@ static Yozio *instance = nil;
   [instance doFlush];
 }
 
++ (void)setApplicationVersion:(NSString *)appVersion
+{
+  if (appVersion == NULL) {
+    [NSException raise:NSInvalidArgumentException format:@"appVersion cannot be NULL."];
+  }
+  instance._appVersion = appVersion;
+}
+
++ (void)setEnvironment:(NSString *)environment
+{
+  if (environment == NULL) {
+    [NSException raise:NSInvalidArgumentException format:@"environment cannot be NULL."];
+  }
+  instance._env = environment;
+}
+
++ (void)setUserId:(NSString *)userId
+{
+  if (userId == NULL) {
+    [NSException raise:NSInvalidArgumentException format:@"userId cannot be NULL."];
+  }
+  instance._userId = userId;
+}
+
++ (void)setCampaign:(NSString *)campaignName
+     campaignSource:(NSString *)campaignSource
+     campaignMedium:(NSString *)campaignMedium
+       campaignTerm:(NSString *)campaignTerm
+    campaignContent:(NSString *)campaignContent
+{
+  if (campaignName == NULL) {
+    [NSException raise:NSInvalidArgumentException format:@"campaignName cannot be NULL."];
+  }
+  if (campaignSource == NULL) {
+    [NSException raise:NSInvalidArgumentException format:@"campaignSource cannot be NULL."];
+  }
+  if (campaignMedium == NULL) {
+    [NSException raise:NSInvalidArgumentException format:@"campaignMedium cannot be NULL."];
+  }
+  if (campaignTerm == NULL) {
+    [NSException raise:NSInvalidArgumentException format:@"campaignTerm cannot be NULL."];
+  }
+  if (campaignContent == NULL) {
+    [NSException raise:NSInvalidArgumentException format:@"campaignContent cannot be NULL."];
+  }
+  instance._campaignName = campaignName;
+  instance._campaignSource = campaignSource;
+  instance._campaignMedium = campaignMedium;
+  instance._campaignTerm = campaignTerm;
+  instance._campaignContent = campaignContent;
+}
+
++ (void)setUncaughtExceptionHandler:(NSUncaughtExceptionHandler *)exceptionHandler
+{
+  if (exceptionHandler == NULL) {
+    [NSException raise:NSInvalidArgumentException format:@"exceptionHandler cannot be NULL."];
+  }
+  SetCustomExceptionHandler(exceptionHandler);
+}
+
 + (void)newSession
 {
   instance.sessionId = [instance makeUUID];
@@ -183,14 +243,16 @@ static Yozio *instance = nil;
 + (void)endTimer:(NSString *)timerName category:(NSString *)category
 {
   NSDate *startTime = [instance.timers valueForKey:timerName];
+  // Ignore if the timer was cleared (i.e. app went into background).
   if (startTime != NULL) {
     [instance.timers removeObjectForKey:timerName];
     float elapsedTime = [[NSDate date] timeIntervalSinceDate:startTime];
     NSString *elapsedTimeStr = [NSString stringWithFormat:@"%.2f", elapsedTime];
     [instance doCollect:T_TIMER
-                    name:timerName
-                  amount:elapsedTimeStr
+                   name:timerName
                category:category
+                 amount:@""
+           timeInterval:elapsedTimeStr
                maxQueue:TIMER_DATA_LIMIT];
   }
 }
@@ -198,9 +260,10 @@ static Yozio *instance = nil;
 + (void)funnel:(NSString *)funnelName category:(NSString *)category
 {
   [instance doCollect:T_FUNNEL
-                  name:funnelName
-                amount:NULL
+                 name:funnelName
              category:category
+               amount:@""
+         timeInterval:@""
              maxQueue:FUNNEL_DATA_LIMIT];
 }
 
@@ -208,43 +271,36 @@ static Yozio *instance = nil;
 {
   NSString *stringCost = [NSString stringWithFormat:@"%d", cost];
   [instance doCollect:T_REVENUE
-                  name:itemName
-                amount:stringCost
+                 name:itemName
              category:category
+               amount:stringCost
+         timeInterval:@""
              maxQueue:REVENUE_DATA_LIMIT];
 }
 
 + (void)action:(NSString *)actionName category:(NSString *)category
 {
   [instance doCollect:T_ACTION
-                  name:actionName
-                amount:NULL
+                 name:actionName
              category:category
+               amount:@""
+         timeInterval:@""
              maxQueue:ACTION_DATA_LIMIT];
 }
 
 + (void)error:(NSString *)errorName category:(NSString *)category
 {
   [instance doCollect:T_ERROR
-                  name:errorName
-                amount:NULL
+                 name:errorName
              category:category
+               amount:@""
+         timeInterval:@""
              maxQueue:ERROR_DATA_LIMIT];
 }
 
 + (void)exception:(NSException *)exception category:(NSString *)category
 {
-  [Yozio error:[exception name]
-      category:category];
-}
-
-+ (void)collect:(NSString *)name amount:(NSString *)amount category:(NSString *)category
-{
-  [instance doCollect:T_COLLECT
-                  name:name
-                amount:amount
-             category:category
-             maxQueue:COLLECT_DATA_LIMIT];
+  [Yozio error:[exception name] category:category];
 }
 
 + (void)flush
@@ -296,7 +352,7 @@ static Yozio *instance = nil;
 
 - (void)onApplicationDidEnterBackground:(NSNotification *)notification
 {
-  // TODO(jt): flush data in background task
+  // TODO(jt): flush data in a background task
 }
 
 // TODO(jt): listen to memory warnings and significant time change?
@@ -325,9 +381,10 @@ static Yozio *instance = nil;
 }
 
 - (void)doCollect:(NSString *)type
-              name:(NSString *)name
-            amount:(NSString *)amount
+             name:(NSString *)name
          category:(NSString *)category
+           amount:(NSString *)amount
+     timeInterval:(NSString *)timeInterval
          maxQueue:(NSInteger)maxQueue
 {
   if (![self validateConfiguration]) {
@@ -336,29 +393,24 @@ static Yozio *instance = nil;
   // Increment dataCount even if we don't add to data queue so we know how much data we missed.
   dataCount++;
   if ([self.dataQueue count] < maxQueue) {
-    NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                  type, D_TYPE,
-                                  name, D_NAME,
-                                  @"", D_REVENUE_CURRENCY,
-                                  category, D_CATEGORY,
-                                  [self deviceOrientation], D_DEVICE_ORIENTATION,
-                                  [self uiOrientation], D_UI_ORIENTATION,
-                                  self._userId, D_USER_ID,
-                                  self._appVersion, D_APP_VERSION,
-                                  [self timeStampString], D_TIMESTAMP,
-                                  [NSNumber numberWithInteger:dataCount], D_ID,
-                                  nil];
-// these values are often NULL but NSDictionaries cannot take in NULL values. Make it pass in empty string.
-    if (amount) {
-      [d setValue:amount forKey:D_REVENUE]; 
-    }
-    if (self.experimentsStr) {
-      [d setValue:self.experimentsStr forKey:D_EXPERIMENTS]; 
-    }
-    if(self.sessionId) {
-      [d setValue:self.sessionId forKey:D_SESSION_ID]; 
-    }
-    
+    NSMutableDictionary *d =
+        [NSMutableDictionary dictionaryWithObjectsAndKeys:
+            type, D_TYPE,
+            name, D_NAME,
+            category, D_CATEGORY,
+            amount, D_REVENUE,
+            // TODO(jt): move to instance variable
+            @"", D_REVENUE_CURRENCY,
+            timeInterval, D_TIME_INTERVAL,
+            [self deviceOrientation], D_DEVICE_ORIENTATION,
+            [self uiOrientation], D_UI_ORIENTATION,
+            self._appVersion, D_APP_VERSION,
+            self._userId, D_USER_ID,
+            self.sessionId, D_SESSION_ID,
+            self.experimentsStr, D_EXPERIMENTS,
+            [self timeStampString], D_TIMESTAMP,
+            [NSNumber numberWithInteger:dataCount], D_ID,
+            nil];
     [self.dataQueue addObject:d];
     [Yozio log:@"doCollect: %@", d];
   }
@@ -432,7 +484,6 @@ static Yozio *instance = nil;
   [payload setValue:self.countryName forKey:P_COUNTRY];
   [payload setValue:self.language forKey:P_LANGUAGE];
   [payload setValue:self.timezone forKey:P_TIMEZONE];
-  [payload setValue:@"" forKey:P_TIME_PERIOD];
 
   [payload setValue:self._campaignSource forKey:P_CAMPAIGN_SOURCE];
   [payload setValue:self._campaignMedium forKey:P_CAMPAIGN_MEDIUM];
@@ -451,6 +502,7 @@ static Yozio *instance = nil;
   NSDateFormatter *tmpDateFormatter = [[NSDateFormatter alloc] init];
   instance.dateFormatter = tmpDateFormatter;
   [instance.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss SSS"];
+  [tmpDateFormatter release];
   [instance.dateFormatter setTimeZone:gmt];
   NSString *timeStamp = [instance.dateFormatter stringFromDate:[NSDate date]];
   return timeStamp;
@@ -616,8 +668,6 @@ static Yozio *instance = nil;
 
   NSString *urlString =
       [NSString stringWithFormat:@"http://%@/configuration.json?%@", CONFIGURATION_SERVER_URL, urlParams];
-
-  
   
   [Yozio log:@"Final configuration request url: %@", urlString];
   
