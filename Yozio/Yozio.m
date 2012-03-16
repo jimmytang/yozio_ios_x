@@ -301,19 +301,19 @@ static Yozio *instance = nil;
   if ([self.dataQueue count] < maxQueue) {
     NSMutableDictionary *d =
         [NSMutableDictionary dictionaryWithObjectsAndKeys:
-            type, YOZIO_D_TYPE,
-            name, YOZIO_D_NAME,
-            amount, YOZIO_D_REVENUE,
+            [self notNil:type], YOZIO_D_TYPE,
+            [self notNil:name], YOZIO_D_NAME,
+            [self notNil:amount], YOZIO_D_REVENUE,
             // TODO(jt): move to instance variable
             @"", YOZIO_D_REVENUE_CURRENCY,
-            timeInterval, YOZIO_D_TIME_INTERVAL,
-            [self deviceOrientation], YOZIO_D_DEVICE_ORIENTATION,
-            [self uiOrientation], YOZIO_D_UI_ORIENTATION,
-            self._appVersion, YOZIO_D_APP_VERSION,
-            self._userId, YOZIO_D_USER_ID,
-            self.sessionId, YOZIO_D_SESSION_ID,
-            self.experimentsStr, YOZIO_D_EXPERIMENTS,
-            [self timeStampString], YOZIO_D_TIMESTAMP,
+            [self notNil:timeInterval], YOZIO_D_TIME_INTERVAL,
+            [self notNil:[self deviceOrientation]], YOZIO_D_DEVICE_ORIENTATION,
+            [self notNil:[self uiOrientation]], YOZIO_D_UI_ORIENTATION,
+            [self notNil:self._appVersion], YOZIO_D_APP_VERSION,
+            [self notNil:self._userId], YOZIO_D_USER_ID,
+            [self notNil:self.sessionId], YOZIO_D_SESSION_ID,
+            [self notNil:self.experimentsStr], YOZIO_D_EXPERIMENTS,
+            [self notNil:[self timeStampString]], YOZIO_D_TIMESTAMP,
             [NSNumber numberWithInteger:dataCount], YOZIO_D_DATA_COUNT,
             nil];
     [self.dataQueue addObject:d];
@@ -325,7 +325,8 @@ static Yozio *instance = nil;
 - (void)checkDataQueueSize
 {
   [Yozio log:@"data queue size: %i",[self.dataQueue count]];
-  // Only try to flush when the dataQueue length is a multiple of YOZIO_FLUSH_DATA_COUNT.
+  // Only try to flush when the dataCount is a multiple of YOZIO_FLUSH_DATA_COUNT.
+  // Use self.dataCount instead of dataQueue length because the dataQueue length can be capped.
   if (self.dataCount > 0 && self.dataCount % YOZIO_FLUSH_DATA_COUNT == 0) {
     [self doFlush];
   }
@@ -381,18 +382,18 @@ static Yozio *instance = nil;
   NSString *digest = @"";
   NSNumber *packetCount = [NSNumber numberWithInteger:[self.dataToSend count]];
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
-  [payload setValue:YOZIO_BEACON_SCHEMA_VERSION forKey:YOZIO_P_SCHEMA_VERSION];
-  [payload setValue:digest forKey:YOZIO_P_DIGEST];
-  [payload setValue:self._appKey forKey:YOZIO_P_APP_KEY];
-  [payload setValue:[self notNil:self.environment] forKey:YOZIO_P_ENVIRONMENT];
-  [payload setValue:[self notNil:[self loadOrCreateDeviceId]] forKey:YOZIO_P_DEVICE_ID];
-  [payload setValue:[self notNil:self.hardware] forKey:YOZIO_P_HARDWARE];
-  [payload setValue:[self notNil:self.os] forKey:YOZIO_P_OPERATING_SYSTEM];
-  [payload setValue:[self notNil:self.countryName] forKey:YOZIO_P_COUNTRY];
-  [payload setValue:[self notNil:self.language] forKey:YOZIO_P_LANGUAGE];
-  [payload setValue:self.timezone forKey:YOZIO_P_TIMEZONE];
-  [payload setValue:packetCount forKey:YOZIO_P_PAYLOAD_COUNT];
-  [payload setValue:self.dataToSend forKey:YOZIO_P_PAYLOAD];
+  [payload setObject:YOZIO_BEACON_SCHEMA_VERSION forKey:YOZIO_P_SCHEMA_VERSION];
+  [payload setObject:digest forKey:YOZIO_P_DIGEST];
+  [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
+  [payload setObject:[self notNil:self.environment] forKey:YOZIO_P_ENVIRONMENT];
+  [payload setObject:[self notNil:[self loadOrCreateDeviceId]] forKey:YOZIO_P_DEVICE_ID];
+  [payload setObject:[self notNil:self.hardware] forKey:YOZIO_P_HARDWARE];
+  [payload setObject:[self notNil:self.os] forKey:YOZIO_P_OPERATING_SYSTEM];
+  [payload setObject:[self notNil:self.countryName] forKey:YOZIO_P_COUNTRY];
+  [payload setObject:[self notNil:self.language] forKey:YOZIO_P_LANGUAGE];
+  [payload setObject:self.timezone forKey:YOZIO_P_TIMEZONE];
+  [payload setObject:packetCount forKey:YOZIO_P_PAYLOAD_COUNT];
+  [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];
   return [payload JSONString];
 }
@@ -400,7 +401,7 @@ static Yozio *instance = nil;
 - (NSString *)notNil:(NSString *)str
 {
   if (str == nil) {
-    return @"";
+    return @"Unknown";
   } else {
     return str;
   }
