@@ -527,6 +527,7 @@ static Yozio *instance = nil;
 - (void)loadSessionData
 {
   self.lastActiveTime = [NSKeyedUnarchiver unarchiveObjectWithFile:YOZIO_SESSION_FILE];
+  [[NSFileManager defaultManager] removeItemAtPath:YOZIO_SESSION_FILE error:nil];
   [Yozio log:@"loadSessionData: %@", self.lastActiveTime];
 }
 
