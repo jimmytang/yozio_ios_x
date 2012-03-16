@@ -240,7 +240,7 @@ static Yozio *instance = nil;
   [instance.timers setValue:[NSDate date] forKey:timerName];
 }
 
-+ (void)endTimer:(NSString *)timerName category:(NSString *)category
++ (void)endTimer:(NSString *)timerName
 {
   NSDate *startTime = [instance.timers valueForKey:timerName];
   // Ignore if the timer was cleared (i.e. app went into background).
@@ -250,57 +250,43 @@ static Yozio *instance = nil;
     NSString *elapsedTimeStr = [NSString stringWithFormat:@"%.2f", elapsedTime];
     [instance doCollect:T_TIMER
                    name:timerName
-               category:category
                  amount:@""
            timeInterval:elapsedTimeStr
                maxQueue:TIMER_DATA_LIMIT];
   }
 }
 
-+ (void)funnel:(NSString *)funnelName category:(NSString *)category
-{
-  [instance doCollect:T_FUNNEL
-                 name:funnelName
-             category:category
-               amount:@""
-         timeInterval:@""
-             maxQueue:FUNNEL_DATA_LIMIT];
-}
-
-+ (void)revenue:(NSString *)itemName cost:(double)cost category:(NSString *)category
++ (void)revenue:(NSString *)itemName cost:(double)cost
 {
   NSString *stringCost = [NSString stringWithFormat:@"%d", cost];
   [instance doCollect:T_REVENUE
                  name:itemName
-             category:category
                amount:stringCost
          timeInterval:@""
              maxQueue:REVENUE_DATA_LIMIT];
 }
 
-+ (void)action:(NSString *)actionName category:(NSString *)category
++ (void)action:(NSString *)actionName
 {
   [instance doCollect:T_ACTION
                  name:actionName
-             category:category
                amount:@""
          timeInterval:@""
              maxQueue:ACTION_DATA_LIMIT];
 }
 
-+ (void)error:(NSString *)errorName category:(NSString *)category
++ (void)error:(NSString *)errorName
 {
   [instance doCollect:T_ERROR
                  name:errorName
-             category:category
                amount:@""
          timeInterval:@""
              maxQueue:ERROR_DATA_LIMIT];
 }
 
-+ (void)exception:(NSException *)exception category:(NSString *)category
++ (void)exception:(NSException *)exception
 {
-  [Yozio error:[exception name] category:category];
+  [Yozio error:[exception name]];
 }
 
 + (void)flush
@@ -382,7 +368,6 @@ static Yozio *instance = nil;
 
 - (void)doCollect:(NSString *)type
              name:(NSString *)name
-         category:(NSString *)category
            amount:(NSString *)amount
      timeInterval:(NSString *)timeInterval
          maxQueue:(NSInteger)maxQueue
@@ -397,7 +382,6 @@ static Yozio *instance = nil;
         [NSMutableDictionary dictionaryWithObjectsAndKeys:
             type, D_TYPE,
             name, D_NAME,
-            category, D_CATEGORY,
             amount, D_REVENUE,
             // TODO(jt): move to instance variable
             @"", D_REVENUE_CURRENCY,

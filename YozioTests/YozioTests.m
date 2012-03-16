@@ -15,10 +15,15 @@
 - (void)setUp
 {
   [super setUp];
-  [Yozio configure:@"http://m.snapette.yozio.com"
+  [Yozio configure:@"app key"
             userId:@"MyUserId"
                env:@"production"
         appVersion:@"1.0.1"
+    campaignSource:@"google"
+    campaignMedium:@"cpc"
+      campaignTerm:@"twitter bird jump"
+   campaignContent:@"content"
+      campaignName:@"12873"
   exceptionHandler:NULL];
 }
 
@@ -29,44 +34,25 @@
     [super tearDown];
 }
 
-- (void)testStartTimerEntry
+- (void)testTimerEntry
 {
+  //TODO add test for timeer here
 //  mock [NSDate date]
 //  [Yozio startTimer:@"MyTimer"];
 //  Yozio * instance = [Yozio getInstance];  
 }
 
-- (void)testFunnelEntry
-{
-  NSString *type = @"funnel";
-  NSString *key = @"Checkout";
-  NSString *value = @"Start Checkout";
-  NSString *category = @"MyCategory";
-  [Yozio funnel:key value:value category:category];
-  Yozio *instance = [Yozio getInstance];  
-  NSMutableDictionary *expected = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
-                           type, @"type", 
-                           key, @"key", 
-                           value, @"value", 
-                           category, @"category", 
-                           nil];
-  NSMutableDictionary *actual = [[instance dataQueue] lastObject];
-  [self assertDataEqual:expected actual:actual];
-}
 - (void)testRevenueEntry
 {
   NSString *type = @"revenue";
-  NSString *key = @"PowerShield";
-  double value = 20.5;
-  NSString *category = @"Defence";
-  [Yozio revenue:key cost:value category:category];
+  NSString *itemName = @"PowerShield";
+  double cost = 20.5;
+  [Yozio revenue:itemName cost:cost];
   Yozio *instance = [Yozio getInstance];  
-  NSString *stringValue = [NSString stringWithFormat:@"%d", value];
+
   NSMutableDictionary *expected = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
                                    type, @"type", 
-                                   key, @"key", 
-                                   stringValue, @"value", 
-                                   category, @"category", 
+                                   key, @"revenue", 
                                    nil];
   NSMutableDictionary *actual = [[instance dataQueue] lastObject];
   [self assertDataEqual:expected actual:actual];  
@@ -77,14 +63,12 @@
   NSString *type = @"action";
   NSString *key = @"jump";
   NSString *value = @"Level 1";
-  NSString *category = @"play";
-  [Yozio action:key context:value category:category];
+  [Yozio action:key];
   Yozio *instance = [Yozio getInstance];  
   NSMutableDictionary *expected = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
                                    type, @"type", 
                                    value, @"key", 
                                    key, @"value", 
-                                   category, @"category", 
                                    nil];
   NSMutableDictionary *actual = [[instance dataQueue] lastObject];
   [self assertDataEqual:expected actual:actual];
@@ -95,14 +79,12 @@
   NSString *type = @"error";
   NSString *key = @"Save Error";
   NSString *value = @"error message";
-  NSString *category = @"persistence";
-  [Yozio error:key message:value category:category];
+  [Yozio error:key];
   Yozio *instance = [Yozio getInstance];  
   NSMutableDictionary *expected = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
                                    type, @"type", 
                                    key, @"key", 
                                    value, @"value", 
-                                   category, @"category", 
                                    nil];
   NSMutableDictionary *actual = [[instance dataQueue] lastObject];
   [self assertDataEqual:expected actual:actual];
@@ -113,14 +95,12 @@
   NSString *type = @"misc";
   NSString *key = @"SomeEvent";
   NSString *value = @"SomeValue";
-  NSString *category = @"MyCategory";
-  [Yozio collect:key value:value category:category];
+  [Yozio collect:key value:value];
   Yozio *instance = [Yozio getInstance];  
   NSMutableDictionary *expected = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
                                    type, @"type", 
                                    key, @"key", 
                                    value, @"value", 
-                                   category, @"category", 
                                    nil];
   NSMutableDictionary *actual = [[instance dataQueue] lastObject];
   [self assertDataEqual:expected actual:actual];
@@ -136,7 +116,6 @@
   STAssertEqualObjects([expected valueForKey:@"type"], [actual valueForKey:@"type"], @"Wrong type");
   STAssertEqualObjects([expected valueForKey:@"key"], [actual valueForKey:@"key"], @"Wrong key");
   STAssertEqualObjects([expected valueForKey:@"value"], [actual valueForKey:@"value"], @"Wrong value");
-  STAssertEqualObjects([expected valueForKey:@"category"], [actual valueForKey:@"category"], @"Wrong category");
 }
 
 @end

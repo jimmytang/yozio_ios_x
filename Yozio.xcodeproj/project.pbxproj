@@ -513,6 +513,7 @@
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				SEPARATE_STRIP = YES;
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Debug;
 		};

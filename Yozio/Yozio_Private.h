@@ -52,7 +52,6 @@
 
 // Instrumentation entry types.
 #define T_TIMER @"t"
-#define T_FUNNEL @"f"
 #define T_REVENUE @"r"
 #define T_ACTION @"a"
 #define T_ERROR @"e"
@@ -74,7 +73,6 @@
 // event type starts being dropped.
 #define TIMER_DATA_LIMIT 5000
 #define ACTION_DATA_LIMIT 5000
-#define FUNNEL_DATA_LIMIT 7000
 #define REVENUE_DATA_LIMIT 100000
 #define ERROR_DATA_LIMIT 5000
 #define COLLECT_DATA_LIMIT 5000
@@ -165,7 +163,6 @@
 - (BOOL)validateConfiguration;
 - (void)doCollect:(NSString *)type
              name:(NSString *)name
-         category:(NSString *)category
            amount:(NSString *)amount
      timeInterval:(NSString *)timeInterval
          maxQueue:(NSInteger)maxQueue;

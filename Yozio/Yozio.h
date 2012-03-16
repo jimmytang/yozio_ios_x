@@ -35,7 +35,7 @@
  *
  *     Add instrumentation code at any point by calling any of the instrumentation methods.
  *
- *         [Yozio action:@"jump" context:@"Level 1" category:@"play"];
+ *         [Yozio action:@"jump"];
  *
  *     NOTE: Yozio is not thread safe. It is your responsibility to make sure that there are no
  *           concurrent calls to any of the Yozio methods.
@@ -125,98 +125,65 @@
  * Stops a timer started with startTimer and instruments the elapsed time.
  *
  * @param timerName The name of the timer to end. Must be the same as the one used in startTimer.
- * @param category The category to group this event under.
  * @throws NSException if no timer with timerName has been started.
  *
  * @example [Yozio startTimer:@"MyTimer"];
  *
  *          ...later on...
  *
- *          [Yozio endTimer:@"MyTimer" category:@"MyCategory"];
+ *          [Yozio endTimer:@"MyView"];
  */
-+ (void)endTimer:(NSString *)timerName category:(NSString *)category;
-
-
-/**
- * Instruments a new step in a funnel.
- *
- * @param funnelName The name of the funnel.
- * @param category The category to group this event under.
- *
- * @example // User enters checkout page.
- *          [Yozio funnel:@"Checkout" category:@"MyCategory"];
- *
- *          ...later on...
- *
- *          // User verified shopping cart and proceeds to checkout.
- *          [Yozio funnel:@"Checkout" category:@"MyCategory"];
- *
- *          ...later on...
- *
- *          // User entered shipping and billing information
- *          [Yozio funnel:@"Checkout" category:@"MyCategory"];
- *
- *          ...later on...
- *
- *          // User confirmed order and finishes purchase.
- *          [Yozio funnel:@"Checkout" category:@"MyCategory"];
- */
-+ (void)funnel:(NSString *)funnelName category:(NSString *)category;
-
++ (void)endTimer:(NSString *)timerName;
 
 /**
  * Instruments an item purchase.
  *
  * @param itemName The name of the item that was purchased.
  * @param cost The price the user payed to purchase the item.
- * @param category The category to group this event under.
  *
- * @example [Yozio revenue:@"PowerShield" cost:20.5 category:@"Defence"];
+ * @example [Yozio revenue:@"PowerShield" cost:20.5];
  */
-+ (void)revenue:(NSString *)itemName cost:(double)cost category:(NSString *)category;
++ (void)revenue:(NSString *)itemName cost:(double)cost;
 
 
 /**
  * Instruments some user action. An action can be anything, such as a button click.
  *
  * @param actionName The name of the action the user performed.
- * @param category The category to group this event under.
  *
- * @example [Yozio action:@"jump" category:@"play"];
+ * @example [Yozio action:@"jump"];
  */
-+ (void)action:(NSString *)actionName category:(NSString *)category;
++ (void)action:(NSString *)actionName;
 
 
 /**
  * Instruments an error in your application.
  *
  * @param errorName The name of the error.
- * @param category The category to group this event under.
  *
  * @example NSError *error = ...;
- *          [Yozio error:@"Save Error" category:@"persistence"];
+ *          [Yozio error:@"Save Error"];
  */
-+ (void)error:(NSString *)errorName category:(NSString *)category;
++ (void)error:(NSString *)errorName;
 
 
 /**
  * Convenience method for instrumenting caught exceptions.
  * Calling this exception is the equivalent of calling the error method with:
  *
- *    [Yozio exception:theException category:@"MyCategory"]
+ *    [Yozio exception:theException]
  *
  * @param exception The caught exception to instrument.
- * @param category The category to group this event under.
  *
  * @example @try {
  *            [NSException raise:@"MyException"
  *                        reason:@"Some exception reason"];
  *          }
  *          @catch (id theException) {
- *            [Yozio exception:theException category:@"MyCategory"];
+ *            [Yozio exception:theException];
  *          }
  */
-+ (void)exception:(NSException *)exception category:(NSString *)category;
++ (void)exception:(NSException *)exception;
 
 
 /**
