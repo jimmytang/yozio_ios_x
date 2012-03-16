@@ -71,7 +71,7 @@ static Yozio *instance = nil;
   self.os = [device systemVersion];
 
   // Initialize  mutable instrumentation variables.
-  self.sessionId = nil;
+  [self loadSessionData];
   [self updateCountryName];
   [self updateLanguage];
   [self updateTimezone];
@@ -163,7 +163,8 @@ static Yozio *instance = nil;
   }
 
   [instance updateConfig];
-  [instance loadSessionData];
+
+  // Don't load session data here. Only need to do that once in init.
   [instance updateSessionId];
 
   // Load any previous data and try to flush it.
