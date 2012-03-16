@@ -62,6 +62,9 @@
 #define YOZIO_ORIENT_FACE_DOWN @"fd"
 #define YOZIO_ORIENT_UNKNOWN @"u"
 
+// The number of seconds of inactivity before a new session is started.
+#define YOZIO_SESSION_INACTIVITY_THRESHOLD 1800
+
 // The number of items in the queue before forcing a flush.
 #define YOZIO_FLUSH_DATA_COUNT 15
 // Time interval before automatically flushing the data queue.
@@ -102,6 +105,7 @@
   NSString *environment;
   
   // Internal variables.
+  NSDate *lastActiveTime;
   NSTimer *flushTimer;
   NSInteger dataCount;
   NSMutableArray *dataQueue;
@@ -129,6 +133,7 @@
 @property(nonatomic, retain) NSString *environment;
 
 // Internal variables.
+@property(nonatomic, retain) NSDate *lastActiveTime;
 @property(nonatomic, retain) NSTimer *flushTimer;
 @property(nonatomic, assign) NSInteger dataCount;
 @property(nonatomic, retain) NSMutableArray *dataQueue;
@@ -162,6 +167,7 @@
 - (NSString *)timeStampString;
 - (NSString *)deviceOrientation;
 - (NSString *)uiOrientation;
+- (void)updateSessionId;
 - (void)updateCountryName;
 - (void)updateLanguage;
 - (void)updateTimezone;

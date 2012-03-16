@@ -31,6 +31,7 @@
 @synthesize environment;
 
 // Internal variables.
+@synthesize lastActiveTime;
 @synthesize flushTimer;
 @synthesize dataQueue;
 @synthesize dataToSend;
@@ -70,8 +71,7 @@ static Yozio *instance = nil;
   self.os = [device systemVersion];
   
   // Initialize  mutable instrumentation variables.
-  // TODO: update sessionId correctly
-  self.sessionId = [self makeUUID];
+  [self updateSessionId];
   [self updateCountryName];
   [self updateLanguage];
   [self updateTimezone];
@@ -298,6 +298,7 @@ static Yozio *instance = nil;
   }
   // Increment dataCount even if we don't add to data queue so we know how much data we missed.
   dataCount++;
+  [self updateSessionId];
   if ([self.dataQueue count] < maxQueue) {
     NSMutableDictionary *d =
         [NSMutableDictionary dictionaryWithObjectsAndKeys:
@@ -461,6 +462,15 @@ static Yozio *instance = nil;
   }
 }
 
+- (void)updateSessionId
+{
+  if (self.lastActiveTime == nil
+      || [self.lastActiveTime timeIntervalSinceNow] < -YOZIO_SESSION_INACTIVITY_THRESHOLD) {
+    self.sessionId = [self makeUUID];
+  }
+  self.lastActiveTime = [NSDate date];
+}
+
 - (void)updateCountryName
 {
   NSLocale *locale = [NSLocale currentLocale];
@@ -496,7 +506,7 @@ static Yozio *instance = nil;
 - (void)loadUnsentData
 {
   self.dataQueue = [NSKeyedUnarchiver unarchiveObjectWithFile:YOZIO_DATA_QUEUE_FILE];
-  if (!self.dataQueue)  {
+  if (self.dataQueue == nil)  {
     self.dataQueue = [NSMutableArray array];
   }
   [Yozio log:@"loadUnsentData: %@", self.dataQueue];
