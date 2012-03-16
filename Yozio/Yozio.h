@@ -10,6 +10,8 @@
 @interface Yozio : NSObject
 
 /**
+ * TODO(jt): UPDATE DOCS
+ *
  * Setup:
  *     Link the libraries "libYozio.a" and "Security.framework" to your binary.
  *     To do this in Xcode 4, click on your project in the Project navigator and choose your target.
@@ -25,10 +27,6 @@
  *
  *     Optionally set additional application information.
  *         [Yozio setApplicationVersion:@"1.0.1"];
- *         TODO(jt): add other optional setters here
- *         
- *
- *     TODO(jt): possibly add campaign example
  *
  *     If you already set a global uncaught exception (NSSetUncaughtExceptionHandler), remove that
  *     code and pass your exception handler into the configure method.
@@ -66,12 +64,6 @@
 
 
 /**
- * TODO(jt): do we need this?
- */
-+ (void)setEnvironment:(NSString *)environment;
-
-
-/**
  * Set the id of the user using the application. This is useful for applications where the
  * application user can be identified by some sort of id (i.e. user name, email address, etc).
  *
@@ -83,17 +75,6 @@
 
 
 /**
- * TODO(jt): do we actually need this?
- * TODO(jt): document this
- */
-+ (void)setCampaign:(NSString *)campaignName
-     campaignSource:(NSString *)campaignSource
-     campaignMedium:(NSString *)campaignMedium
-       campaignTerm:(NSString *)campaignTerm
-    campaignContent:(NSString *)campaignContent;
-
-
-/**
  * Registers a global exception handler to handle uncaught exceptions in your application.
  *
  * @param exceptionHandler  The NSUncaughtExceptionHandler to handle all uncaught exceptions.
@@ -101,12 +82,6 @@
  * @example [Yozio setUncaughtExceptionHandler:&myExceptionHandler];
  */
 + (void)setUncaughtExceptionHandler:(NSUncaughtExceptionHandler *)exceptionHandler;
-
-
-/**
- * TODO(jt): document
- */
-+ (void)newSession;
 
 
 /**
@@ -168,34 +143,10 @@
 
 
 /**
- * Convenience method for instrumenting caught exceptions.
- * Calling this exception is the equivalent of calling the error method with:
- *
- *    [Yozio exception:theException]
- *
- * @param exception The caught exception to instrument.
- *
- * @example @try {
- *            [NSException raise:@"MyException"
- *                        reason:@"Some exception reason"];
- *          }
- *          @catch (id theException) {
- *            [Yozio exception:theException];
- *          }
- */
-+ (void)exception:(NSException *)exception;
-
-
-/**
- * Forces Yozio to try to flush any unflushed instrumented events to the server.
- */
-+ (void)flush;
-
-
-/**
  * TODO(jt): document this
  */
 + (NSString *)stringForKey:(NSString *)key defaultValue:(NSString *)defaultValue;
+
 
 /**
  * TODO(jt): document this
