@@ -156,7 +156,7 @@ static Yozio *instance = nil;
   [instance updateConfig];
   
   if (instance.flushTimer == nil) {
-    instance.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_INTERVAL_SEC
+    instance.flushTimer = [NSTimer scheduledTimerWithTimeInterval:YOZIO_FLUSH_INTERVAL_SEC
                                                            target:instance
                                                          selector:@selector(doFlush)
                                                          userInfo:nil
@@ -193,40 +193,40 @@ static Yozio *instance = nil;
     [instance.timers removeObjectForKey:timerName];
     float elapsedTime = [[NSDate date] timeIntervalSinceDate:startTime];
     NSString *elapsedTimeStr = [NSString stringWithFormat:@"%.2f", elapsedTime];
-    [instance doCollect:T_TIMER
+    [instance doCollect:YOZIO_T_TIMER
                    name:timerName
                  amount:@""
            timeInterval:elapsedTimeStr
-               maxQueue:TIMER_DATA_LIMIT];
+               maxQueue:YOZIO_TIMER_DATA_LIMIT];
   }
 }
 
 + (void)revenue:(NSString *)itemName cost:(double)cost
 {
   NSString *stringCost = [NSString stringWithFormat:@"%d", cost];
-  [instance doCollect:T_REVENUE
+  [instance doCollect:YOZIO_T_REVENUE
                  name:itemName
                amount:stringCost
          timeInterval:@""
-             maxQueue:REVENUE_DATA_LIMIT];
+             maxQueue:YOZIO_REVENUE_DATA_LIMIT];
 }
 
 + (void)action:(NSString *)actionName
 {
-  [instance doCollect:T_ACTION
+  [instance doCollect:YOZIO_T_ACTION
                  name:actionName
                amount:@""
          timeInterval:@""
-             maxQueue:ACTION_DATA_LIMIT];
+             maxQueue:YOZIO_ACTION_DATA_LIMIT];
 }
 
 + (void)exception:(NSException *)exception
 {
-  [instance doCollect:T_ERROR
+  [instance doCollect:YOZIO_T_ERROR
                  name:[exception name]
                amount:@""
          timeInterval:@""
-             maxQueue:ERROR_DATA_LIMIT];
+             maxQueue:YOZIO_ERROR_DATA_LIMIT];
 }
 
 + (NSString *)stringForKey:(NSString *)key defaultValue:(NSString *)defaultValue
@@ -301,20 +301,20 @@ static Yozio *instance = nil;
   if ([self.dataQueue count] < maxQueue) {
     NSMutableDictionary *d =
         [NSMutableDictionary dictionaryWithObjectsAndKeys:
-            type, D_TYPE,
-            name, D_NAME,
-            amount, D_REVENUE,
+            type, YOZIO_D_TYPE,
+            name, YOZIO_D_NAME,
+            amount, YOZIO_D_REVENUE,
             // TODO(jt): move to instance variable
-            @"", D_REVENUE_CURRENCY,
-            timeInterval, D_TIME_INTERVAL,
-            [self deviceOrientation], D_DEVICE_ORIENTATION,
-            [self uiOrientation], D_UI_ORIENTATION,
-            self._appVersion, D_APP_VERSION,
-            self._userId, D_USER_ID,
-            self.sessionId, D_SESSION_ID,
-            self.experimentsStr, D_EXPERIMENTS,
-            [self timeStampString], D_TIMESTAMP,
-            [NSNumber numberWithInteger:dataCount], D_DATA_COUNT,
+            @"", YOZIO_D_REVENUE_CURRENCY,
+            timeInterval, YOZIO_D_TIME_INTERVAL,
+            [self deviceOrientation], YOZIO_D_DEVICE_ORIENTATION,
+            [self uiOrientation], YOZIO_D_UI_ORIENTATION,
+            self._appVersion, YOZIO_D_APP_VERSION,
+            self._userId, YOZIO_D_USER_ID,
+            self.sessionId, YOZIO_D_SESSION_ID,
+            self.experimentsStr, YOZIO_D_EXPERIMENTS,
+            [self timeStampString], YOZIO_D_TIMESTAMP,
+            [NSNumber numberWithInteger:dataCount], YOZIO_D_DATA_COUNT,
             nil];
     [self.dataQueue addObject:d];
     [Yozio log:@"doCollect: %@", d];
@@ -325,8 +325,8 @@ static Yozio *instance = nil;
 - (void)checkDataQueueSize
 {
   [Yozio log:@"data queue size: %i",[self.dataQueue count]];
-  // Only try to flush when the dataQueue length is a multiple of FLUSH_DATA_COUNT.
-  if ([self.dataQueue count] > 0 && [self.dataQueue count] % FLUSH_DATA_COUNT == 0) {
+  // Only try to flush when the dataQueue length is a multiple of YOZIO_FLUSH_DATA_COUNT.
+  if ([self.dataQueue count] > 0 && [self.dataQueue count] % YOZIO_FLUSH_DATA_COUNT == 0) {
     [self doFlush];
   }
 }
@@ -341,8 +341,8 @@ static Yozio *instance = nil;
     [Yozio log:@"Already flushing"];
     return;
   }
-  if ([self.dataQueue count] > FLUSH_DATA_COUNT) {
-    self.dataToSend = [self.dataQueue subarrayWithRange:NSMakeRange(0, FLUSH_DATA_COUNT)];
+  if ([self.dataQueue count] > YOZIO_FLUSH_DATA_COUNT) {
+    self.dataToSend = [self.dataQueue subarrayWithRange:NSMakeRange(0, YOZIO_FLUSH_DATA_COUNT)];
   } else {
     self.dataToSend = [NSArray arrayWithArray:self.dataQueue];
   }
@@ -353,7 +353,7 @@ static Yozio *instance = nil;
   NSString *escapedUrlParams =
       [urlParams stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
   NSString *urlString =
-      [NSString stringWithFormat:@"http://%@/p.gif?%@", TRACKING_SERVER_URL, escapedUrlParams];
+      [NSString stringWithFormat:@"http://%@/p.gif?%@", YOZIO_TRACKING_SERVER_URL, escapedUrlParams];
 
   [Yozio log:@"Final get request url: %@", urlString];
 
@@ -380,18 +380,18 @@ static Yozio *instance = nil;
   // TODO(jt): compute real digest from shared key
   NSString *digest = @"";
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
-  [payload setValue:YOZIO_BEACON_SCHEMA_VERSION forKey:P_SCHEMA_VERSION];
-  [payload setValue:digest forKey:P_DIGEST];
-  [payload setValue:self._appKey forKey:P_APP_KEY];
-  [payload setValue:self.environment forKey:P_ENVIRONMENT];
-  [payload setValue:[self loadOrCreateDeviceId] forKey:P_DEVICE_ID];
-  [payload setValue:self.hardware forKey:P_HARDWARE];
-  [payload setValue:self.os forKey:P_OPERATING_SYSTEM];
-  [payload setValue:self.countryName forKey:P_COUNTRY];
-  [payload setValue:self.language forKey:P_LANGUAGE];
-  [payload setValue:self.timezone forKey:P_TIMEZONE];
-  [payload setValue:[NSNumber numberWithInteger:[self.dataToSend count]] forKey:P_PAYLOAD_COUNT];
-  [payload setValue:self.dataToSend forKey:P_PAYLOAD];
+  [payload setValue:YOZIO_BEACON_SCHEMA_VERSION forKey:YOZIO_P_SCHEMA_VERSION];
+  [payload setValue:digest forKey:YOZIO_P_DIGEST];
+  [payload setValue:self._appKey forKey:YOZIO_P_APP_KEY];
+  [payload setValue:self.environment forKey:YOZIO_P_ENVIRONMENT];
+  [payload setValue:[self loadOrCreateDeviceId] forKey:YOZIO_P_DEVICE_ID];
+  [payload setValue:self.hardware forKey:YOZIO_P_HARDWARE];
+  [payload setValue:self.os forKey:YOZIO_P_OPERATING_SYSTEM];
+  [payload setValue:self.countryName forKey:YOZIO_P_COUNTRY];
+  [payload setValue:self.language forKey:YOZIO_P_LANGUAGE];
+  [payload setValue:self.timezone forKey:YOZIO_P_TIMEZONE];
+  [payload setValue:[NSNumber numberWithInteger:[self.dataToSend count]] forKey:YOZIO_P_PAYLOAD_COUNT];
+  [payload setValue:self.dataToSend forKey:YOZIO_P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];
   return [payload JSONString];
 }
@@ -417,19 +417,19 @@ static Yozio *instance = nil;
   UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
   switch(orientation) {
     case UIDeviceOrientationPortrait:
-      return ORIENT_PORTRAIT;
+      return YOZIO_ORIENT_PORTRAIT;
     case UIDeviceOrientationPortraitUpsideDown:
-      return ORIENT_PORTRAIT_UPSIDE_DOWN;
+      return YOZIO_ORIENT_PORTRAIT_UPSIDE_DOWN;
     case UIDeviceOrientationLandscapeLeft:
-      return ORIENT_LANDSCAPE_LEFT;
+      return YOZIO_ORIENT_LANDSCAPE_LEFT;
     case UIDeviceOrientationLandscapeRight:
-      return ORIENT_LANDSCAPE_RIGHT;
+      return YOZIO_ORIENT_LANDSCAPE_RIGHT;
     case UIDeviceOrientationFaceUp:
-      return ORIENT_FACE_UP;
+      return YOZIO_ORIENT_FACE_UP;
     case UIDeviceOrientationFaceDown:
-      return ORIENT_FACE_DOWN;
+      return YOZIO_ORIENT_FACE_DOWN;
     default:
-      return ORIENT_UNKNOWN;
+      return YOZIO_ORIENT_UNKNOWN;
   }
 }
 
@@ -438,15 +438,15 @@ static Yozio *instance = nil;
   UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
   switch (orientation) {
     case UIInterfaceOrientationPortrait:
-      return ORIENT_PORTRAIT;
+      return YOZIO_ORIENT_PORTRAIT;
     case UIInterfaceOrientationPortraitUpsideDown:
-      return ORIENT_PORTRAIT_UPSIDE_DOWN;
+      return YOZIO_ORIENT_PORTRAIT_UPSIDE_DOWN;
     case UIInterfaceOrientationLandscapeLeft:
-      return ORIENT_LANDSCAPE_LEFT;
+      return YOZIO_ORIENT_LANDSCAPE_LEFT;
     case UIInterfaceOrientationLandscapeRight:
-      return ORIENT_LANDSCAPE_RIGHT;
+      return YOZIO_ORIENT_LANDSCAPE_RIGHT;
     default:
-      return ORIENT_UNKNOWN;
+      return YOZIO_ORIENT_UNKNOWN;
   }
 }
 
@@ -477,14 +477,14 @@ static Yozio *instance = nil;
 - (void)saveUnsentData
 {
   [Yozio log:@"saveUnsentData: %@", self.dataQueue];
-  if (![NSKeyedArchiver archiveRootObject:self.dataQueue toFile:DATA_QUEUE_FILE]) {
+  if (![NSKeyedArchiver archiveRootObject:self.dataQueue toFile:YOZIO_DATA_QUEUE_FILE]) {
     [Yozio log:@"Unable to archive data!"];
   }
 }
 
 - (void)loadUnsentData
 {
-  self.dataQueue = [NSKeyedUnarchiver unarchiveObjectWithFile:DATA_QUEUE_FILE];
+  self.dataQueue = [NSKeyedUnarchiver unarchiveObjectWithFile:YOZIO_DATA_QUEUE_FILE];
   if (!self.dataQueue)  {
     self.dataQueue = [NSMutableArray array];
   }
@@ -510,8 +510,8 @@ static Yozio *instance = nil;
   }
 
   NSError *loadError = nil;
-  NSString *uuid = [SFHFKeychainUtils getPasswordForUsername:UUID_KEYCHAIN_USERNAME
-                                              andServiceName:KEYCHAIN_SERVICE
+  NSString *uuid = [SFHFKeychainUtils getPasswordForUsername:YOZIO_UUID_KEYCHAIN_USERNAME
+                                              andServiceName:YOZIO_KEYCHAIN_SERVICE
                                                        error:&loadError];
   NSInteger loadErrorCode = [loadError code];
   if (loadErrorCode == errSecItemNotFound || uuid == nil) {
@@ -533,9 +533,9 @@ static Yozio *instance = nil;
 - (BOOL)storeDeviceId:(NSString *)uuid
 {
   NSError *storeError = nil;
-  [SFHFKeychainUtils storeUsername:UUID_KEYCHAIN_USERNAME
+  [SFHFKeychainUtils storeUsername:YOZIO_UUID_KEYCHAIN_USERNAME
                        andPassword:uuid
-                    forServiceName:KEYCHAIN_SERVICE
+                    forServiceName:YOZIO_KEYCHAIN_SERVICE
                     updateExisting:true
                              error:&storeError];
   if ([storeError code] != errSecSuccess) {
@@ -576,7 +576,7 @@ static Yozio *instance = nil;
   }
   NSString *urlParams = [NSString stringWithFormat:@"deviceId=%@", self.deviceId];
   NSString *urlString =
-      [NSString stringWithFormat:@"http://%@/configuration.json?%@", CONFIGURATION_SERVER_URL, urlParams];
+      [NSString stringWithFormat:@"http://%@/configuration.json?%@", YOZIO_CONFIGURATION_SERVER_URL, urlParams];
 
   [Yozio log:@"Final configuration request url: %@", urlString];
 
@@ -587,8 +587,8 @@ static Yozio *instance = nil;
     } else {
       if ([response statusCode] == 200) {
         [Yozio log:@"config before update: %@", self.config];
-        self.config = [body objectForKey:CONFIG_CONFIG];
-        self.experimentsStr = [body objectForKey:CONFIG_EXPERIMENTS];
+        self.config = [body objectForKey:YOZIO_CONFIG_KEY];
+        self.experimentsStr = [body objectForKey:YOZIO_CONFIG_EXPERIMENTS_KEY];
         [Yozio log:@"config after update: %@", self.config];
       }
     }

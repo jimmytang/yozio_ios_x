@@ -10,75 +10,75 @@
 #import "Yozio.h"
 
 #define YOZIO_BEACON_SCHEMA_VERSION @"1"
-#define TRACKING_SERVER_URL @"ec2-50-18-34-219.us-west-1.compute.amazonaws.com:8080"
-#define CONFIGURATION_SERVER_URL @"c.yozio.com"
+#define YOZIO_TRACKING_SERVER_URL @"ec2-50-18-34-219.us-west-1.compute.amazonaws.com:8080"
+#define YOZIO_CONFIGURATION_SERVER_URL @"c.yozio.com"
 
 // Set to true to show log messages.
 #define YOZIO_LOG true
 
 // Payload keys.
-#define P_SCHEMA_VERSION @"sv"
-#define P_DIGEST @"di"
-#define P_APP_KEY @"ak"
-#define P_ENVIRONMENT @"env"
-#define P_DEVICE_ID @"de"
-#define P_HARDWARE @"h"
-#define P_OPERATING_SYSTEM @"os"
-#define P_COUNTRY @"c"
-#define P_LANGUAGE @"l"
-#define P_TIMEZONE @"tz"
-#define P_PAYLOAD_COUNT @"pldc"
-#define P_PAYLOAD @"pld"
+#define YOZIO_P_SCHEMA_VERSION @"sv"
+#define YOZIO_P_DIGEST @"di"
+#define YOZIO_P_APP_KEY @"ak"
+#define YOZIO_P_ENVIRONMENT @"env"
+#define YOZIO_P_DEVICE_ID @"de"
+#define YOZIO_P_HARDWARE @"h"
+#define YOZIO_P_OPERATING_SYSTEM @"os"
+#define YOZIO_P_COUNTRY @"c"
+#define YOZIO_P_LANGUAGE @"l"
+#define YOZIO_P_TIMEZONE @"tz"
+#define YOZIO_P_PAYLOAD_COUNT @"pldc"
+#define YOZIO_P_PAYLOAD @"pld"
 
 // Payload data entry keys.
-#define D_TYPE @"t"
-#define D_NAME @"n"
-#define D_REVENUE @"r"
-#define D_REVENUE_CURRENCY @"rc"
-#define D_TIME_INTERVAL @"ti"
-#define D_DEVICE_ORIENTATION @"o"
-#define D_UI_ORIENTATION @"uo"
-#define D_APP_VERSION @"v"
-#define D_USER_ID @"u"
-#define D_SESSION_ID @"s"
-#define D_EXPERIMENTS @"e"
-#define D_TIMESTAMP @"ts"
-#define D_DATA_COUNT @"dc"
+#define YOZIO_D_TYPE @"t"
+#define YOZIO_D_NAME @"n"
+#define YOZIO_D_REVENUE @"r"
+#define YOZIO_D_REVENUE_CURRENCY @"rc"
+#define YOZIO_D_TIME_INTERVAL @"ti"
+#define YOZIO_D_DEVICE_ORIENTATION @"o"
+#define YOZIO_D_UI_ORIENTATION @"uo"
+#define YOZIO_D_APP_VERSION @"v"
+#define YOZIO_D_USER_ID @"u"
+#define YOZIO_D_SESSION_ID @"s"
+#define YOZIO_D_EXPERIMENTS @"e"
+#define YOZIO_D_TIMESTAMP @"ts"
+#define YOZIO_D_DATA_COUNT @"dc"
 
 // Instrumentation entry types.
-#define T_TIMER @"t"
-#define T_REVENUE @"r"
-#define T_ACTION @"a"
-#define T_ERROR @"e"
+#define YOZIO_T_TIMER @"t"
+#define YOZIO_T_REVENUE @"r"
+#define YOZIO_T_ACTION @"a"
+#define YOZIO_T_ERROR @"e"
 
 // Orientations strings.
-#define ORIENT_PORTRAIT @"p"
-#define ORIENT_PORTRAIT_UPSIDE_DOWN @"pu"
-#define ORIENT_LANDSCAPE_LEFT @"ll"
-#define ORIENT_LANDSCAPE_RIGHT @"lr"
-#define ORIENT_FACE_UP @"fu"
-#define ORIENT_FACE_DOWN @"fd"
-#define ORIENT_UNKNOWN @"u"
+#define YOZIO_ORIENT_PORTRAIT @"p"
+#define YOZIO_ORIENT_PORTRAIT_UPSIDE_DOWN @"pu"
+#define YOZIO_ORIENT_LANDSCAPE_LEFT @"ll"
+#define YOZIO_ORIENT_LANDSCAPE_RIGHT @"lr"
+#define YOZIO_ORIENT_FACE_UP @"fu"
+#define YOZIO_ORIENT_FACE_DOWN @"fd"
+#define YOZIO_ORIENT_UNKNOWN @"u"
 
-// TODO(jt): make these numbers configurable instead of macros
 // The number of items in the queue before forcing a flush.
-#define FLUSH_DATA_COUNT 15
+#define YOZIO_FLUSH_DATA_COUNT 15
+// Time interval before automatically flushing the data queue.
+#define YOZIO_FLUSH_INTERVAL_SEC 15
+
 // XX_DATA_LIMIT describes the required number of items in the queue before that instrumentation
 // event type starts being dropped.
-#define TIMER_DATA_LIMIT 5000
-#define ACTION_DATA_LIMIT 5000
-#define REVENUE_DATA_LIMIT 100000
-#define ERROR_DATA_LIMIT 5000
-// Time interval before automatically flushing the data queue.
-#define FLUSH_INTERVAL_SEC 15
+#define YOZIO_TIMER_DATA_LIMIT 5000
+#define YOZIO_ACTION_DATA_LIMIT 5000
+#define YOZIO_REVENUE_DATA_LIMIT 100000
+#define YOZIO_ERROR_DATA_LIMIT 5000
 
 // Mobile configuration data keys.
-#define CONFIG_CONFIG @"config"
-#define CONFIG_EXPERIMENTS @"experiments"
+#define YOZIO_CONFIG_KEY @"config"
+#define YOZIO_CONFIG_EXPERIMENTS_KEY @"experiments"
 
-#define DATA_QUEUE_FILE [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
-#define UUID_KEYCHAIN_USERNAME @"UUID"
-#define KEYCHAIN_SERVICE @"yozio"
+#define YOZIO_DATA_QUEUE_FILE [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
+#define YOZIO_UUID_KEYCHAIN_USERNAME @"yozioUuid"
+#define YOZIO_KEYCHAIN_SERVICE @"yozioKeychain"
 
 @interface Yozio()
 {
