@@ -100,7 +100,6 @@
  * Stops a timer started with startTimer and instruments the elapsed time.
  *
  * @param timerName The name of the timer to end. Must be the same as the one used in startTimer.
- * @throws NSException if no timer with timerName has been started.
  *
  * @example [Yozio startTimer:@"MyTimer"];
  *
@@ -109,6 +108,7 @@
  *          [Yozio endTimer:@"MyView"];
  */
 + (void)endTimer:(NSString *)timerName;
+
 
 /**
  * Instruments an item purchase.
@@ -132,14 +132,20 @@
 
 
 /**
- * Instruments an error in your application.
+ * Instruments an exception in your application.
  *
- * @param errorName The name of the error.
+ * @param exception The caught exception to instrument.
+ * @param category The category to group this event under.
  *
- * @example NSError *error = ...;
- *          [Yozio error:@"Save Error"];
+ * @example @try {
+ *            [NSException raise:@"MyException"
+ *                        reason:@"Some exception reason"];
+ *          }
+ *          @catch (id theException) {
+ *            [Yozio exception:theException category:@"MyCategory"];
+ *          }
  */
-+ (void)error:(NSString *)errorName;
++ (void)exception:(NSException *)exception;
 
 
 /**
