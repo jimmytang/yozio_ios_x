@@ -75,16 +75,6 @@
 
 
 /**
- * Registers a global exception handler to handle uncaught exceptions in your application.
- *
- * @param exceptionHandler  The NSUncaughtExceptionHandler to handle all uncaught exceptions.
- *
- * @example [Yozio setUncaughtExceptionHandler:&myExceptionHandler];
- */
-+ (void)setUncaughtExceptionHandler:(NSUncaughtExceptionHandler *)exceptionHandler;
-
-
-/**
  * Starts a new timer. This call by itself will not trigger an instrumentation event. You must
  * call endTimer with the same timerName to capture the timing information.
  *
@@ -135,14 +125,13 @@
  * Instruments an exception in your application.
  *
  * @param exception The caught exception to instrument.
- * @param category The category to group this event under.
  *
  * @example @try {
  *            [NSException raise:@"MyException"
  *                        reason:@"Some exception reason"];
  *          }
  *          @catch (id theException) {
- *            [Yozio exception:theException category:@"MyCategory"];
+ *            [Yozio exception:theException];
  *          }
  */
 + (void)exception:(NSException *)exception;
@@ -153,11 +142,6 @@
  */
 + (NSString *)stringForKey:(NSString *)key defaultValue:(NSString *)defaultValue;
 
-
-/**
- * TODO(jt): document this
- */
-+ (NSInteger)intForKey:(NSString *)key defaultValue:(NSInteger)defaultValue;
 
 @end
 

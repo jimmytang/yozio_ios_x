@@ -9,35 +9,30 @@
 
 #import "Yozio.h"
 
+#define YOZIO_BEACON_SCHEMA_VERSION @"1"
 #define TRACKING_SERVER_URL @"ec2-50-18-34-219.us-west-1.compute.amazonaws.com:8080"
 #define CONFIGURATION_SERVER_URL @"c.yozio.com"
-#define UNCAUGHT_EXCEPTION_CATEGORY @"uncaught"
 
 // Set to true to show log messages.
 #define YOZIO_LOG true
 
 // Payload keys.
+#define P_SCHEMA_VERSION @"sv"
+#define P_DIGEST @"di"
 #define P_APP_KEY @"ak"
 #define P_ENVIRONMENT @"env"
-#define P_DIGEST @"di"
 #define P_DEVICE_ID @"de"
 #define P_HARDWARE @"h"
 #define P_OPERATING_SYSTEM @"os"
-#define P_SCHEMA_VERSION @"sv"
 #define P_COUNTRY @"c"
 #define P_LANGUAGE @"l"
 #define P_TIMEZONE @"tz"
-#define P_CARRIER @"car"
-#define P_CAMPAIGN_SOURCE @"cs"
-#define P_CAMPAIGN_MEDIUM @"cm"
-#define P_CAMPAIGN_TERM @"ct"
-#define P_CAMPAIGN_CONTENT @"cc"
-#define P_CAMPAIGN_NAME @"cn"
+#define P_PAYLOAD_COUNT @"pldc"
+#define P_PAYLOAD @"pld"
 
 // Payload data entry keys.
 #define D_TYPE @"t"
 #define D_NAME @"n"
-#define D_CATEGORY @"c"
 #define D_REVENUE @"r"
 #define D_REVENUE_CURRENCY @"rc"
 #define D_TIME_INTERVAL @"ti"
@@ -48,14 +43,13 @@
 #define D_SESSION_ID @"s"
 #define D_EXPERIMENTS @"e"
 #define D_TIMESTAMP @"ts"
-#define D_ID @"id"
+#define D_DATA_COUNT @"dc"
 
 // Instrumentation entry types.
 #define T_TIMER @"t"
 #define T_REVENUE @"r"
 #define T_ACTION @"a"
 #define T_ERROR @"e"
-#define T_COLLECT @"m"
 
 // Orientations strings.
 #define ORIENT_PORTRAIT @"p"
@@ -68,14 +62,13 @@
 
 // TODO(jt): make these numbers configurable instead of macros
 // The number of items in the queue before forcing a flush.
-#define FLUSH_DATA_COUNT 1
+#define FLUSH_DATA_COUNT 15
 // XX_DATA_LIMIT describes the required number of items in the queue before that instrumentation
 // event type starts being dropped.
 #define TIMER_DATA_LIMIT 5000
 #define ACTION_DATA_LIMIT 5000
 #define REVENUE_DATA_LIMIT 100000
 #define ERROR_DATA_LIMIT 5000
-#define COLLECT_DATA_LIMIT 5000
 // Time interval before automatically flushing the data queue.
 #define FLUSH_INTERVAL_SEC 15
 
@@ -89,77 +82,69 @@
 
 @interface Yozio()
 {
+  // User set instrumentation variables.
   NSString *_appKey;
   NSString *_secretKey;
   NSString *_userId;
-  NSString *_env;
   NSString *_appVersion;
-  NSString *_campaignSource;
-  NSString *_campaignMedium;
-  NSString *_campaignTerm;
-  NSString *_campaignContent;
-  NSString *_campaignName;
 
+  // Automatically determined instrumentation variables.
   NSString *deviceId;
   NSString *hardware;
   NSString *os;
   NSString *sessionId;
-  NSString *schemaVersion;
   NSString *countryName;
   NSString *language;
   NSNumber *timezone;
   NSString *experimentsStr;
+  NSString *environment;
   
+  // Internal variables.
   NSTimer *flushTimer;
-  NSMutableArray *dataQueue;
-  NSMutableDictionary *dataToSend;
   NSInteger dataCount;
+  NSMutableArray *dataQueue;
+  NSArray *dataToSend;
   NSMutableDictionary *timers;
   NSMutableDictionary *config;
-  
-  // Cached variables.
   NSDateFormatter *dateFormatter;
 }
 
-// User variables that need to be set by user.
+// User set instrumentation variables.
 @property(nonatomic, retain) NSString *_appKey;
 @property(nonatomic, retain) NSString *_secretKey;
 @property(nonatomic, retain) NSString *_userId;
-@property(nonatomic, retain) NSString *_env;
 @property(nonatomic, retain) NSString *_appVersion;
-@property(nonatomic, retain) NSString *_campaignSource;
-@property(nonatomic, retain) NSString *_campaignMedium;
-@property(nonatomic, retain) NSString *_campaignTerm;
-@property(nonatomic, retain) NSString *_campaignContent;
-@property(nonatomic, retain) NSString *_campaignName;
-// User variables that can be figured out.
+
+// Automatically determined instrumentation variables.
 @property(nonatomic, retain) NSString *deviceId;
 @property(nonatomic, retain) NSString *hardware;
 @property(nonatomic, retain) NSString *os;
 @property(nonatomic, retain) NSString *sessionId;
-@property(nonatomic, retain) NSString *schemaVersion;
 @property(nonatomic, retain) NSString *countryName;
 @property(nonatomic, retain) NSString *language;
 @property(nonatomic, retain) NSNumber *timezone;
 @property(nonatomic, retain) NSString *experimentsStr;
+@property(nonatomic, retain) NSString *environment;
+
 // Internal variables.
 @property(nonatomic, retain) NSTimer *flushTimer;
-@property(nonatomic, retain) NSMutableArray *dataQueue;
-@property(nonatomic, retain) NSMutableDictionary *dataToSend;
 @property(nonatomic, assign) NSInteger dataCount;
+@property(nonatomic, retain) NSMutableArray *dataQueue;
+@property(nonatomic, retain) NSArray *dataToSend;
 @property(nonatomic, retain) NSMutableDictionary *timers;
 @property(nonatomic, retain) NSMutableDictionary *config;
-// Cached variables.
 @property(nonatomic, retain) NSDateFormatter *dateFormatter;
 
-+ (Yozio *)getInstance; // Used for testing.
++ (Yozio *)getInstance; 
 + (void)log:(NSString *)format, ...;
+
 // Notification observer methods.
 - (void)onApplicationWillTerminate:(NSNotification *)notification;
 - (void)onApplicationWillResignActive:(NSNotification *)notification;
 - (void)onApplicationWillEnterForeground:(NSNotification *)notification;
 - (void)onApplicationDidEnterBackground:(NSNotification *)notification;
-// Helper methods.
+
+// Data collection helper methods.
 - (BOOL)validateConfiguration;
 - (void)doCollect:(NSString *)type
              name:(NSString *)name
@@ -169,17 +154,25 @@
 - (void)checkDataQueueSize;
 - (void)doFlush;
 - (NSString *)buildPayload;
+
+// Instrumentation data helper methods.
 - (NSString *)timeStampString;
 - (NSString *)deviceOrientation;
 - (NSString *)uiOrientation;
 - (void)updateCountryName;
 - (void)updateLanguage;
 - (void)updateTimezone;
+
+// File system helper methods.
 - (void)saveUnsentData;
 - (void)loadUnsentData;
+
+// UUID helper methods.
 - (NSString *)loadOrCreateDeviceId;
 - (BOOL)storeDeviceId:(NSString *)uuid;
 - (NSString *)makeUUID;
+
+// Configuration related helper methods.
 - (void)updateConfig;
 
 @end

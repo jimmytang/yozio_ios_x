@@ -48,7 +48,7 @@ NSUncaughtExceptionHandler *_customExceptionHandler;
   if (_customExceptionHandler != nil) {
     _customExceptionHandler(exception);
   }
-  [Yozio exception:exception category:UNCAUGHT_EXCEPTION_CATEGORY];
+  [Yozio exception:exception];
 
 	NSSetUncaughtExceptionHandler(NULL);
 	signal(SIGABRT, SIG_DFL);

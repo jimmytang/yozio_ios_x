@@ -7,30 +7,30 @@
 #import "Seriously.h"
 #import "SFHFKeychainUtils.h"
 #import "UncaughtExceptionHandler.h"
+#import "Yozio.h"
 #import "Yozio_Private.h"
 
 
 @implementation Yozio
 
+// User set instrumentation variables.
 @synthesize _appKey;
 @synthesize _secretKey;
 @synthesize _userId;
-@synthesize _env;
 @synthesize _appVersion;
-@synthesize _campaignSource;
-@synthesize _campaignMedium;
-@synthesize _campaignTerm;
-@synthesize _campaignContent;
-@synthesize _campaignName;
+
+// Automatically determined instrumentation variables.
 @synthesize deviceId;
 @synthesize hardware;
 @synthesize os;
 @synthesize sessionId;
-@synthesize schemaVersion;
 @synthesize countryName;
 @synthesize language;
 @synthesize timezone;
 @synthesize experimentsStr;
+@synthesize environment;
+
+// Internal variables.
 @synthesize flushTimer;
 @synthesize dataQueue;
 @synthesize dataToSend;
@@ -56,26 +56,34 @@ static Yozio *instance = nil;
 - (id)init
 {
   self = [super init];
-
+  
+  // User set instrumentation variables.
+  instance._appKey = nil;
+  instance._secretKey = nil;
+  instance._userId = @"";
+  instance._appVersion = @"";
+  
+  // Initialize constant intrumentation variables.
   UIDevice* device = [UIDevice currentDevice];
+  [instance loadOrCreateDeviceId];
   instance.hardware = device.model;
   instance.os = [device systemVersion];
-  // TODO(jt): schemaVersion
-  instance.schemaVersion = @"";
-  instance.experimentsStr = @"";
-  instance.sessionId = @"";
-  instance._appVersion = @"";
-  instance._env = @"";
-  instance._userId = @"";
-  instance._campaignName = @"";
-  instance._campaignSource = @"";
-  instance._campaignMedium = @"";
-  instance._campaignTerm = @"";
-  instance._campaignContent = @"";
   
-  instance.dataQueue = [NSMutableArray array];
+  // Initialize  mutable instrumentation variables.
+  // TODO: update sessionId correctly
+  instance.sessionId = [instance makeUUID];
+  [instance updateCountryName];
+  [instance updateLanguage];
+  [instance updateTimezone];
+  instance.experimentsStr = @"";
+  instance.environment = @"production";
+  
+  instance.flushTimer = nil;
   instance.dataCount = 0;
+  instance.dataQueue = [NSMutableArray array];
+  instance.dataToSend = nil;
   instance.timers = [NSMutableDictionary dictionary];
+  instance.config = nil;
 
   // Initialize dateFormatter.
   NSTimeZone *gmt = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
@@ -84,9 +92,6 @@ static Yozio *instance = nil;
   [instance.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss SSS"];
   [instance.dateFormatter setTimeZone:gmt];
   [tmpDateFormatter release];
-
-  // Initialize device id.
-  [instance loadOrCreateDeviceId];
 
   // Add notification observers.
   NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
@@ -139,23 +144,18 @@ static Yozio *instance = nil;
 
 + (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey
 {
-  if (appKey == NULL) {
-    [NSException raise:NSInvalidArgumentException format:@"appKey cannot be NULL."];
+  if (appKey == nil) {
+    [NSException raise:NSInvalidArgumentException format:@"appKey cannot be nil."];
   }
-  if (secretKey == NULL) {
-    [NSException raise:NSInvalidArgumentException format:@"secretKey cannot be NULL."];
+  if (secretKey == nil) {
+    [NSException raise:NSInvalidArgumentException format:@"secretKey cannot be nil."];
   }
   instance._appKey = appKey;
   instance._secretKey = secretKey;
-  
-  [instance updateCountryName];
-  [instance updateLanguage];
-  [instance updateTimezone];
+  InstallUncaughtExceptionHandler();
   [instance updateConfig];
   
-  InstallUncaughtExceptionHandler();
-  
-  if (instance.flushTimer == NULL) {
+  if (instance.flushTimer == nil) {
     instance.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_INTERVAL_SEC
                                                            target:instance
                                                          selector:@selector(doFlush)
@@ -172,67 +172,12 @@ static Yozio *instance = nil;
 
 + (void)setApplicationVersion:(NSString *)appVersion
 {
-  if (appVersion == NULL) {
-    [NSException raise:NSInvalidArgumentException format:@"appVersion cannot be NULL."];
-  }
   instance._appVersion = appVersion;
-}
-
-+ (void)setEnvironment:(NSString *)environment
-{
-  if (environment == NULL) {
-    [NSException raise:NSInvalidArgumentException format:@"environment cannot be NULL."];
-  }
-  instance._env = environment;
 }
 
 + (void)setUserId:(NSString *)userId
 {
-  if (userId == NULL) {
-    [NSException raise:NSInvalidArgumentException format:@"userId cannot be NULL."];
-  }
   instance._userId = userId;
-}
-
-+ (void)setCampaign:(NSString *)campaignName
-     campaignSource:(NSString *)campaignSource
-     campaignMedium:(NSString *)campaignMedium
-       campaignTerm:(NSString *)campaignTerm
-    campaignContent:(NSString *)campaignContent
-{
-  if (campaignName == NULL) {
-    [NSException raise:NSInvalidArgumentException format:@"campaignName cannot be NULL."];
-  }
-  if (campaignSource == NULL) {
-    [NSException raise:NSInvalidArgumentException format:@"campaignSource cannot be NULL."];
-  }
-  if (campaignMedium == NULL) {
-    [NSException raise:NSInvalidArgumentException format:@"campaignMedium cannot be NULL."];
-  }
-  if (campaignTerm == NULL) {
-    [NSException raise:NSInvalidArgumentException format:@"campaignTerm cannot be NULL."];
-  }
-  if (campaignContent == NULL) {
-    [NSException raise:NSInvalidArgumentException format:@"campaignContent cannot be NULL."];
-  }
-  instance._campaignName = campaignName;
-  instance._campaignSource = campaignSource;
-  instance._campaignMedium = campaignMedium;
-  instance._campaignTerm = campaignTerm;
-  instance._campaignContent = campaignContent;
-}
-
-+ (void)setUncaughtExceptionHandler:(NSUncaughtExceptionHandler *)exceptionHandler
-{
-  if (exceptionHandler == NULL) {
-    [NSException raise:NSInvalidArgumentException format:@"exceptionHandler cannot be NULL."];
-  }
-  SetCustomExceptionHandler(exceptionHandler);
-}
-
-+ (void)newSession
-{
-  instance.sessionId = [instance makeUUID];
 }
 
 + (void)startTimer:(NSString *)timerName
@@ -244,7 +189,7 @@ static Yozio *instance = nil;
 {
   NSDate *startTime = [instance.timers valueForKey:timerName];
   // Ignore if the timer was cleared (i.e. app went into background).
-  if (startTime != NULL) {
+  if (startTime != nil) {
     [instance.timers removeObjectForKey:timerName];
     float elapsedTime = [[NSDate date] timeIntervalSinceDate:startTime];
     NSString *elapsedTimeStr = [NSString stringWithFormat:@"%.2f", elapsedTime];
@@ -275,41 +220,22 @@ static Yozio *instance = nil;
              maxQueue:ACTION_DATA_LIMIT];
 }
 
-+ (void)error:(NSString *)errorName
++ (void)exception:(NSException *)exception
 {
   [instance doCollect:T_ERROR
-                 name:errorName
+                 name:[exception name]
                amount:@""
          timeInterval:@""
              maxQueue:ERROR_DATA_LIMIT];
 }
 
-+ (void)exception:(NSException *)exception
-{
-  [Yozio error:[exception name]];
-}
-
-+ (void)flush
-{
-  [instance doFlush];
-}
-
 + (NSString *)stringForKey:(NSString *)key defaultValue:(NSString *)defaultValue
 {
+  if (instance.config == nil) {
+    return defaultValue;
+  }
   NSString *val = [instance.config objectForKey:key];
-  if (val == NULL) {
-    return defaultValue;
-  }
-  return val;
-}
-
-+ (NSInteger)intForKey:(NSString *)key defaultValue:(NSInteger)defaultValue
-{
-  NSNumber *num = [instance.config objectForKey:key];
-  if (num == NULL) {
-    return defaultValue;
-  }
-  return [num integerValue];
+  return val != nil ? val : defaultValue;
 }
 
 
@@ -351,19 +277,14 @@ static Yozio *instance = nil;
 
 - (BOOL)validateConfiguration
 {
-  BOOL validAppKey = self._appKey != NULL;
-  BOOL validSession = self.sessionId != NULL;
-  if (!validAppKey) {
+  BOOL validAppKey = self._appKey != nil;
+  BOOL validSecretKey = self._secretKey != nil;
+  if (!validAppKey || !validSecretKey) {
     NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     NSLog(@"Please call [Yozio configure] before instrumenting.");
     NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
   }
-  if (!validSession) {
-    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    NSLog(@"Please call [Yozio newSession] before instrumenting.");
-    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-  }
-  return validAppKey && validSession;
+  return validAppKey && validSecretKey;
 }
 
 - (void)doCollect:(NSString *)type
@@ -393,7 +314,7 @@ static Yozio *instance = nil;
             self.sessionId, D_SESSION_ID,
             self.experimentsStr, D_EXPERIMENTS,
             [self timeStampString], D_TIMESTAMP,
-            [NSNumber numberWithInteger:dataCount], D_ID,
+            [NSNumber numberWithInteger:dataCount], D_DATA_COUNT,
             nil];
     [self.dataQueue addObject:d];
     [Yozio log:@"doCollect: %@", d];
@@ -404,6 +325,7 @@ static Yozio *instance = nil;
 - (void)checkDataQueueSize
 {
   [Yozio log:@"data queue size: %i",[self.dataQueue count]];
+  // Only try to flush when the dataQueue length is a multiple of FLUSH_DATA_COUNT.
   if ([self.dataQueue count] > 0 && [self.dataQueue count] % FLUSH_DATA_COUNT == 0) {
     [self doFlush];
   }
@@ -415,21 +337,23 @@ static Yozio *instance = nil;
     [Yozio log:@"No data to flush."];
     return;
   }
-  if (self.dataToSend != NULL) {
+  if (self.dataToSend != nil) {
     [Yozio log:@"Already flushing"];
     return;
   }
-  self.dataToSend = [self.dataQueue objectAtIndex:0];
+  if ([self.dataQueue count] > FLUSH_DATA_COUNT) {
+    self.dataToSend = [self.dataQueue subarrayWithRange:NSMakeRange(0, FLUSH_DATA_COUNT)];
+  } else {
+    self.dataToSend = [NSArray arrayWithArray:self.dataQueue];
+  }
   [Yozio log:@"Flushing..."];
   NSString *dataStr = [self buildPayload];
   NSString *urlParams = [NSString stringWithFormat:@"data=%@", dataStr];
   // TODO(jt): try to avoid having to escape urlParams if possible
   NSString *escapedUrlParams =
       [urlParams stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
-
   NSString *urlString =
       [NSString stringWithFormat:@"http://%@/p.gif?%@", TRACKING_SERVER_URL, escapedUrlParams];
-
 
   [Yozio log:@"Final get request url: %@", urlString];
 
@@ -438,17 +362,15 @@ static Yozio *instance = nil;
     if (error) {
       [Yozio log:@"Flush error %@", error];
     } else {
-
       if ([response statusCode] == 200) {
         [Yozio log:@"Before remove: %@", self.dataQueue];
-
         [self.dataQueue removeObject:self.dataToSend];
         [Yozio log:@"After remove: %@", self.dataQueue];
         // TODO(jt): stop background task if running in background
       }
     }
     [Yozio log:@"flush request complete"];
-    self.dataToSend = NULL;
+    self.dataToSend = nil;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
   }];
 }
@@ -458,27 +380,26 @@ static Yozio *instance = nil;
   // TODO(jt): compute real digest from shared key
   NSString *digest = @"";
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
+  [payload setValue:YOZIO_BEACON_SCHEMA_VERSION forKey:P_SCHEMA_VERSION];
   [payload setValue:digest forKey:P_DIGEST];
   [payload setValue:self._appKey forKey:P_APP_KEY];
-  [payload setValue:self._env forKey:P_ENVIRONMENT];
+  [payload setValue:self.environment forKey:P_ENVIRONMENT];
   [payload setValue:[self loadOrCreateDeviceId] forKey:P_DEVICE_ID];
   [payload setValue:self.hardware forKey:P_HARDWARE];
   [payload setValue:self.os forKey:P_OPERATING_SYSTEM];
-  [payload setValue:self.schemaVersion forKey:P_SCHEMA_VERSION];
   [payload setValue:self.countryName forKey:P_COUNTRY];
   [payload setValue:self.language forKey:P_LANGUAGE];
   [payload setValue:self.timezone forKey:P_TIMEZONE];
-
-  [payload setValue:self._campaignSource forKey:P_CAMPAIGN_SOURCE];
-  [payload setValue:self._campaignMedium forKey:P_CAMPAIGN_MEDIUM];
-  [payload setValue:self._campaignTerm forKey:P_CAMPAIGN_TERM];
-  [payload setValue:self._campaignContent forKey:P_CAMPAIGN_CONTENT];
-  [payload setValue:self._campaignName forKey:P_CAMPAIGN_NAME];
-  [payload addEntriesFromDictionary:self.dataToSend];
-
+  [payload setValue:[NSNumber numberWithInteger:[self.dataToSend count]] forKey:P_PAYLOAD_COUNT];
+  [payload setValue:self.dataToSend forKey:P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];
   return [payload JSONString];
 }
+
+
+/*******************************************
+ * Instrumentation data helper methods.
+ *******************************************/
 
 - (NSString *)timeStampString
 {
@@ -548,6 +469,11 @@ static Yozio *instance = nil;
   instance.timezone = [NSNumber numberWithInteger:timezoneOffset];
 }
 
+
+/*******************************************
+ * File system helper methods.
+ *******************************************/
+
 - (void)saveUnsentData
 {
   [Yozio log:@"saveUnsentData: %@", self.dataQueue];
@@ -567,7 +493,7 @@ static Yozio *instance = nil;
 
 
 /*******************************************
- * UUID related helper methods.
+ * UUID helper methods.
  *******************************************/
 
 /**
@@ -632,7 +558,7 @@ static Yozio *instance = nil;
 
 
 /*******************************************
- * Configuration related helper methods.
+ * Configuration helper methods.
  *******************************************/
 
 /**
@@ -640,20 +566,17 @@ static Yozio *instance = nil;
  */
 - (void)updateConfig
 {
-  if (self._appKey == NULL) {
-    [Yozio log:@"updateConfig NULL appKey"];
+  if (self._appKey == nil) {
+    [Yozio log:@"updateConfig nil appKey"];
     return;
   }
-  if (self.deviceId == NULL) {
-    [Yozio log:@"updateConfig NULL deviceId"];
+  if (self.deviceId == nil) {
+    [Yozio log:@"updateConfig nil deviceId"];
     return;
   }
   NSString *urlParams = [NSString stringWithFormat:@"deviceId=%@", self.deviceId];
-
   NSString *urlString =
       [NSString stringWithFormat:@"http://%@/configuration.json?%@", CONFIGURATION_SERVER_URL, urlParams];
-
-
 
   [Yozio log:@"Final configuration request url: %@", urlString];
 
