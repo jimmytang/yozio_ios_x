@@ -519,7 +519,7 @@ static Yozio *instance = nil;
 - (void)saveSessionData
 {
   [Yozio log:@"saveSessionData: %@", self.lastActiveTime];
-  if (![NSKeyedArchiver archiveRootObject:self.dataQueue toFile:YOZIO_SESSION_FILE]) {
+  if (![NSKeyedArchiver archiveRootObject:self.lastActiveTime toFile:YOZIO_SESSION_FILE]) {
     [Yozio log:@"Unable to archive session data!"];
   }
 }
