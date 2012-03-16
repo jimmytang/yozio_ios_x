@@ -27,10 +27,13 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#if !defined(__YOZIO_KEYCHAIN_UTILS__)
+#define __YOZIO_KEYCHAIN_UTILS__ 1
+
 #import <UIKit/UIKit.h>
 
 
-@interface SFHFKeychainUtils : NSObject {
+@interface YSFHFKeychainUtils : NSObject {
   
 }
 
@@ -39,3 +42,5 @@
 + (BOOL) deleteItemForUsername: (NSString *) username andServiceName: (NSString *) serviceName error: (NSError **) error;
 
 @end
+
+#endif /* ! __YOZIO_KEYCHAIN_UTILS__ */

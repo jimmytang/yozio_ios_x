@@ -5,7 +5,7 @@
 #import <UIKit/UIKit.h>
 #import "JSONKit.h"
 #import "Seriously.h"
-#import "SFHFKeychainUtils.h"
+#import "YSFHFKeychainUtils.h"
 #import "YUncaughtExceptionHandler.h"
 #import "Yozio.h"
 #import "Yozio_Private.h"
@@ -510,7 +510,7 @@ static Yozio *instance = nil;
   }
 
   NSError *loadError = nil;
-  NSString *uuid = [SFHFKeychainUtils getPasswordForUsername:YOZIO_UUID_KEYCHAIN_USERNAME
+  NSString *uuid = [YSFHFKeychainUtils getPasswordForUsername:YOZIO_UUID_KEYCHAIN_USERNAME
                                               andServiceName:YOZIO_KEYCHAIN_SERVICE
                                                        error:&loadError];
   NSInteger loadErrorCode = [loadError code];
@@ -533,7 +533,7 @@ static Yozio *instance = nil;
 - (BOOL)storeDeviceId:(NSString *)uuid
 {
   NSError *storeError = nil;
-  [SFHFKeychainUtils storeUsername:YOZIO_UUID_KEYCHAIN_USERNAME
+  [YSFHFKeychainUtils storeUsername:YOZIO_UUID_KEYCHAIN_USERNAME
                        andPassword:uuid
                     forServiceName:YOZIO_KEYCHAIN_SERVICE
                     updateExisting:true
