@@ -57,27 +57,27 @@ static Yozio *instance = nil;
 - (id)init
 {
   self = [super init];
-  
+
   // User set instrumentation variables.
   self._appKey = nil;
   self._secretKey = nil;
   self._userId = @"";
   self._appVersion = @"";
-  
+
   // Initialize constant intrumentation variables.
   UIDevice* device = [UIDevice currentDevice];
   [self loadOrCreateDeviceId];
   self.hardware = device.model;
   self.os = [device systemVersion];
-  
+
   // Initialize  mutable instrumentation variables.
-  [self updateSessionId];
+  self.sessionId = nil;
   [self updateCountryName];
   [self updateLanguage];
   [self updateTimezone];
   self.experimentsStr = @"";
   self.environment = @"production";
-  
+
   self.flushTimer = nil;
   self.dataCount = 0;
   self.dataQueue = [NSMutableArray array];
@@ -153,8 +153,7 @@ static Yozio *instance = nil;
   instance._appKey = appKey;
   instance._secretKey = secretKey;
   InstallUncaughtExceptionHandler();
-  [instance updateConfig];
-  
+
   if (instance.flushTimer == nil) {
     instance.flushTimer = [NSTimer scheduledTimerWithTimeInterval:YOZIO_FLUSH_INTERVAL_SEC
                                                            target:instance
@@ -162,6 +161,10 @@ static Yozio *instance = nil;
                                                          userInfo:nil
                                                           repeats:YES];
   }
+
+  [instance updateConfig];
+  [instance loadSessionData];
+  [instance updateSessionId];
 
   // Load any previous data and try to flush it.
   // Perform this here instead of on applicationDidFinishLoading because instrumentation calls
@@ -246,6 +249,7 @@ static Yozio *instance = nil;
 - (void)onApplicationWillTerminate:(NSNotification *)notification
 {
   [self saveUnsentData];
+  [self saveSessionData];
 }
 
 - (void)onApplicationWillResignActive:(NSNotification *)notification
@@ -499,7 +503,7 @@ static Yozio *instance = nil;
 {
   [Yozio log:@"saveUnsentData: %@", self.dataQueue];
   if (![NSKeyedArchiver archiveRootObject:self.dataQueue toFile:YOZIO_DATA_QUEUE_FILE]) {
-    [Yozio log:@"Unable to archive data!"];
+    [Yozio log:@"Unable to archive dataQueue!"];
   }
 }
 
@@ -510,6 +514,20 @@ static Yozio *instance = nil;
     self.dataQueue = [NSMutableArray array];
   }
   [Yozio log:@"loadUnsentData: %@", self.dataQueue];
+}
+
+- (void)saveSessionData
+{
+  [Yozio log:@"saveSessionData: %@", self.lastActiveTime];
+  if (![NSKeyedArchiver archiveRootObject:self.dataQueue toFile:YOZIO_SESSION_FILE]) {
+    [Yozio log:@"Unable to archive session data!"];
+  }
+}
+
+- (void)loadSessionData
+{
+  self.lastActiveTime = [NSKeyedUnarchiver unarchiveObjectWithFile:YOZIO_SESSION_FILE];
+  [Yozio log:@"loadSessionData: %@", self.lastActiveTime];
 }
 
 

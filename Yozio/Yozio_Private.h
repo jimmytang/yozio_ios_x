@@ -82,6 +82,7 @@
 #define YOZIO_CONFIG_EXPERIMENTS_KEY @"experiments"
 
 #define YOZIO_DATA_QUEUE_FILE [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
+#define YOZIO_SESSION_FILE [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SessionData.plist"]
 #define YOZIO_UUID_KEYCHAIN_USERNAME @"yozioUuid"
 #define YOZIO_KEYCHAIN_SERVICE @"yozioKeychain"
 
@@ -175,6 +176,8 @@
 // File system helper methods.
 - (void)saveUnsentData;
 - (void)loadUnsentData;
+- (void)saveSessionData;
+- (void)loadSessionData;
 
 // UUID helper methods.
 - (NSString *)loadOrCreateDeviceId;
