@@ -156,6 +156,7 @@
 - (void)checkDataQueueSize;
 - (void)doFlush;
 - (NSString *)buildPayload;
+- (NSString *)notNil:(NSString *)str;
 
 // Instrumentation data helper methods.
 - (NSString *)timeStampString;

@@ -326,7 +326,7 @@ static Yozio *instance = nil;
 {
   [Yozio log:@"data queue size: %i",[self.dataQueue count]];
   // Only try to flush when the dataQueue length is a multiple of YOZIO_FLUSH_DATA_COUNT.
-  if ([self.dataQueue count] > 0 && [self.dataQueue count] % YOZIO_FLUSH_DATA_COUNT == 0) {
+  if (self.dataCount > 0 && self.dataCount % YOZIO_FLUSH_DATA_COUNT == 0) {
     [self doFlush];
   }
 }
@@ -379,21 +379,31 @@ static Yozio *instance = nil;
 {
   // TODO(jt): compute real digest from shared key
   NSString *digest = @"";
+  NSNumber *packetCount = [NSNumber numberWithInteger:[self.dataToSend count]];
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
   [payload setValue:YOZIO_BEACON_SCHEMA_VERSION forKey:YOZIO_P_SCHEMA_VERSION];
   [payload setValue:digest forKey:YOZIO_P_DIGEST];
   [payload setValue:self._appKey forKey:YOZIO_P_APP_KEY];
-  [payload setValue:self.environment forKey:YOZIO_P_ENVIRONMENT];
-  [payload setValue:[self loadOrCreateDeviceId] forKey:YOZIO_P_DEVICE_ID];
-  [payload setValue:self.hardware forKey:YOZIO_P_HARDWARE];
-  [payload setValue:self.os forKey:YOZIO_P_OPERATING_SYSTEM];
-  [payload setValue:self.countryName forKey:YOZIO_P_COUNTRY];
-  [payload setValue:self.language forKey:YOZIO_P_LANGUAGE];
+  [payload setValue:[self notNil:self.environment] forKey:YOZIO_P_ENVIRONMENT];
+  [payload setValue:[self notNil:[self loadOrCreateDeviceId]] forKey:YOZIO_P_DEVICE_ID];
+  [payload setValue:[self notNil:self.hardware] forKey:YOZIO_P_HARDWARE];
+  [payload setValue:[self notNil:self.os] forKey:YOZIO_P_OPERATING_SYSTEM];
+  [payload setValue:[self notNil:self.countryName] forKey:YOZIO_P_COUNTRY];
+  [payload setValue:[self notNil:self.language] forKey:YOZIO_P_LANGUAGE];
   [payload setValue:self.timezone forKey:YOZIO_P_TIMEZONE];
-  [payload setValue:[NSNumber numberWithInteger:[self.dataToSend count]] forKey:YOZIO_P_PAYLOAD_COUNT];
+  [payload setValue:packetCount forKey:YOZIO_P_PAYLOAD_COUNT];
   [payload setValue:self.dataToSend forKey:YOZIO_P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];
   return [payload JSONString];
+}
+
+- (NSString *)notNil:(NSString *)str
+{
+  if (str == nil) {
+    return @"";
+  } else {
+    return str;
+  }
 }
 
 
