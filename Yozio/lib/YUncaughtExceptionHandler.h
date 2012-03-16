@@ -17,9 +17,9 @@
 
 #import <UIKit/UIKit.h>
 
-#define UNCAUGHT_EXCEPTION_HANDLER_ADDRESSES_KEY @"UncaughtExceptionHandlerAddressesKey"
+#define YOZIO_UNCAUGHT_EXCEPTION_HANDLER_ADDRESSES_KEY @"UncaughtExceptionHandlerAddressesKey"
 
-@interface UncaughtExceptionHandler : NSObject {}
+@interface YUncaughtExceptionHandler : NSObject {}
 @end
 
 /**

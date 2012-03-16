@@ -12,7 +12,7 @@
 //  appreciated but not required.
 //
 
-#import "UncaughtExceptionHandler.h"
+#import "YUncaughtExceptionHandler.h"
 #import "Yozio_Private.h"
 #include <libkern/OSAtomic.h>
 #include <execinfo.h>
@@ -27,7 +27,7 @@ const NSInteger UncaughtExceptionHandlerSkipAddressCount = 7;
 
 NSUncaughtExceptionHandler *_customExceptionHandler;
 
-@implementation UncaughtExceptionHandler
+@implementation YUncaughtExceptionHandler
 
 + (NSArray *)backtrace
 {
@@ -62,7 +62,7 @@ NSUncaughtExceptionHandler *_customExceptionHandler;
          "*** Call stack at first throw:\n%@\n"
          "terminate called throwing an exception",
         [exception name], [exception reason],
-        [[exception userInfo] valueForKey:UNCAUGHT_EXCEPTION_HANDLER_ADDRESSES_KEY]);
+        [[exception userInfo] valueForKey:YOZIO_UNCAUGHT_EXCEPTION_HANDLER_ADDRESSES_KEY]);
 	
 	if ([[exception name] isEqual:UncaughtExceptionHandlerSignalExceptionName]) {
 		kill(getpid(), [[[exception userInfo] objectForKey:UncaughtExceptionHandlerSignalKey] intValue]);
@@ -80,14 +80,14 @@ void HandleException(NSException *exception)
 		return;
 	}
 	
-	NSArray *callStack = [UncaughtExceptionHandler backtrace];
+	NSArray *callStack = [YUncaughtExceptionHandler backtrace];
 	NSMutableDictionary *userInfo =
 		[NSMutableDictionary dictionaryWithDictionary:[exception userInfo]];
 	[userInfo
 		setObject:callStack
-		forKey:UNCAUGHT_EXCEPTION_HANDLER_ADDRESSES_KEY];
+		forKey:YOZIO_UNCAUGHT_EXCEPTION_HANDLER_ADDRESSES_KEY];
 	
-	[[[[UncaughtExceptionHandler alloc] init] autorelease]
+	[[[[YUncaughtExceptionHandler alloc] init] autorelease]
 		performSelectorOnMainThread:@selector(handleException:)
 		withObject:
 			[NSException
@@ -109,12 +109,12 @@ void SignalHandler(int signal)
 			dictionaryWithObject:[NSNumber numberWithInt:signal]
 			forKey:UncaughtExceptionHandlerSignalKey];
 
-	NSArray *callStack = [UncaughtExceptionHandler backtrace];
+	NSArray *callStack = [YUncaughtExceptionHandler backtrace];
 	[userInfo
 		setObject:callStack
-		forKey:UNCAUGHT_EXCEPTION_HANDLER_ADDRESSES_KEY];
+		forKey:YOZIO_UNCAUGHT_EXCEPTION_HANDLER_ADDRESSES_KEY];
 	
-	[[[[UncaughtExceptionHandler alloc] init] autorelease]
+	[[[[YUncaughtExceptionHandler alloc] init] autorelease]
 		performSelectorOnMainThread:@selector(handleException:)
 		withObject:
 			[NSException

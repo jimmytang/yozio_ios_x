@@ -6,7 +6,7 @@
 #import "JSONKit.h"
 #import "Seriously.h"
 #import "SFHFKeychainUtils.h"
-#import "UncaughtExceptionHandler.h"
+#import "YUncaughtExceptionHandler.h"
 #import "Yozio.h"
 #import "Yozio_Private.h"
 
@@ -58,39 +58,39 @@ static Yozio *instance = nil;
   self = [super init];
   
   // User set instrumentation variables.
-  instance._appKey = nil;
-  instance._secretKey = nil;
-  instance._userId = @"";
-  instance._appVersion = @"";
+  self._appKey = nil;
+  self._secretKey = nil;
+  self._userId = @"";
+  self._appVersion = @"";
   
   // Initialize constant intrumentation variables.
   UIDevice* device = [UIDevice currentDevice];
-  [instance loadOrCreateDeviceId];
-  instance.hardware = device.model;
-  instance.os = [device systemVersion];
+  [self loadOrCreateDeviceId];
+  self.hardware = device.model;
+  self.os = [device systemVersion];
   
   // Initialize  mutable instrumentation variables.
   // TODO: update sessionId correctly
-  instance.sessionId = [instance makeUUID];
-  [instance updateCountryName];
-  [instance updateLanguage];
-  [instance updateTimezone];
-  instance.experimentsStr = @"";
-  instance.environment = @"production";
+  self.sessionId = [self makeUUID];
+  [self updateCountryName];
+  [self updateLanguage];
+  [self updateTimezone];
+  self.experimentsStr = @"";
+  self.environment = @"production";
   
-  instance.flushTimer = nil;
-  instance.dataCount = 0;
-  instance.dataQueue = [NSMutableArray array];
-  instance.dataToSend = nil;
-  instance.timers = [NSMutableDictionary dictionary];
-  instance.config = nil;
+  self.flushTimer = nil;
+  self.dataCount = 0;
+  self.dataQueue = [NSMutableArray array];
+  self.dataToSend = nil;
+  self.timers = [NSMutableDictionary dictionary];
+  self.config = nil;
 
   // Initialize dateFormatter.
   NSTimeZone *gmt = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
   NSDateFormatter *tmpDateFormatter = [[NSDateFormatter alloc] init];
-  instance.dateFormatter = tmpDateFormatter;
-  [instance.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss SSS"];
-  [instance.dateFormatter setTimeZone:gmt];
+  self.dateFormatter = tmpDateFormatter;
+  [self.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss SSS"];
+  [self.dateFormatter setTimeZone:gmt];
   [tmpDateFormatter release];
 
   // Add notification observers.
