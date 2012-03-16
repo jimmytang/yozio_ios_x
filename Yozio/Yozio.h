@@ -76,9 +76,9 @@
 
 /**
  * Starts a new timer. This call by itself will not trigger an instrumentation event. You must
- * call endTimer with the same timerName to capture the timing information.
+ * call stopTimer with the same timerName to capture the timing information.
  *
- * @param timerName A unique name to assign the timer. Use this name in the endTimer method to
+ * @param timerName A unique name to assign the timer. Use this name in the stopTimer method to
  *                  to stop the timer.
  *
  * @example [Yozio startTimer:@"MyTimer"];
@@ -95,9 +95,9 @@
  *
  *          ...later on...
  *
- *          [Yozio endTimer:@"MyView"];
+ *          [Yozio stopTimer:@"MyView"];
  */
-+ (void)endTimer:(NSString *)timerName;
++ (void)stopTimer:(NSString *)timerName;
 
 
 /**

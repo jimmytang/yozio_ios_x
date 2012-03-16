@@ -10,7 +10,7 @@
 #import "Yozio.h"
 
 #define YOZIO_BEACON_SCHEMA_VERSION @"1"
-#define YOZIO_TRACKING_SERVER_URL @"ec2-50-18-34-219.us-west-1.compute.amazonaws.com:8080"
+#define YOZIO_TRACKING_SERVER_URL @"p.yozio.com"
 #define YOZIO_CONFIGURATION_SERVER_URL @"c.yozio.com"
 
 // Set to true to show log messages.

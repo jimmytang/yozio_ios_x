@@ -189,7 +189,7 @@ static Yozio *instance = nil;
   [instance.timers setValue:[NSDate date] forKey:timerName];
 }
 
-+ (void)endTimer:(NSString *)timerName
++ (void)stopTimer:(NSString *)timerName
 {
   NSDate *startTime = [instance.timers valueForKey:timerName];
   // Ignore if the timer was cleared (i.e. app went into background).
