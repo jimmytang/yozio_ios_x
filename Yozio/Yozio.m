@@ -370,9 +370,9 @@ static Yozio *instance = nil;
       [Yozio log:@"Flush error %@", error];
     } else {
       if ([response statusCode] == 200) {
-        [Yozio log:@"Before remove: %@", self.dataQueue];
-        [self.dataQueue removeObject:self.dataToSend];
-        [Yozio log:@"After remove: %@", self.dataQueue];
+        [Yozio log:@"dataQueue before remove: %@", self.dataQueue];
+        [self.dataQueue removeObjectsInArray:self.dataToSend];
+        [Yozio log:@"dataQueue after remove: %@", self.dataQueue];
         // TODO(jt): stop background task if running in background
       }
     }
