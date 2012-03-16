@@ -260,10 +260,10 @@ static Yozio *instance = nil;
 
 - (void)onApplicationWillEnterForeground:(NSNotification *)notification
 {
-  [instance updateCountryName];
-  [instance updateLanguage];
-  [instance updateTimezone];
-  [instance updateConfig];
+  [self updateCountryName];
+  [self updateLanguage];
+  [self updateTimezone];
+  [self updateConfig];
 }
 
 - (void)onApplicationDidEnterBackground:(NSNotification *)notification
@@ -421,11 +421,11 @@ static Yozio *instance = nil;
 {
   NSTimeZone *gmt = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
   NSDateFormatter *tmpDateFormatter = [[NSDateFormatter alloc] init];
-  instance.dateFormatter = tmpDateFormatter;
-  [instance.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss SSS"];
+  self.dateFormatter = tmpDateFormatter;
+  [self.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss SSS"];
   [tmpDateFormatter release];
-  [instance.dateFormatter setTimeZone:gmt];
-  NSString *timeStamp = [instance.dateFormatter stringFromDate:[NSDate date]];
+  [self.dateFormatter setTimeZone:gmt];
+  NSString *timeStamp = [self.dateFormatter stringFromDate:[NSDate date]];
   return timeStamp;
 }
 
@@ -479,19 +479,19 @@ static Yozio *instance = nil;
 {
   NSLocale *locale = [NSLocale currentLocale];
   NSString *countryCode = [locale objectForKey: NSLocaleCountryCode];
-  instance.countryName = [locale displayNameForKey:NSLocaleCountryCode value:countryCode];
+  self.countryName = [locale displayNameForKey:NSLocaleCountryCode value:countryCode];
 }
 
 - (void)updateLanguage
 {
-  instance.language = [[NSLocale preferredLanguages] objectAtIndex:0];
+  self.language = [[NSLocale preferredLanguages] objectAtIndex:0];
 }
 
 - (void)updateTimezone
 {
   [NSTimeZone resetSystemTimeZone];
   NSInteger timezoneOffset = [[NSTimeZone systemTimeZone] secondsFromGMT]/3600;
-  instance.timezone = [NSNumber numberWithInteger:timezoneOffset];
+  self.timezone = [NSNumber numberWithInteger:timezoneOffset];
 }
 
 
