@@ -587,7 +587,7 @@ static Yozio *instance = nil;
   }
   NSString *urlParams = [NSString stringWithFormat:@"deviceId=%@", self.deviceId];
   NSString *urlString =
-      [NSString stringWithFormat:@"http://%@/configuration.json?%@", YOZIO_CONFIGURATION_SERVER_URL, urlParams];
+      [NSString stringWithFormat:@"http://%@.%@/configuration.json?%@", self._appKey, YOZIO_CONFIGURATION_SERVER_URL, urlParams];
 
   [Yozio log:@"Final configuration request url: %@", urlString];
 
