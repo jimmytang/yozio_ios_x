@@ -15,6 +15,7 @@
 
 
 static char mockDateKey;
+static char mockUUID;
 Method originalMethod = nil;
 Method swizzleMethod = nil;
 
@@ -31,7 +32,9 @@ Method swizzleMethod = nil;
   method_exchangeImplementations(originalMethod, swizzleMethod);       
   [Yozio configure:@"app key"
          secretKey:@"secret key"];
-
+  [self setMockUUID:@"mock UUID"];
+  id mock = [OCMockObject partialMockForObject:[Yozio getInstance]];
+  [[[mock stub] andCall:@selector(mockUUID) onObject:mock] makeUUID];
 }
 
 - (void)tearDown
@@ -51,6 +54,11 @@ Method swizzleMethod = nil;
   objc_setAssociatedObject([NSDate class], &mockDateKey, aMockDate, OBJC_ASSOCIATION_RETAIN);    
 }
 
+- (void)setMockUUID:(NSString *)uuid {
+  objc_setAssociatedObject([NSString class], &mockUUID, uuid, OBJC_ASSOCIATION_RETAIN);    
+}
+
+
 - (void)testTimerEntry
 {
   NSDate* startDate = [NSDate date];
@@ -61,26 +69,41 @@ Method swizzleMethod = nil;
   [self setMockDate:endDate];
   [Yozio stopTimer:@"MyTimer"];
 
+  [Yozio log:@"1"];
+
 
   NSMutableDictionary *expected = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
                                    @"", @"av", 
-                                   1, @"dc", 
+                                   [NSNumber numberWithInteger:1], @"dc", 
                                    @"u", @"dot", 
                                    @"MyTimer", @"en", 
-                                   @"t", @"exp", 
-                                   @"10", @"rev", 
-                                   @"t", @"revc", 
-                                   @"", @"sid", 
+                                   @"", @"exp", 
+                                   @"", @"rev", 
+                                   @"", @"revc", 
+                                   @"mock UUID", @"sid", 
                                    @"10.00", @"ti", 
                                    @"t", @"tp", 
-                                   startDate, @"ts", 
+                                   [self formatTimeStampString:startDate], @"ts", 
                                    @"", @"uid", 
                                    @"u", @"uot", 
                                    nil];
+  [Yozio log:@"2"];
 
   NSMutableDictionary *actual = [[Yozio getInstance].dataQueue lastObject];
+  
   NSLog(@"%@", actual);
   [self assertDataEqual:expected actual:actual];
+}
+
+- (NSString*)formatTimeStampString:(NSDate*)date
+{
+  NSTimeZone *gmt = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+  NSDateFormatter *tmpDateFormatter = [[NSDateFormatter alloc] init];
+  [tmpDateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss SSS"];
+  [tmpDateFormatter setTimeZone:gmt];
+  NSString *timeStamp = [tmpDateFormatter stringFromDate:[NSDate date]];
+  [tmpDateFormatter release];
+  return timeStamp;
 }
 
 //- (void)testRevenueEntry
