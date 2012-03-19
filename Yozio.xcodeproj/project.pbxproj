@@ -54,7 +54,7 @@
 		F7595BFD1516A19B0042ADB5 /* OCMock.h in Headers */ = {isa = PBXBuildFile; fileRef = F7595BF51516A19B0042ADB5 /* OCMock.h */; };
 		F7595BFE1516A19B0042ADB5 /* OCMockObject.h in Headers */ = {isa = PBXBuildFile; fileRef = F7595BF61516A19B0042ADB5 /* OCMockObject.h */; };
 		F7595BFF1516A19B0042ADB5 /* OCMockRecorder.h in Headers */ = {isa = PBXBuildFile; fileRef = F7595BF71516A19B0042ADB5 /* OCMockRecorder.h */; };
-		F7595C001516A19B0042ADB5 /* libOCMock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7595BF91516A19B0042ADB5 /* libOCMock.a */; };
+		F7595C021516B0CF0042ADB5 /* libobjc.A.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F7595C011516B0CF0042ADB5 /* libobjc.A.dylib */; };
 		F7B6822E15169ABD00FF7DA6 /* YSFHFKeychainUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F7B6822A15169ABD00FF7DA6 /* YSFHFKeychainUtils.h */; };
 		F7B6822F15169ABD00FF7DA6 /* YSFHFKeychainUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6822B15169ABD00FF7DA6 /* YSFHFKeychainUtils.m */; };
 		F7B6823015169ABD00FF7DA6 /* YUncaughtExceptionHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = F7B6822C15169ABD00FF7DA6 /* YUncaughtExceptionHandler.h */; };
@@ -126,6 +126,7 @@
 		F7595BF61516A19B0042ADB5 /* OCMockObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMockObject.h; sourceTree = "<group>"; };
 		F7595BF71516A19B0042ADB5 /* OCMockRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMockRecorder.h; sourceTree = "<group>"; };
 		F7595BF91516A19B0042ADB5 /* libOCMock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libOCMock.a; sourceTree = "<group>"; };
+		F7595C011516B0CF0042ADB5 /* libobjc.A.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libobjc.A.dylib; path = usr/lib/libobjc.A.dylib; sourceTree = SDKROOT; };
 		F7B6822A15169ABD00FF7DA6 /* YSFHFKeychainUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YSFHFKeychainUtils.h; path = Yozio/YSFHFKeychainUtils.h; sourceTree = SOURCE_ROOT; };
 		F7B6822B15169ABD00FF7DA6 /* YSFHFKeychainUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YSFHFKeychainUtils.m; path = Yozio/YSFHFKeychainUtils.m; sourceTree = SOURCE_ROOT; };
 		F7B6822C15169ABD00FF7DA6 /* YUncaughtExceptionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YUncaughtExceptionHandler.h; path = Yozio/YUncaughtExceptionHandler.h; sourceTree = SOURCE_ROOT; };
@@ -138,7 +139,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E7848A6146A7468004269C5 /* Foundation.framework in Frameworks */,
-				F7595C001516A19B0042ADB5 /* libOCMock.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -146,6 +146,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F7595C021516B0CF0042ADB5 /* libobjc.A.dylib in Frameworks */,
 				F7595BD815169D420042ADB5 /* UIKit.framework in Frameworks */,
 				F7595BD515169D2F0042ADB5 /* Security.framework in Frameworks */,
 				0E7848B4146A7468004269C5 /* SenTestingKit.framework in Frameworks */,
@@ -185,6 +186,7 @@
 		0E784897146A7468004269C5 = {
 			isa = PBXGroup;
 			children = (
+				F7595C011516B0CF0042ADB5 /* libobjc.A.dylib */,
 				F7595BD715169D420042ADB5 /* UIKit.framework */,
 				F7595BD415169D2F0042ADB5 /* Security.framework */,
 				0E5009E9146A7ACF00F0CD4D /* testCases */,

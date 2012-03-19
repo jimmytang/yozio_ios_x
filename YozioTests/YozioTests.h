@@ -10,6 +10,8 @@
 
 @interface YozioTests : SenTestCase
 
+- (void)setMockDate:(NSDate *)aMockDate;
+
 - (void)assertDataEqual:(NSMutableDictionary *)expected
                  actual:(NSMutableDictionary *)actual;
 

@@ -9,30 +9,78 @@
 #import "Yozio_Private.h"
 #import "YozioTests.h"
 #import "OCMock.h"
+#import <objc/runtime.h>
 
 @implementation YozioTests
+
+
+static char mockDateKey;
+Method originalMethod = nil;
+Method swizzleMethod = nil;
 
 - (void)setUp
 {
   [super setUp];
+  
+  // Start by having the mock return the test startup date
+  [self setMockDate:[NSDate date]];
+  
+  // Save these as instance variables so test teardown can swap the implementation back
+  originalMethod = class_getClassMethod([NSDate class], @selector(date));
+  swizzleMethod = class_getInstanceMethod([self class], @selector(mockDateSwizzle));
+  method_exchangeImplementations(originalMethod, swizzleMethod);       
   [Yozio configure:@"app key"
          secretKey:@"secret key"];
+
 }
 
 - (void)tearDown
-{
-    // Tear-down code here.
-    
-    [super tearDown];
+{ 
+  // Revert the swizzle   
+  method_exchangeImplementations(swizzleMethod, originalMethod);   
+  [super tearDown];
+}
+
+// Mock Method, replaces [NSDate date]
+- (NSDate *)mockDateSwizzle {    
+  return objc_getAssociatedObject([NSDate class], &mockDateKey);
+}
+
+// Convenience method so tests can set want they want [NSDate date] to return
+- (void)setMockDate:(NSDate *)aMockDate {
+  objc_setAssociatedObject([NSDate class], &mockDateKey, aMockDate, OBJC_ASSOCIATION_RETAIN);    
 }
 
 - (void)testTimerEntry
 {
-  //TODO add test for timeer here
-//  mock [NSDate date]
-//  [Yozio startTimer:@"MyTimer"];
-//  Yozio * instance = [Yozio getInstance];  
-  
+  NSDate* startDate = [NSDate date];
+  [self setMockDate:startDate];
+  [Yozio startTimer:@"MyTimer"];
+
+  NSDate* endDate = [startDate dateByAddingTimeInterval:10];
+  [self setMockDate:endDate];
+  [Yozio stopTimer:@"MyTimer"];
+
+
+  NSMutableDictionary *expected = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
+                                   @"", @"av", 
+                                   1, @"dc", 
+                                   @"u", @"dot", 
+                                   @"MyTimer", @"en", 
+                                   @"t", @"exp", 
+                                   @"10", @"rev", 
+                                   @"t", @"revc", 
+                                   @"", @"sid", 
+                                   @"10.00", @"ti", 
+                                   @"t", @"tp", 
+                                   startDate, @"ts", 
+                                   @"", @"uid", 
+                                   @"u", @"uot", 
+                                   nil];
+
+  NSMutableDictionary *actual = [[Yozio getInstance].dataQueue lastObject];
+  NSLog(@"%@", actual);
+  [self assertDataEqual:expected actual:actual];
 }
 
 //- (void)testRevenueEntry
@@ -104,11 +152,19 @@
 - (void)assertDataEqual:(NSMutableDictionary *)expected
                  actual:(NSMutableDictionary *)actual
 {
-  NSLog(@"expected: %@", expected);
-  NSLog(@"actual: %@", actual);
-  STAssertEqualObjects([expected valueForKey:@"type"], [actual valueForKey:@"type"], @"Wrong type");
-  STAssertEqualObjects([expected valueForKey:@"key"], [actual valueForKey:@"key"], @"Wrong key");
-  STAssertEqualObjects([expected valueForKey:@"value"], [actual valueForKey:@"value"], @"Wrong value");
+  STAssertEqualObjects([expected valueForKey:@"av"], [actual valueForKey:@"av"], @"Wrong App Version");
+  STAssertEqualObjects([expected valueForKey:@"dc"], [actual valueForKey:@"dc"], @"Wrong Data Count");
+  STAssertEqualObjects([expected valueForKey:@"dot"], [actual valueForKey:@"dot"], @"Wrong Device Orientation");
+  STAssertEqualObjects([expected valueForKey:@"en"], [actual valueForKey:@"en"], @"Wrong Event Name");
+  STAssertEqualObjects([expected valueForKey:@"exp"], [actual valueForKey:@"exp"], @"Wrong Experiment");
+  STAssertEqualObjects([expected valueForKey:@"rev"], [actual valueForKey:@"rev"], @"Wrong Revenue");
+  STAssertEqualObjects([expected valueForKey:@"revc"], [actual valueForKey:@"revc"], @"Wrong Revenue Currency");
+  STAssertEqualObjects([expected valueForKey:@"sid"], [actual valueForKey:@"sid"], @"Wrong Session ID");
+  STAssertEqualObjects([expected valueForKey:@"ti"], [actual valueForKey:@"ti"], @"Wrong Time Interval");
+  STAssertEqualObjects([expected valueForKey:@"tp"], [actual valueForKey:@"tp"], @"Wrong type");
+  STAssertEqualObjects([expected valueForKey:@"ts"], [actual valueForKey:@"ts"], @"Wrong Time Stamp");
+  STAssertEqualObjects([expected valueForKey:@"uid"], [actual valueForKey:@"uid"], @"Wrong User ID");
+  STAssertEqualObjects([expected valueForKey:@"uot"], [actual valueForKey:@"uot"], @"Wrong User Device Orientation");
 }
 
 @end
