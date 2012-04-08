@@ -57,19 +57,19 @@ static Yozio *instance = nil;
 - (id)init
 {
   self = [super init];
-
+  
   // User set instrumentation variables.
   self._appKey = nil;
   self._secretKey = nil;
   self._userId = @"";
   self._appVersion = @"";
-
+  
   // Initialize constant intrumentation variables.
   UIDevice* device = [UIDevice currentDevice];
   [self loadOrCreateDeviceId];
   self.hardware = device.model;
   self.os = [device systemVersion];
-
+  
   // Initialize  mutable instrumentation variables.
   [self loadSessionData];
   [self updateCountryName];
@@ -77,14 +77,14 @@ static Yozio *instance = nil;
   [self updateTimezone];
   self.experimentsStr = @"";
   self.environment = @"production";
-
+  
   self.flushTimer = nil;
   self.dataCount = 0;
-  self.dataQueue = [NSMutableArray array];
+  self.dataQueue = [[NSMutableArray alloc] init];
   self.dataToSend = nil;
-  self.timers = [NSMutableDictionary dictionary];
+  self.timers = [[NSMutableDictionary alloc] init];
   self.config = nil;
-
+  
   // Initialize dateFormatter.
   NSTimeZone *gmt = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
   NSDateFormatter *tmpDateFormatter = [[NSDateFormatter alloc] init];
@@ -92,7 +92,7 @@ static Yozio *instance = nil;
   [self.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss SSS"];
   [self.dateFormatter setTimeZone:gmt];
   [tmpDateFormatter release];
-
+  
   // Add notification observers.
   NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
   [notificationCenter addObserver:self
@@ -115,7 +115,7 @@ static Yozio *instance = nil;
                              object:nil];
   }
 #endif
-
+  
   return self;
 }
 
@@ -153,7 +153,7 @@ static Yozio *instance = nil;
   instance._appKey = appKey;
   instance._secretKey = secretKey;
   InstallUncaughtExceptionHandler();
-
+  
   if (instance.flushTimer == nil) {
     instance.flushTimer = [NSTimer scheduledTimerWithTimeInterval:YOZIO_FLUSH_INTERVAL_SEC
                                                            target:instance
@@ -161,12 +161,12 @@ static Yozio *instance = nil;
                                                          userInfo:nil
                                                           repeats:YES];
   }
-
+  
   [instance updateConfig];
-
+  
   // Don't load session data here. Only need to do that once in init.
   [instance updateSessionId];
-
+  
   // Load any previous data and try to flush it.
   // Perform this here instead of on applicationDidFinishLoading because instrumentation calls
   // could be made before an application is finished loading.
@@ -191,17 +191,19 @@ static Yozio *instance = nil;
 
 + (void)stopTimer:(NSString *)timerName
 {
-  NSDate *startTime = [instance.timers valueForKey:timerName];
-  // Ignore if the timer was cleared (i.e. app went into background).
-  if (startTime != nil) {
-    [instance.timers removeObjectForKey:timerName];
-    float elapsedTime = [[NSDate date] timeIntervalSinceDate:startTime];
-    NSString *elapsedTimeStr = [NSString stringWithFormat:@"%.2f", elapsedTime];
-    [instance doCollect:YOZIO_T_TIMER
-                   name:timerName
-                 amount:@""
-           timeInterval:elapsedTimeStr
-               maxQueue:YOZIO_TIMER_DATA_LIMIT];
+  if (instance.timers) {
+    NSDate *startTime = [instance.timers valueForKey:timerName];
+    // Ignore if the timer was cleared (i.e. app went into background).
+    if (startTime != nil) {
+      [instance.timers removeObjectForKey:timerName];
+      float elapsedTime = [[NSDate date] timeIntervalSinceDate:startTime];
+      NSString *elapsedTimeStr = [NSString stringWithFormat:@"%.2f", elapsedTime];
+      [instance doCollect:YOZIO_T_TIMER
+                     name:timerName
+                   amount:@""
+             timeInterval:elapsedTimeStr
+                 maxQueue:YOZIO_TIMER_DATA_LIMIT];
+    }
   }
 }
 
@@ -615,12 +617,12 @@ static Yozio *instance = nil;
     [Yozio log:@"updateConfig nil deviceId"];
     return;
   }
-  NSString *urlParams = [NSString stringWithFormat:@"deviceId=%@", self.deviceId];
+  NSString *urlParams = [NSString stringWithFormat:@"deviceId=%@&appKey=%@", self.deviceId, self._appKey];
   NSString *urlString =
-      [NSString stringWithFormat:@"http://%@.%@/configuration.json?%@", self._appKey, YOZIO_CONFIGURATION_SERVER_URL, urlParams];
-
+  [NSString stringWithFormat:@"http://%@/configuration.json?%@", YOZIO_CONFIGURATION_SERVER_URL, urlParams];
+  
   [Yozio log:@"Final configuration request url: %@", urlString];
-
+  
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
   [Seriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
     if (error) {
@@ -638,5 +640,36 @@ static Yozio *instance = nil;
     // TODO(jt): stop background task if running in background
   }];
 }
+
+
+- (void)dealloc
+{
+  [self saveUnsentData];
+  [self saveSessionData];
+  [_appKey release], _appKey = nil;
+  [_secretKey release], _secretKey = nil;
+  [_userId release], _userId = nil;
+  [_appVersion release], _appVersion = nil;
+  
+  [deviceId release], deviceId = nil;
+  [hardware release], hardware = nil;
+  [os release], os = nil;
+  [sessionId release], sessionId = nil;
+  [countryName release], countryName = nil;
+  [language release], language = nil;
+  [timezone release], timezone = nil;
+  [experimentsStr release], experimentsStr = nil;
+  [environment release], environment = nil;
+  
+  [lastActiveTime release], lastActiveTime = nil;
+  [flushTimer release], dataQueue = nil;
+  [dataQueue release], flushTimer = nil;
+  [dataToSend release], dataToSend = nil;
+  [timers release], timers = nil;
+  [config release], config = nil;
+  [dateFormatter release], dateFormatter = nil;
+  [super dealloc];
+}
+
 
 @end
