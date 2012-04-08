@@ -512,9 +512,11 @@ static Yozio *instance = nil;
 
 - (void)loadUnsentData
 {
-  self.dataQueue = [NSKeyedUnarchiver unarchiveObjectWithFile:YOZIO_DATA_QUEUE_FILE];
-  if (self.dataQueue == nil)  {
-    self.dataQueue = [NSMutableArray array];
+  if ([[NSFileManager defaultManager] fileExistsAtPath: YOZIO_SESSION_FILE]) {
+    self.dataQueue = [NSKeyedUnarchiver unarchiveObjectWithFile:YOZIO_SESSION_FILE];
+    if (self.dataQueue == nil)  {
+      self.dataQueue = [NSMutableArray array];
+    }
   }
   [Yozio log:@"loadUnsentData: %@", self.dataQueue];
 }
@@ -529,8 +531,10 @@ static Yozio *instance = nil;
 
 - (void)loadSessionData
 {
-  self.lastActiveTime = [NSKeyedUnarchiver unarchiveObjectWithFile:YOZIO_SESSION_FILE];
-  [[NSFileManager defaultManager] removeItemAtPath:YOZIO_SESSION_FILE error:nil];
+  if ([[NSFileManager defaultManager] fileExistsAtPath: YOZIO_SESSION_FILE]) {
+    self.lastActiveTime = [NSKeyedUnarchiver unarchiveObjectWithFile:YOZIO_SESSION_FILE];
+    [[NSFileManager defaultManager] removeItemAtPath:YOZIO_SESSION_FILE error:nil];
+  }
   [Yozio log:@"loadSessionData: %@", self.lastActiveTime];
 }
 
@@ -644,8 +648,6 @@ static Yozio *instance = nil;
 
 - (void)dealloc
 {
-  [self saveUnsentData];
-  [self saveSessionData];
   [_appKey release], _appKey = nil;
   [_secretKey release], _secretKey = nil;
   [_userId release], _userId = nil;

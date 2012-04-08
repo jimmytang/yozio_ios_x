@@ -20,18 +20,23 @@ Method swizzleMethod = nil;
 - (void)setUp
 {
   [super setUp];
-  
+  NSLog(@"a");
   // Start by having the mock return the test startup date
   [self setMockDate:[NSDate date]];
+  NSLog(@"b");
   
   // Save these as instance variables so test teardown can swap the implementation back
   originalMethod = class_getClassMethod([NSDate class], @selector(date));
   swizzleMethod = class_getInstanceMethod([self class], @selector(mockDateSwizzle));
   method_exchangeImplementations(originalMethod, swizzleMethod);       
+  NSLog(@"c");
   [Yozio configure:@"app key"
          secretKey:@"secret key"];
+  NSLog(@"d");
   [self setMockUUID:@"mock UUID"];
+  NSLog(@"e");
   id mock = [OCMockObject partialMockForObject:[Yozio getInstance]];
+  NSLog(@"f");
   [[[mock stub] andCall:@selector(mockUUID) onObject:mock] makeUUID];
   // mock doFlush
   
@@ -41,7 +46,11 @@ Method swizzleMethod = nil;
 { 
   // Revert the swizzle   
   method_exchangeImplementations(swizzleMethod, originalMethod); 
+
 //  [[Yozio getInstance] dealloc];
+  [[NSFileManager defaultManager] removeItemAtPath:YOZIO_SESSION_FILE error:nil];
+  [[NSFileManager defaultManager] removeItemAtPath:YOZIO_DATA_QUEUE_FILE error:nil];
+
   [super tearDown];
 }
 
@@ -139,15 +148,18 @@ Method swizzleMethod = nil;
                                    nil];
   NSMutableDictionary *actual = [[instance dataQueue] lastObject];
   [self assertDataEqual:expected actual:actual];
-  
+
   // stress test
-  for(int i=0; i<6000; i++) {
+  for(int i=0; i<5004; i++) {
     [Yozio action:eventName];
+    NSLog(@"asdf");
   }
-  STAssertEquals(6001, instance.dataCount, @"Data Count doesn't equal");
   
-  int actionLimit = 5000;
-  STAssertEquals(actionLimit, [instance.dataQueue count], @"Queue size does not equal");
+  int dc = instance.dataCount;
+  STAssertEquals(5005, dc, @"Data Count doesn't equal");
+  
+  int dqc = [instance.dataQueue count];
+  STAssertEquals(5000, dqc, @"Queue size does not equal");
 }
 
 
