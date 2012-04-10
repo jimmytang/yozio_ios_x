@@ -18,6 +18,7 @@
 @synthesize _secretKey;
 @synthesize _userId;
 @synthesize _appVersion;
+@synthesize _async;
 
 // Automatically determined instrumentation variables.
 @synthesize deviceId;
@@ -39,6 +40,7 @@
 @synthesize timers;
 @synthesize config;
 @synthesize dateFormatter;
+@synthesize stopConfigLoading;
 
 
 /*******************************************
@@ -142,7 +144,12 @@ static Yozio *instance = nil;
  * Public API.
  *******************************************/
 
-+ (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey
++ (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey 
+{
+  [Yozio configure:appKey secretKey:secretKey async:true];
+}
+
++ (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey async:(BOOL)async
 {
   if (appKey == nil) {
     [NSException raise:NSInvalidArgumentException format:@"appKey cannot be nil."];
@@ -152,6 +159,7 @@ static Yozio *instance = nil;
   }
   instance._appKey = appKey;
   instance._secretKey = secretKey;
+  instance._async = async;
   InstallUncaughtExceptionHandler();
   
   if (instance.flushTimer == nil) {
@@ -624,18 +632,27 @@ static Yozio *instance = nil;
   NSString *urlParams = [NSString stringWithFormat:@"deviceId=%@&appKey=%@", self.deviceId, self._appKey];
   NSString *urlString =
   [NSString stringWithFormat:@"http://%@/configuration.json?%@", YOZIO_CONFIGURATION_SERVER_URL, urlParams];
-  
-  [Yozio log:@"Final configuration request url: %@", urlString];
-  
+  NSString* escapedUrlString =
+  [urlString stringByAddingPercentEscapesUsingEncoding:
+   NSASCIIStringEncoding];
+  [Yozio log:@"Final configuration request url: %@", escapedUrlString];
+
+  if (!self._async) {
+    [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(cancelURLConnection) userInfo:nil repeats:NO];
+  }
+
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+  //  add some timing check before and on response
   [Seriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
     if (error) {
+      self.stopConfigLoading = true;
       [Yozio log:@"updateConfig error %@", error];
     } else {
       if ([response statusCode] == 200) {
         [Yozio log:@"config before update: %@", self.config];
         self.config = [body objectForKey:YOZIO_CONFIG_KEY];
         self.experimentsStr = [body objectForKey:YOZIO_CONFIG_EXPERIMENTS_KEY];
+        self.stopConfigLoading = true;
         [Yozio log:@"config after update: %@", self.config];
       }
     }
@@ -643,8 +660,19 @@ static Yozio *instance = nil;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
     // TODO(jt): stop background task if running in background
   }];
+
+  if (!self._async) {
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
+    while (!self.stopConfigLoading && [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil]) {
+      [Yozio log:@"Still waiting: %@", [self timeStampString]];
+      loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
+    }
+  }
 }
 
+- (void)cancelURLConnection {
+  self.stopConfigLoading = true;
+}
 
 - (void)dealloc
 {

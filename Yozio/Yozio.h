@@ -51,6 +51,8 @@
  */
 + (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey;
 
++ (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey async:(BOOL)async;
+
 
 /**
  * Set the application version. This allows you to segment your instrumented data across your

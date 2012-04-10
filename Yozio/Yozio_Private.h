@@ -93,6 +93,7 @@
   NSString *_secretKey;
   NSString *_userId;
   NSString *_appVersion;
+  BOOL _async;
 
   // Automatically determined instrumentation variables.
   NSString *deviceId;
@@ -114,6 +115,7 @@
   NSMutableDictionary *timers;
   NSMutableDictionary *config;
   NSDateFormatter *dateFormatter;
+  BOOL stopConfigLoading;
 }
 
 // User set instrumentation variables.
@@ -121,6 +123,7 @@
 @property(nonatomic, retain) NSString *_secretKey;
 @property(nonatomic, retain) NSString *_userId;
 @property(nonatomic, retain) NSString *_appVersion;
+@property(nonatomic, assign) BOOL _async; 
 
 // Automatically determined instrumentation variables.
 @property(nonatomic, retain) NSString *deviceId;
@@ -142,6 +145,7 @@
 @property(nonatomic, retain) NSMutableDictionary *timers;
 @property(nonatomic, retain) NSMutableDictionary *config;
 @property(nonatomic, retain) NSDateFormatter *dateFormatter;
+@property(nonatomic, assign) BOOL stopConfigLoading;
 
 + (Yozio *)getInstance; 
 + (void)log:(NSString *)format, ...;

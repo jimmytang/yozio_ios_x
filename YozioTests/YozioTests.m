@@ -20,23 +20,17 @@ Method swizzleMethod = nil;
 - (void)setUp
 {
   [super setUp];
-  NSLog(@"a");
   // Start by having the mock return the test startup date
   [self setMockDate:[NSDate date]];
-  NSLog(@"b");
   
   // Save these as instance variables so test teardown can swap the implementation back
   originalMethod = class_getClassMethod([NSDate class], @selector(date));
   swizzleMethod = class_getInstanceMethod([self class], @selector(mockDateSwizzle));
   method_exchangeImplementations(originalMethod, swizzleMethod);       
-  NSLog(@"c");
   [Yozio configure:@"app key"
          secretKey:@"secret key"];
-  NSLog(@"d");
   [self setMockUUID:@"mock UUID"];
-  NSLog(@"e");
   id mock = [OCMockObject partialMockForObject:[Yozio getInstance]];
-  NSLog(@"f");
   [[[mock stub] andCall:@selector(mockUUID) onObject:mock] makeUUID];
   // mock doFlush
   
@@ -177,6 +171,16 @@ Method swizzleMethod = nil;
 //   NSLog(@"asdf"); 
 //}
 //
+
+- (void)testSyncLoadConfig
+{
+  [Yozio configure:@"app key"
+         secretKey:@"secret key"
+             async:false];
+  [[Yozio getInstance] updateConfig];
+
+  
+}
 
 - (NSString*)formatTimeStampString:(NSDate*)date
 {
