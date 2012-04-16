@@ -17,6 +17,7 @@
 @synthesize _appKey;
 @synthesize _secretKey;
 @synthesize _async;
+@synthesize _urlKeys;
 
 // Automatically determined instrumentation variables.
 @synthesize deviceId;
@@ -148,6 +149,7 @@ static Yozio *instance = nil;
   instance._appKey = appKey;
   instance._secretKey = secretKey;
   instance._async = async;
+  instance._urlKeys = urlKeys;
   
   [instance updateConfig];
 
@@ -472,12 +474,11 @@ static Yozio *instance = nil;
     [Yozio log:@"updateConfig nil deviceId"];
     return;
   }
-  NSString *urlParams = [NSString stringWithFormat:@"deviceId=%@&appKey=%@", self.deviceId, self._appKey];
+  NSString *urlKeys = [self._urlKeys componentsJoinedByString:@","];
+  NSString *urlParams = [NSString stringWithFormat:@"deviceId=%@&appKey=%@&urlKeys=%@", self.deviceId, self._appKey, urlKeys];
   NSString *urlString =
   [NSString stringWithFormat:@"http://%@/configuration.json?%@", YOZIO_CONFIGURATION_SERVER_URL, urlParams];
-  NSString* escapedUrlString =
-  [urlString stringByAddingPercentEscapesUsingEncoding:
-   NSASCIIStringEncoding];
+  NSString* escapedUrlString =  [urlString stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
   [Yozio log:@"Final configuration request url: %@", escapedUrlString];
 
   if (!self._async) {
@@ -493,7 +494,7 @@ static Yozio *instance = nil;
     } else {
       if ([response statusCode] == 200) {
         [Yozio log:@"config before update: %@", self.config];
-        self.config = [body objectForKey:YOZIO_URLS_KEY];
+        self.config = [body objectForKey:YOZIO_CONFIG_KEY];
         self.stopConfigLoading = true;
         [Yozio log:@"urls after update: %@", self.config];
       }
@@ -520,7 +521,7 @@ static Yozio *instance = nil;
 {
   [_appKey release], _appKey = nil;
   [_secretKey release], _secretKey = nil;
-  
+  [_urlKeys release], _urlKeys = nil;
   [deviceId release], deviceId = nil;
   [dateFormatter release], dateFormatter = nil;
   [super dealloc];

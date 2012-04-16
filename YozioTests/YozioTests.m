@@ -27,8 +27,11 @@ Method swizzleMethod = nil;
   originalMethod = class_getClassMethod([NSDate class], @selector(date));
   swizzleMethod = class_getInstanceMethod([self class], @selector(mockDateSwizzle));
   method_exchangeImplementations(originalMethod, swizzleMethod);       
+  NSArray* urlKeys = [NSArray arrayWithObjects:@"facebook", @"twitter", @"text", nil];
   [Yozio configure:@"app key"
-         secretKey:@"secret key"];
+         secretKey:@"secret key"
+           urlKeys:urlKeys];
+  
   [self setMockUUID:@"mock UUID"];
   id mock = [OCMockObject partialMockForObject:[Yozio getInstance]];
   [[[mock stub] andCall:@selector(mockUUID) onObject:mock] makeUUID];
@@ -42,7 +45,6 @@ Method swizzleMethod = nil;
   method_exchangeImplementations(swizzleMethod, originalMethod); 
 
 //  [[Yozio getInstance] dealloc];
-  [[NSFileManager defaultManager] removeItemAtPath:YOZIO_SESSION_FILE error:nil];
   [[NSFileManager defaultManager] removeItemAtPath:YOZIO_DATA_QUEUE_FILE error:nil];
 
   [super tearDown];
@@ -64,96 +66,6 @@ Method swizzleMethod = nil;
 
 - (void)testConfiguration
 {
-  NSLog(@"1");
-  [Yozio configure:@"app key" secretKey:@"secret key"];
-  NSLog(@"2");
-  Yozio *instance = [Yozio getInstance];  
-  NSLog(@"3");
-  NSTimer* flushTimer = instance.flushTimer;
-  NSLog(@"4");
-  [Yozio configure:@"app key" secretKey:@"secret key"];
-  NSLog(@"5");
-  STAssertEqualObjects(flushTimer, [Yozio getInstance].flushTimer, @"flushTimer changed when reconfigured");
-}
-
-- (void)testStopTimerStartTimerStopTimer
-{
-//  NSDate* endDate = [startDate dateByAddingTimeInterval:10];
-//  [self setMockDate:endDate];
-//  [Yozio stopTimer:@"MyTimer"];
-//  Assert nothing changed.
-  
-  NSDate* startDate = [NSDate date];
-  [self setMockDate:startDate];
-  [Yozio startTimer:@"MyTimer"];
-  
-//  Assert that there is a timer set.
-
-  NSDate* endDate = [startDate dateByAddingTimeInterval:10];
-  [self setMockDate:endDate];
-  [Yozio stopTimer:@"MyTimer"];
-  
-//  Assert the timer is removed.
-
-
-  NSMutableDictionary *expected = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
-                                   @"", @"av", 
-                                   [NSNumber numberWithInteger:1], @"dc", 
-                                   @"u", @"dot", 
-                                   @"MyTimer", @"en", 
-                                   @"", @"exp", 
-                                   @"", @"rev", 
-                                   @"", @"revc", 
-                                   @"mock UUID", @"sid", 
-                                   @"10.00", @"ti", 
-                                   @"t", @"tp", 
-                                   [self formatTimeStampString:startDate], @"ts", 
-                                   @"", @"uid", 
-                                   @"u", @"uot", 
-                                   nil];
-  NSMutableDictionary *actual = [[Yozio getInstance].dataQueue lastObject];
-  
-  NSLog(@"%@", actual);
-  [self assertDataEqual:expected actual:actual];
-}
-
-- (void)testActionEntry
-{
-  NSDate* timeStamp = [NSDate date];
-  [self setMockDate:timeStamp];
-
-  NSString *eventName = @"Level1.jump";
-  [Yozio action:eventName];
-  Yozio *instance = [Yozio getInstance];  
-  NSMutableDictionary *expected = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
-                                   @"", @"av", 
-                                   [NSNumber numberWithInteger:1], @"dc", 
-                                   @"u", @"dot", 
-                                   @"Level1.jump", @"en", 
-                                   @"", @"exp", 
-                                   @"", @"rev", 
-                                   @"", @"revc", 
-                                   @"mock UUID", @"sid", 
-                                   @"", @"ti", 
-                                   @"a", @"tp", 
-                                   [self formatTimeStampString:timeStamp],@"ts", 
-                                   @"", @"uid", 
-                                   @"u", @"uot", 
-                                   nil];
-  NSMutableDictionary *actual = [[instance dataQueue] lastObject];
-  [self assertDataEqual:expected actual:actual];
-
-  // stress test
-  for(int i=0; i<5004; i++) {
-    [Yozio action:eventName];
-    NSLog(@"asdf");
-  }
-  
-  int dc = instance.dataCount;
-  STAssertEquals(5005, dc, @"Data Count doesn't equal");
-  
-  int dqc = [instance.dataQueue count];
-  STAssertEquals(5000, dqc, @"Queue size does not equal");
 }
 
 
@@ -174,8 +86,10 @@ Method swizzleMethod = nil;
 
 - (void)testSyncLoadConfig
 {
+  NSArray* urlKeys = [NSArray arrayWithObjects:@"facebook", @"twitter", @"text", nil];
   [Yozio configure:@"app key"
          secretKey:@"secret key"
+           urlKeys:urlKeys
              async:false];
   [[Yozio getInstance] updateConfig];
 

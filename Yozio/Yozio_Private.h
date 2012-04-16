@@ -10,8 +10,8 @@
 #import "Yozio.h"
 
 #define YOZIO_BEACON_SCHEMA_VERSION @"1"
-#define YOZIO_TRACKING_SERVER_URL @"p.yozio.com"
-#define YOZIO_CONFIGURATION_SERVER_URL @"c.yozio.com"
+#define YOZIO_TRACKING_SERVER_URL @"192.168.1.14:3000"
+#define YOZIO_CONFIGURATION_SERVER_URL @"192.168.1.14:3000"
 
 // Set to true to show log messages.
 #define YOZIO_LOG true
@@ -67,6 +67,7 @@
   NSString *_appKey;
   NSString *_secretKey;
   BOOL _async;
+  NSArray *_urlKeys;
 
   // Automatically determined instrumentation variables.
   NSString *deviceId;
@@ -84,6 +85,7 @@
 @property(nonatomic, retain) NSString *_appKey;
 @property(nonatomic, retain) NSString *_secretKey;
 @property(nonatomic, assign) BOOL _async; 
+@property(nonatomic, assign) NSArray *_urlKeys;
 
 // Automatically determined instrumentation variables.
 @property(nonatomic, retain) NSString *deviceId;
