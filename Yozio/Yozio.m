@@ -16,30 +16,22 @@
 // User set instrumentation variables.
 @synthesize _appKey;
 @synthesize _secretKey;
-@synthesize _userId;
-@synthesize _appVersion;
 @synthesize _async;
 
 // Automatically determined instrumentation variables.
 @synthesize deviceId;
 @synthesize hardware;
 @synthesize os;
-@synthesize sessionId;
 @synthesize countryName;
 @synthesize language;
 @synthesize timezone;
-@synthesize experimentsStr;
-@synthesize environment;
 
 // Internal variables.
-@synthesize lastActiveTime;
-@synthesize flushTimer;
 @synthesize dataQueue;
 @synthesize dataToSend;
 @synthesize dataCount;
-@synthesize timers;
-@synthesize config;
 @synthesize dateFormatter;
+@synthesize config;
 @synthesize stopConfigLoading;
 
 
@@ -63,8 +55,6 @@ static Yozio *instance = nil;
   // User set instrumentation variables.
   self._appKey = nil;
   self._secretKey = nil;
-  self._userId = @"";
-  self._appVersion = @"";
   
   // Initialize constant intrumentation variables.
   UIDevice* device = [UIDevice currentDevice];
@@ -73,18 +63,11 @@ static Yozio *instance = nil;
   self.os = [device systemVersion];
   
   // Initialize  mutable instrumentation variables.
-  [self loadSessionData];
   [self updateCountryName];
   [self updateLanguage];
   [self updateTimezone];
-  self.experimentsStr = @"";
-  self.environment = @"production";
-  
-  self.flushTimer = nil;
-  self.dataCount = 0;
-  self.dataQueue = [[NSMutableArray alloc] init];
-  self.dataToSend = nil;
-  self.timers = [[NSMutableDictionary alloc] init];
+
+  // Initialize  mutable instrumentation variables.
   self.config = nil;
   
   // Initialize dateFormatter.
@@ -144,12 +127,17 @@ static Yozio *instance = nil;
  * Public API.
  *******************************************/
 
-+ (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey 
++ (void)configure:(NSString *)appKey 
+        secretKey:(NSString *)secretKey 
+         urlKeys:(NSArray *)urlKeys
 {
-  [Yozio configure:appKey secretKey:secretKey async:true];
+  [Yozio configure:appKey secretKey:secretKey urlKeys:urlKeys async:true];
 }
 
-+ (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey async:(BOOL)async
++ (void)configure:(NSString *)appKey 
+        secretKey:(NSString *)secretKey 
+         urlKeys:(NSArray *)urlKeys 
+            async:(BOOL)async
 {
   if (appKey == nil) {
     [NSException raise:NSInvalidArgumentException format:@"appKey cannot be nil."];
@@ -160,21 +148,9 @@ static Yozio *instance = nil;
   instance._appKey = appKey;
   instance._secretKey = secretKey;
   instance._async = async;
-  InstallUncaughtExceptionHandler();
-  
-  if (instance.flushTimer == nil) {
-    instance.flushTimer = [NSTimer scheduledTimerWithTimeInterval:YOZIO_FLUSH_INTERVAL_SEC
-                                                           target:instance
-                                                         selector:@selector(doFlush)
-                                                         userInfo:nil
-                                                          repeats:YES];
-  }
   
   [instance updateConfig];
-  
-  // Don't load session data here. Only need to do that once in init.
-  [instance updateSessionId];
-  
+
   // Load any previous data and try to flush it.
   // Perform this here instead of on applicationDidFinishLoading because instrumentation calls
   // could be made before an application is finished loading.
@@ -182,74 +158,34 @@ static Yozio *instance = nil;
   [instance doFlush];
 }
 
-+ (void)setApplicationVersion:(NSString *)appVersion
++ (NSString *)getUrl:(NSString *)urlKey defaultUrl:(NSString *)defaultUrl
 {
-  instance._appVersion = appVersion;
-}
-
-+ (void)setUserId:(NSString *)userId
-{
-  instance._userId = userId;
-}
-
-+ (void)startTimer:(NSString *)timerName
-{
-  [instance.timers setValue:[NSDate date] forKey:timerName];
-}
-
-+ (void)stopTimer:(NSString *)timerName
-{
-  if (instance.timers) {
-    NSDate *startTime = [instance.timers valueForKey:timerName];
-    // Ignore if the timer was cleared (i.e. app went into background).
-    if (startTime != nil) {
-      [instance.timers removeObjectForKey:timerName];
-      float elapsedTime = [[NSDate date] timeIntervalSinceDate:startTime];
-      NSString *elapsedTimeStr = [NSString stringWithFormat:@"%.2f", elapsedTime];
-      [instance doCollect:YOZIO_T_TIMER
-                     name:timerName
-                   amount:@""
-             timeInterval:elapsedTimeStr
-                 maxQueue:YOZIO_TIMER_DATA_LIMIT];
-    }
+  if (instance.config == nil) {
+    return defaultUrl;
   }
+  NSString *val = [instance.config objectForKey:urlKey];
+  return val != nil ? val : defaultUrl;
 }
 
-+ (void)revenue:(NSString *)itemName cost:(double)cost
-{
-  NSString *stringCost = [NSString stringWithFormat:@"%d", cost];
-  [instance doCollect:YOZIO_T_REVENUE
-                 name:itemName
-               amount:stringCost
-         timeInterval:@""
-             maxQueue:YOZIO_REVENUE_DATA_LIMIT];
-}
-
-+ (void)action:(NSString *)actionName
++ (void)viewedLink
 {
   [instance doCollect:YOZIO_T_ACTION
-                 name:actionName
-               amount:@""
-         timeInterval:@""
+                 name:YOZIO_VIEWED_LINK_ACTION
              maxQueue:YOZIO_ACTION_DATA_LIMIT];
 }
 
-+ (void)exception:(NSException *)exception
++ (void)clickedLink
 {
-  [instance doCollect:YOZIO_T_ERROR
-                 name:[exception name]
-               amount:@""
-         timeInterval:@""
-             maxQueue:YOZIO_ERROR_DATA_LIMIT];
+  [instance doCollect:YOZIO_T_ACTION
+                 name:YOZIO_CLICKED_LINK_ACTION
+             maxQueue:YOZIO_ACTION_DATA_LIMIT];
 }
 
-+ (NSString *)stringForKey:(NSString *)key defaultValue:(NSString *)defaultValue
++ (void)openedApp
 {
-  if (instance.config == nil) {
-    return defaultValue;
-  }
-  NSString *val = [instance.config objectForKey:key];
-  return val != nil ? val : defaultValue;
+  [instance doCollect:YOZIO_T_ACTION
+                 name:YOZIO_OPENED_APP_ACTION
+             maxQueue:YOZIO_ACTION_DATA_LIMIT];
 }
 
 
@@ -260,31 +196,20 @@ static Yozio *instance = nil;
 - (void)onApplicationWillTerminate:(NSNotification *)notification
 {
   [self saveUnsentData];
-  [self saveSessionData];
 }
 
 - (void)onApplicationWillResignActive:(NSNotification *)notification
 {
-  // Clear all current timers to prevent skewed timings due to the app being inactive.
-  [self.timers removeAllObjects];
 }
 
 - (void)onApplicationWillEnterForeground:(NSNotification *)notification
 {
-  [self updateCountryName];
-  [self updateLanguage];
-  [self updateTimezone];
   [self updateConfig];
 }
 
 - (void)onApplicationDidEnterBackground:(NSNotification *)notification
 {
-  // TODO(jt): flush data in a background task
 }
-
-// TODO(jt): listen to memory warnings and significant time change?
-// http://developer.apple.com/library/ios/#documentation/uikit/reference/UIApplicationDelegate_Protocol/Reference/Reference.html
-
 
 /*******************************************
  * Data collection helper methods.
@@ -304,34 +229,19 @@ static Yozio *instance = nil;
 
 - (void)doCollect:(NSString *)type
              name:(NSString *)name
-           amount:(NSString *)amount
-     timeInterval:(NSString *)timeInterval
          maxQueue:(NSInteger)maxQueue
 {
   if (![self validateConfiguration]) {
     return;
   }
-  // Increment dataCount even if we don't add to data queue so we know how much data we missed.
-  dataCount++;
-  [self updateSessionId];
   if ([self.dataQueue count] < maxQueue) {
     NSMutableDictionary *d =
-        [NSMutableDictionary dictionaryWithObjectsAndKeys:
-            [self notNil:type], YOZIO_D_TYPE,
-            [self notNil:name], YOZIO_D_NAME,
-            [self notNil:amount], YOZIO_D_REVENUE,
-            // TODO(jt): move to instance variable
-            @"", YOZIO_D_REVENUE_CURRENCY,
-            [self notNil:timeInterval], YOZIO_D_TIME_INTERVAL,
-            [self notNil:[self deviceOrientation]], YOZIO_D_DEVICE_ORIENTATION,
-            [self notNil:[self uiOrientation]], YOZIO_D_UI_ORIENTATION,
-            [self notNil:self._appVersion], YOZIO_D_APP_VERSION,
-            [self notNil:self._userId], YOZIO_D_USER_ID,
-            [self notNil:self.sessionId], YOZIO_D_SESSION_ID,
-            [self notNil:self.experimentsStr], YOZIO_D_EXPERIMENTS,
-            [self notNil:[self timeStampString]], YOZIO_D_TIMESTAMP,
-            [NSNumber numberWithInteger:dataCount], YOZIO_D_DATA_COUNT,
-            nil];
+    [NSMutableDictionary dictionaryWithObjectsAndKeys:
+     [self notNil:type], YOZIO_D_TYPE,
+     [self notNil:name], YOZIO_D_NAME,
+     [self notNil:[self timeStampString]], YOZIO_D_TIMESTAMP,
+     [NSNumber numberWithInteger:dataCount], YOZIO_D_DATA_COUNT,
+     nil];
     [self.dataQueue addObject:d];
     [Yozio log:@"doCollect: %@", d];
   }
@@ -368,12 +278,12 @@ static Yozio *instance = nil;
   NSString *urlParams = [NSString stringWithFormat:@"data=%@", dataStr];
   // TODO(jt): try to avoid having to escape urlParams if possible
   NSString *escapedUrlParams =
-      [urlParams stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+  [urlParams stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
   NSString *urlString =
-      [NSString stringWithFormat:@"http://%@/p.gif?%@", YOZIO_TRACKING_SERVER_URL, escapedUrlParams];
-
+  [NSString stringWithFormat:@"http://%@/p.gif?%@", YOZIO_TRACKING_SERVER_URL, escapedUrlParams];
+  
   [Yozio log:@"Final get request url: %@", urlString];
-
+  
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
   [Seriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
     if (error) {
@@ -392,24 +302,21 @@ static Yozio *instance = nil;
   }];
 }
 
+
 - (NSString *)buildPayload
 {
   // TODO(jt): compute real digest from shared key
   NSString *digest = @"";
-  NSNumber *packetCount = [NSNumber numberWithInteger:[self.dataToSend count]];
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
   [payload setObject:YOZIO_BEACON_SCHEMA_VERSION forKey:YOZIO_P_SCHEMA_VERSION];
   [payload setObject:digest forKey:YOZIO_P_DIGEST];
   [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
-  [payload setObject:[self notNil:self.environment] forKey:YOZIO_P_ENVIRONMENT];
   [payload setObject:[self notNil:[self loadOrCreateDeviceId]] forKey:YOZIO_P_DEVICE_ID];
   [payload setObject:[self notNil:self.hardware] forKey:YOZIO_P_HARDWARE];
   [payload setObject:[self notNil:self.os] forKey:YOZIO_P_OPERATING_SYSTEM];
   [payload setObject:[self notNil:self.countryName] forKey:YOZIO_P_COUNTRY];
   [payload setObject:[self notNil:self.language] forKey:YOZIO_P_LANGUAGE];
   [payload setObject:self.timezone forKey:YOZIO_P_TIMEZONE];
-  [payload setObject:packetCount forKey:YOZIO_P_PAYLOAD_COUNT];
-  [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];
   return [payload JSONString];
 }
@@ -422,7 +329,6 @@ static Yozio *instance = nil;
     return str;
   }
 }
-
 
 /*******************************************
  * Instrumentation data helper methods.
@@ -438,52 +344,6 @@ static Yozio *instance = nil;
   [self.dateFormatter setTimeZone:gmt];
   NSString *timeStamp = [self.dateFormatter stringFromDate:[NSDate date]];
   return timeStamp;
-}
-
-- (NSString*)deviceOrientation {
-  UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-  switch(orientation) {
-    case UIDeviceOrientationPortrait:
-      return YOZIO_ORIENT_PORTRAIT;
-    case UIDeviceOrientationPortraitUpsideDown:
-      return YOZIO_ORIENT_PORTRAIT_UPSIDE_DOWN;
-    case UIDeviceOrientationLandscapeLeft:
-      return YOZIO_ORIENT_LANDSCAPE_LEFT;
-    case UIDeviceOrientationLandscapeRight:
-      return YOZIO_ORIENT_LANDSCAPE_RIGHT;
-    case UIDeviceOrientationFaceUp:
-      return YOZIO_ORIENT_FACE_UP;
-    case UIDeviceOrientationFaceDown:
-      return YOZIO_ORIENT_FACE_DOWN;
-    default:
-      return YOZIO_ORIENT_UNKNOWN;
-  }
-}
-
-- (NSString *)uiOrientation
-{
-  UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-  switch (orientation) {
-    case UIInterfaceOrientationPortrait:
-      return YOZIO_ORIENT_PORTRAIT;
-    case UIInterfaceOrientationPortraitUpsideDown:
-      return YOZIO_ORIENT_PORTRAIT_UPSIDE_DOWN;
-    case UIInterfaceOrientationLandscapeLeft:
-      return YOZIO_ORIENT_LANDSCAPE_LEFT;
-    case UIInterfaceOrientationLandscapeRight:
-      return YOZIO_ORIENT_LANDSCAPE_RIGHT;
-    default:
-      return YOZIO_ORIENT_UNKNOWN;
-  }
-}
-
-- (void)updateSessionId
-{
-  if (self.lastActiveTime == nil
-      || [self.lastActiveTime timeIntervalSinceNow] < -YOZIO_SESSION_INACTIVITY_THRESHOLD) {
-    self.sessionId = [self makeUUID];
-  }
-  self.lastActiveTime = [NSDate date];
 }
 
 - (void)updateCountryName
@@ -505,7 +365,6 @@ static Yozio *instance = nil;
   self.timezone = [NSNumber numberWithInteger:timezoneOffset];
 }
 
-
 /*******************************************
  * File system helper methods.
  *******************************************/
@@ -520,8 +379,8 @@ static Yozio *instance = nil;
 
 - (void)loadUnsentData
 {
-  if ([[NSFileManager defaultManager] fileExistsAtPath: YOZIO_SESSION_FILE]) {
-    self.dataQueue = [NSKeyedUnarchiver unarchiveObjectWithFile:YOZIO_SESSION_FILE];
+  if ([[NSFileManager defaultManager] fileExistsAtPath: YOZIO_DATA_QUEUE_FILE]) {
+    self.dataQueue = [NSKeyedUnarchiver unarchiveObjectWithFile:YOZIO_DATA_QUEUE_FILE];
     if (self.dataQueue == nil)  {
       self.dataQueue = [NSMutableArray array];
     }
@@ -529,22 +388,6 @@ static Yozio *instance = nil;
   [Yozio log:@"loadUnsentData: %@", self.dataQueue];
 }
 
-- (void)saveSessionData
-{
-  [Yozio log:@"saveSessionData: %@", self.lastActiveTime];
-  if (![NSKeyedArchiver archiveRootObject:self.lastActiveTime toFile:YOZIO_SESSION_FILE]) {
-    [Yozio log:@"Unable to archive session data!"];
-  }
-}
-
-- (void)loadSessionData
-{
-  if ([[NSFileManager defaultManager] fileExistsAtPath: YOZIO_SESSION_FILE]) {
-    self.lastActiveTime = [NSKeyedUnarchiver unarchiveObjectWithFile:YOZIO_SESSION_FILE];
-    [[NSFileManager defaultManager] removeItemAtPath:YOZIO_SESSION_FILE error:nil];
-  }
-  [Yozio log:@"loadSessionData: %@", self.lastActiveTime];
-}
 
 
 /*******************************************
@@ -617,7 +460,7 @@ static Yozio *instance = nil;
  *******************************************/
 
 /**
- * Update self.config and self.experimentsStr with data from server.
+ * Update self.configs with data from server.
  */
 - (void)updateConfig
 {
@@ -650,10 +493,9 @@ static Yozio *instance = nil;
     } else {
       if ([response statusCode] == 200) {
         [Yozio log:@"config before update: %@", self.config];
-        self.config = [body objectForKey:YOZIO_CONFIG_KEY];
-        self.experimentsStr = [body objectForKey:YOZIO_CONFIG_EXPERIMENTS_KEY];
+        self.config = [body objectForKey:YOZIO_URLS_KEY];
         self.stopConfigLoading = true;
-        [Yozio log:@"config after update: %@", self.config];
+        [Yozio log:@"urls after update: %@", self.config];
       }
     }
     [Yozio log:@"configuration request complete"];
@@ -678,25 +520,8 @@ static Yozio *instance = nil;
 {
   [_appKey release], _appKey = nil;
   [_secretKey release], _secretKey = nil;
-  [_userId release], _userId = nil;
-  [_appVersion release], _appVersion = nil;
   
   [deviceId release], deviceId = nil;
-  [hardware release], hardware = nil;
-  [os release], os = nil;
-  [sessionId release], sessionId = nil;
-  [countryName release], countryName = nil;
-  [language release], language = nil;
-  [timezone release], timezone = nil;
-  [experimentsStr release], experimentsStr = nil;
-  [environment release], environment = nil;
-  
-  [lastActiveTime release], lastActiveTime = nil;
-  [flushTimer release], dataQueue = nil;
-  [dataQueue release], flushTimer = nil;
-  [dataToSend release], dataToSend = nil;
-  [timers release], timers = nil;
-  [config release], config = nil;
   [dateFormatter release], dateFormatter = nil;
   [super dealloc];
 }
