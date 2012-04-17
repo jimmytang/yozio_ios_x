@@ -27,10 +27,10 @@ Method swizzleMethod = nil;
   originalMethod = class_getClassMethod([NSDate class], @selector(date));
   swizzleMethod = class_getInstanceMethod([self class], @selector(mockDateSwizzle));
   method_exchangeImplementations(originalMethod, swizzleMethod);       
-  NSArray* urlKeys = [NSArray arrayWithObjects:@"facebook", @"twitter", @"text", nil];
+  NSArray* urlNames = [NSArray arrayWithObjects:@"facebook", @"twitter", @"text", nil];
   [Yozio configure:@"app key"
          secretKey:@"secret key"
-           urlKeys:urlKeys];
+           urlNames:urlNames];
   
   [self setMockUUID:@"mock UUID"];
   id mock = [OCMockObject partialMockForObject:[Yozio getInstance]];
@@ -86,10 +86,10 @@ Method swizzleMethod = nil;
 
 - (void)testSyncLoadConfig
 {
-  NSArray* urlKeys = [NSArray arrayWithObjects:@"facebook", @"twitter", @"text", nil];
+  NSArray* urlNames = [NSArray arrayWithObjects:@"facebook", @"twitter", @"text", nil];
   [Yozio configure:@"app key"
          secretKey:@"secret key"
-           urlKeys:urlKeys
+           urlNames:urlNames
              async:false];
   [[Yozio getInstance] updateConfig];
 

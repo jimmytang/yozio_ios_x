@@ -26,6 +26,7 @@
 #define YOZIO_P_COUNTRY @"ctry"
 #define YOZIO_P_LANGUAGE @"lg"
 #define YOZIO_P_TIMEZONE @"tz"
+#define YOZIO_P_URLNAMES @"un"
 // TODO: UDID
 // TODO: MAC
 
@@ -67,7 +68,7 @@
   NSString *_appKey;
   NSString *_secretKey;
   BOOL _async;
-  NSArray *_urlKeys;
+  NSArray *_urlNames;
 
   // Automatically determined instrumentation variables.
   NSString *deviceId;
@@ -85,7 +86,7 @@
 @property(nonatomic, retain) NSString *_appKey;
 @property(nonatomic, retain) NSString *_secretKey;
 @property(nonatomic, assign) BOOL _async; 
-@property(nonatomic, assign) NSArray *_urlKeys;
+@property(nonatomic, assign) NSArray *_urlNames;
 
 // Automatically determined instrumentation variables.
 @property(nonatomic, retain) NSString *deviceId;
@@ -105,6 +106,7 @@
 
 + (Yozio *)getInstance; 
 + (void)log:(NSString *)format, ...;
++ (void)openedApp;
 
 // Notification observer methods.
 - (void)onApplicationWillTerminate:(NSNotification *)notification;
@@ -121,6 +123,7 @@
 - (void)doFlush;
 - (NSString *)buildPayload;
 - (NSString *)notNil:(NSString *)str;
+- (NSArray *)arrayNotNil:(NSArray *)arr;
 
 // Instrumentation data helper methods.
 - (NSString *)timeStampString;

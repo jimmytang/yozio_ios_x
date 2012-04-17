@@ -6,7 +6,6 @@
 #import "JSONKit.h"
 #import "Seriously.h"
 #import "YSFHFKeychainUtils.h"
-#import "YUncaughtExceptionHandler.h"
 #import "Yozio.h"
 #import "Yozio_Private.h"
 
@@ -17,7 +16,7 @@
 @synthesize _appKey;
 @synthesize _secretKey;
 @synthesize _async;
-@synthesize _urlKeys;
+@synthesize _urlNames;
 
 // Automatically determined instrumentation variables.
 @synthesize deviceId;
@@ -130,14 +129,14 @@ static Yozio *instance = nil;
 
 + (void)configure:(NSString *)appKey 
         secretKey:(NSString *)secretKey 
-         urlKeys:(NSArray *)urlKeys
+         urlNames:(NSArray *)urlNames
 {
-  [Yozio configure:appKey secretKey:secretKey urlKeys:urlKeys async:true];
+  [Yozio configure:appKey secretKey:secretKey urlNames:urlNames async:true];
 }
 
 + (void)configure:(NSString *)appKey 
         secretKey:(NSString *)secretKey 
-         urlKeys:(NSArray *)urlKeys 
+         urlNames:(NSArray *)urlNames 
             async:(BOOL)async
 {
   if (appKey == nil) {
@@ -149,9 +148,10 @@ static Yozio *instance = nil;
   instance._appKey = appKey;
   instance._secretKey = secretKey;
   instance._async = async;
-  instance._urlKeys = urlKeys;
+  instance._urlNames = urlNames;
   
   [instance updateConfig];
+  [Yozio openedApp];
 
   // Load any previous data and try to flush it.
   // Perform this here instead of on applicationDidFinishLoading because instrumentation calls
@@ -160,12 +160,12 @@ static Yozio *instance = nil;
   [instance doFlush];
 }
 
-+ (NSString *)getUrl:(NSString *)urlKey defaultUrl:(NSString *)defaultUrl
++ (NSString *)getUrl:(NSString *)urlName defaultUrl:(NSString *)defaultUrl
 {
   if (instance.config == nil) {
     return defaultUrl;
   }
-  NSString *val = [instance.config objectForKey:urlKey];
+  NSString *val = [instance.config objectForKey:urlName];
   return val != nil ? val : defaultUrl;
 }
 
@@ -304,31 +304,21 @@ static Yozio *instance = nil;
   }];
 }
 
-
-- (NSString *)buildPayload
-{
-  // TODO(jt): compute real digest from shared key
-  NSString *digest = @"";
-  NSMutableDictionary* payload = [NSMutableDictionary dictionary];
-  [payload setObject:YOZIO_BEACON_SCHEMA_VERSION forKey:YOZIO_P_SCHEMA_VERSION];
-  [payload setObject:digest forKey:YOZIO_P_DIGEST];
-  [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
-  [payload setObject:[self notNil:[self loadOrCreateDeviceId]] forKey:YOZIO_P_DEVICE_ID];
-  [payload setObject:[self notNil:self.hardware] forKey:YOZIO_P_HARDWARE];
-  [payload setObject:[self notNil:self.os] forKey:YOZIO_P_OPERATING_SYSTEM];
-  [payload setObject:[self notNil:self.countryName] forKey:YOZIO_P_COUNTRY];
-  [payload setObject:[self notNil:self.language] forKey:YOZIO_P_LANGUAGE];
-  [payload setObject:self.timezone forKey:YOZIO_P_TIMEZONE];
-  [Yozio log:@"payload: %@", payload];
-  return [payload JSONString];
-}
-
 - (NSString *)notNil:(NSString *)str
 {
   if (str == nil) {
     return @"Unknown";
   } else {
     return str;
+  }
+}
+
+- (NSArray *)arrayNotNil:(NSArray *)arr
+{
+  if (arr == nil) {
+    return [NSArray array];
+  } else {
+    return arr;
   }
 }
 
@@ -474,27 +464,39 @@ static Yozio *instance = nil;
     [Yozio log:@"updateConfig nil deviceId"];
     return;
   }
-  NSString *urlKeys = [self._urlKeys componentsJoinedByString:@","];
-  NSString *urlParams = [NSString stringWithFormat:@"deviceId=%@&appKey=%@&urlKeys=%@", self.deviceId, self._appKey, urlKeys];
+  
+  
+  NSMutableDictionary* payload = [NSMutableDictionary dictionary];
+  [payload setObject:YOZIO_BEACON_SCHEMA_VERSION forKey:YOZIO_P_SCHEMA_VERSION];
+  [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
+  [payload setObject:[self notNil:[self loadOrCreateDeviceId]] forKey:YOZIO_P_DEVICE_ID];
+  [payload setObject:[self notNil:self.hardware] forKey:YOZIO_P_HARDWARE];
+  [payload setObject:[self notNil:self.os] forKey:YOZIO_P_OPERATING_SYSTEM];
+  [payload setObject:[self notNil:self.countryName] forKey:YOZIO_P_COUNTRY];
+  [payload setObject:[self notNil:self.language] forKey:YOZIO_P_LANGUAGE];
+  [payload setObject:self.timezone forKey:YOZIO_P_TIMEZONE];
+  [payload setObject:[self arrayNotNil:self._urlNames] forKey:YOZIO_P_URLNAMES];
+
+  NSString *urlParams = [NSString stringWithFormat:@"data=%@", [payload JSONString]];
   NSString *urlString =
-  [NSString stringWithFormat:@"http://%@/configuration.json?%@", YOZIO_CONFIGURATION_SERVER_URL, urlParams];
+  [NSString stringWithFormat:@"http://%@/get_config?%@", YOZIO_CONFIGURATION_SERVER_URL, urlParams];
   NSString* escapedUrlString =  [urlString stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
   [Yozio log:@"Final configuration request url: %@", escapedUrlString];
 
   if (!self._async) {
-    [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(cancelURLConnection) userInfo:nil repeats:NO];
+    [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(cancelURLConnection) userInfo:nil repeats:NO];
   }
 
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
   //  add some timing check before and on response
-  [Seriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+  [Seriously get:escapedUrlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
     if (error) {
       self.stopConfigLoading = true;
       [Yozio log:@"updateConfig error %@", error];
     } else {
       if ([response statusCode] == 200) {
         [Yozio log:@"config before update: %@", self.config];
-        self.config = [body objectForKey:YOZIO_CONFIG_KEY];
+        self.config = [body objectForKey:YOZIO_URLS_KEY];
         self.stopConfigLoading = true;
         [Yozio log:@"urls after update: %@", self.config];
       }
@@ -521,7 +523,7 @@ static Yozio *instance = nil;
 {
   [_appKey release], _appKey = nil;
   [_secretKey release], _secretKey = nil;
-  [_urlKeys release], _urlKeys = nil;
+  [_urlNames release], _urlNames = nil;
   [deviceId release], deviceId = nil;
   [dateFormatter release], dateFormatter = nil;
   [super dealloc];

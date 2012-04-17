@@ -14,21 +14,21 @@
  *
  * @param appKey  The application name we provided you for your application.
  * @param secretKey  The top secret key that only you know about. Don't share this with others!
- * @param urlKeys  The array of url keys
+ * @param urlNames  The array of url keys
  *
  * TODO(jt): use more realistic configure example
  * @example [Yozio configure:@"appKey" secretKey:@"mySecretKey"];
  */
-+ (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey urlKeys:(NSArray *)urlKeys;
++ (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey urlNames:(NSArray *)urlNames;
 
-+ (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey urlKeys:(NSArray *)urlKeys async:(BOOL)async;
++ (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey urlNames:(NSArray *)urlNames async:(BOOL)async;
 
 /**
  * getUrl returns back a shortened url based on the url keyword.
- * @param urlKey: 
+ * @param urlName: 
  * @param defaultUrl: 
  */
-+ (NSString *)getUrl:(NSString *)urlKey defaultUrl:(NSString *)defaultUrl;
++ (NSString *)getUrl:(NSString *)urlName defaultUrl:(NSString *)defaultUrl;
 
 
 /**
@@ -40,11 +40,6 @@
  * Alerts us about when a user has clicked on a link. Place this as a callback to your button links.
  */
 + (void)clickedLink;
-
-/**
- * Alerts Yozio about when a user has opened their app.Place this right after configure.
- */
-+ (void)openedApp;
 
 @end
 

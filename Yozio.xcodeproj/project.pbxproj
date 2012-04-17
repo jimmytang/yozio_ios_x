@@ -57,8 +57,6 @@
 		F7595C021516B0CF0042ADB5 /* libobjc.A.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F7595C011516B0CF0042ADB5 /* libobjc.A.dylib */; };
 		F7B6822E15169ABD00FF7DA6 /* YSFHFKeychainUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F7B6822A15169ABD00FF7DA6 /* YSFHFKeychainUtils.h */; };
 		F7B6822F15169ABD00FF7DA6 /* YSFHFKeychainUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6822B15169ABD00FF7DA6 /* YSFHFKeychainUtils.m */; };
-		F7B6823015169ABD00FF7DA6 /* YUncaughtExceptionHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = F7B6822C15169ABD00FF7DA6 /* YUncaughtExceptionHandler.h */; };
-		F7B6823115169ABD00FF7DA6 /* YUncaughtExceptionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6822D15169ABD00FF7DA6 /* YUncaughtExceptionHandler.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -129,8 +127,6 @@
 		F7595C011516B0CF0042ADB5 /* libobjc.A.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libobjc.A.dylib; path = usr/lib/libobjc.A.dylib; sourceTree = SDKROOT; };
 		F7B6822A15169ABD00FF7DA6 /* YSFHFKeychainUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YSFHFKeychainUtils.h; path = Yozio/YSFHFKeychainUtils.h; sourceTree = SOURCE_ROOT; };
 		F7B6822B15169ABD00FF7DA6 /* YSFHFKeychainUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YSFHFKeychainUtils.m; path = Yozio/YSFHFKeychainUtils.m; sourceTree = SOURCE_ROOT; };
-		F7B6822C15169ABD00FF7DA6 /* YUncaughtExceptionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YUncaughtExceptionHandler.h; path = Yozio/YUncaughtExceptionHandler.h; sourceTree = SOURCE_ROOT; };
-		F7B6822D15169ABD00FF7DA6 /* YUncaughtExceptionHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YUncaughtExceptionHandler.m; path = Yozio/YUncaughtExceptionHandler.m; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,8 +159,6 @@
 			children = (
 				F7B6822A15169ABD00FF7DA6 /* YSFHFKeychainUtils.h */,
 				F7B6822B15169ABD00FF7DA6 /* YSFHFKeychainUtils.m */,
-				F7B6822C15169ABD00FF7DA6 /* YUncaughtExceptionHandler.h */,
-				F7B6822D15169ABD00FF7DA6 /* YUncaughtExceptionHandler.m */,
 				0EBCF569148F563D0079C9F3 /* seriously */,
 				0E5009A1146A74C200F0CD4D /* johnezang-JSONKit-465adc1 */,
 			);
@@ -380,7 +374,6 @@
 				0EBCF5A2148F563D0079C9F3 /* SeriouslyOperation.h in Headers */,
 				0EBCF5A4148F563D0079C9F3 /* SeriouslyXML.h in Headers */,
 				F7B6822E15169ABD00FF7DA6 /* YSFHFKeychainUtils.h in Headers */,
-				F7B6823015169ABD00FF7DA6 /* YUncaughtExceptionHandler.h in Headers */,
 				F7595BFA1516A19B0042ADB5 /* NSNotificationCenter+OCMAdditions.h in Headers */,
 				F7595BFB1516A19B0042ADB5 /* OCMArg.h in Headers */,
 				F7595BFC1516A19B0042ADB5 /* OCMConstraint.h in Headers */,
@@ -516,7 +509,6 @@
 				0EBCF5A3148F563D0079C9F3 /* SeriouslyOperation.m in Sources */,
 				0EBCF5A5148F563D0079C9F3 /* SeriouslyXML.m in Sources */,
 				F7B6822F15169ABD00FF7DA6 /* YSFHFKeychainUtils.m in Sources */,
-				F7B6823115169ABD00FF7DA6 /* YUncaughtExceptionHandler.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
