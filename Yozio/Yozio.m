@@ -176,10 +176,10 @@ static Yozio *instance = nil;
              maxQueue:YOZIO_ACTION_DATA_LIMIT];
 }
 
-+ (void)clickedLink
++ (void)sharedLink
 {
   [instance doCollect:YOZIO_T_ACTION
-                 name:YOZIO_CLICKED_LINK_ACTION
+                 name:YOZIO_SHARED_LINK_ACTION
              maxQueue:YOZIO_ACTION_DATA_LIMIT];
 }
 

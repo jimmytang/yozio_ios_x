@@ -39,7 +39,7 @@
 /**
  * Alerts us about when a user has clicked on a link. Place this as a callback to your button links.
  */
-+ (void)clickedLink;
++ (void)sharedLink;
 
 @end
 

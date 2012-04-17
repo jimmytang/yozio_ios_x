@@ -54,7 +54,7 @@
 
 // Actions
 #define YOZIO_VIEWED_LINK_ACTION @"Viewed Link"
-#define YOZIO_CLICKED_LINK_ACTION @"Clicked Link"
+#define YOZIO_SHARED_LINK_ACTION @"Shared Link"
 #define YOZIO_OPENED_APP_ACTION @"Opened App"
 
 // XX_DATA_LIMIT describes the required number of items in the queue before that instrumentation
