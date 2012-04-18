@@ -34,12 +34,12 @@
 /**
  * Alerts Yozio about when a user has viewed a link. Place this on pages where the link is loaded.
  */
-+ (void)viewedLink;
++ (void)viewedLink:(NSString *)urlName;
 
 /**
  * Alerts us about when a user has clicked on a link. Place this as a callback to your button links.
  */
-+ (void)sharedLink;
++ (void)sharedLink:(NSString *)urlName;
 
 @end
 

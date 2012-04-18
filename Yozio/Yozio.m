@@ -67,7 +67,9 @@ static Yozio *instance = nil;
   [self updateLanguage];
   [self updateTimezone];
 
-  // Initialize  mutable instrumentation variables.
+  self.dataCount = 0;
+  self.dataQueue = [[NSMutableArray alloc] init];
+  self.dataToSend = nil;
   self.config = nil;
   
   // Initialize dateFormatter.
@@ -169,17 +171,19 @@ static Yozio *instance = nil;
   return val != nil ? val : defaultUrl;
 }
 
-+ (void)viewedLink
++ (void)viewedLink:(NSString *)urlName
 {
   [instance doCollect:YOZIO_T_ACTION
                  name:YOZIO_VIEWED_LINK_ACTION
+              urlName:urlName
              maxQueue:YOZIO_ACTION_DATA_LIMIT];
 }
 
-+ (void)sharedLink
++ (void)sharedLink:(NSString *)urlName
 {
   [instance doCollect:YOZIO_T_ACTION
                  name:YOZIO_SHARED_LINK_ACTION
+              urlName:urlName
              maxQueue:YOZIO_ACTION_DATA_LIMIT];
 }
 
@@ -187,6 +191,7 @@ static Yozio *instance = nil;
 {
   [instance doCollect:YOZIO_T_ACTION
                  name:YOZIO_OPENED_APP_ACTION
+              urlName:@""
              maxQueue:YOZIO_ACTION_DATA_LIMIT];
 }
 
@@ -231,16 +236,19 @@ static Yozio *instance = nil;
 
 - (void)doCollect:(NSString *)type
              name:(NSString *)name
+          urlName:(NSString *)urlName
          maxQueue:(NSInteger)maxQueue
 {
   if (![self validateConfiguration]) {
     return;
   }
+  dataCount++;
   if ([self.dataQueue count] < maxQueue) {
     NSMutableDictionary *d =
     [NSMutableDictionary dictionaryWithObjectsAndKeys:
      [self notNil:type], YOZIO_D_TYPE,
      [self notNil:name], YOZIO_D_NAME,
+     [self notNil:urlName], YOZIO_D_URL_NAME,
      [self notNil:[self timeStampString]], YOZIO_D_TIMESTAMP,
      [NSNumber numberWithInteger:dataCount], YOZIO_D_DATA_COUNT,
      nil];
@@ -303,6 +311,23 @@ static Yozio *instance = nil;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
   }];
 }
+
+- (NSString *)buildPayload
+{
+  // TODO(jt): compute real digest from shared key
+  NSString *digest = @"";
+  NSNumber *packetCount = [NSNumber numberWithInteger:[self.dataToSend count]];
+  NSMutableDictionary* payload = [NSMutableDictionary dictionary];
+  [payload setObject:YOZIO_BEACON_SCHEMA_VERSION forKey:YOZIO_P_SCHEMA_VERSION];
+  [payload setObject:digest forKey:YOZIO_P_DIGEST];
+  [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
+  [payload setObject:[self notNil:[self loadOrCreateDeviceId]] forKey:YOZIO_P_DEVICE_ID];
+  [payload setObject:packetCount forKey:YOZIO_P_PAYLOAD_COUNT];
+  [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
+  [Yozio log:@"payload: %@", payload];
+  return [payload JSONString];
+}
+
 
 - (NSString *)notNil:(NSString *)str
 {

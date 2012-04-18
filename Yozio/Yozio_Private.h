@@ -10,8 +10,8 @@
 #import "Yozio.h"
 
 #define YOZIO_BEACON_SCHEMA_VERSION @"1"
-#define YOZIO_TRACKING_SERVER_URL @"192.168.1.14:3000"
-#define YOZIO_CONFIGURATION_SERVER_URL @"192.168.1.14:3000"
+#define YOZIO_TRACKING_SERVER_URL @"192.168.1.131:3000"
+#define YOZIO_CONFIGURATION_SERVER_URL @"192.168.1.131:3000"
 
 // Set to true to show log messages.
 #define YOZIO_LOG true
@@ -29,10 +29,13 @@
 #define YOZIO_P_URLNAMES @"un"
 // TODO: UDID
 // TODO: MAC
+#define YOZIO_P_PAYLOAD_COUNT @"plc"
+#define YOZIO_P_PAYLOAD @"pl"
 
 // Payload data entry keys.
 #define YOZIO_D_TYPE @"tp"
 #define YOZIO_D_NAME @"en"
+#define YOZIO_D_URL_NAME @"un"
 #define YOZIO_D_APP_VERSION @"av"
 #define YOZIO_D_TIMESTAMP @"ts"
 #define YOZIO_D_DATA_COUNT @"dc"
@@ -118,6 +121,7 @@
 - (BOOL)validateConfiguration;
 - (void)doCollect:(NSString *)type
              name:(NSString *)name
+          urlName:(NSString *)urlName
          maxQueue:(NSInteger)maxQueue;
 - (void)checkDataQueueSize;
 - (void)doFlush;
