@@ -26,7 +26,8 @@
 #define YOZIO_P_COUNTRY @"ctry"
 #define YOZIO_P_LANGUAGE @"lg"
 #define YOZIO_P_TIMEZONE @"tz"
-#define YOZIO_P_URLNAMES @"un"
+#define YOZIO_P_URL_LINKS @"ul"
+#define YOZIO_P_USER_NAME @"usn"
 // TODO: UDID
 // TODO: MAC
 #define YOZIO_P_PAYLOAD_COUNT @"plc"
@@ -42,6 +43,7 @@
 
 // Instrumentation entry types.
 #define YOZIO_T_ACTION @"a"
+#define YOZIO_T_ERROR @"e"
 
 // Mobile configuration data keys.
 #define YOZIO_CONFIG_KEY @"config"
@@ -60,6 +62,7 @@
 #define YOZIO_SHARED_LINK_ACTION @"Shared Link"
 #define YOZIO_OPENED_APP_ACTION @"Opened App"
 
+#define YOZIO_BAD_URL_NAME @"Bad URL"
 // XX_DATA_LIMIT describes the required number of items in the queue before that instrumentation
 // event type starts being dropped.
 #define YOZIO_ACTION_DATA_LIMIT 5000
@@ -71,11 +74,13 @@
   NSString *_appKey;
   NSString *_secretKey;
   BOOL _async;
-  NSArray *_urlNames;
+  NSDictionary *_urlLinks;
+  NSString *_userName;
 
   // Automatically determined instrumentation variables.
   NSString *deviceId;
-  
+  NSString *countryName;
+
   // Internal variables.
   NSInteger dataCount;
   NSMutableArray *dataQueue;
@@ -89,7 +94,8 @@
 @property(nonatomic, retain) NSString *_appKey;
 @property(nonatomic, retain) NSString *_secretKey;
 @property(nonatomic, assign) BOOL _async; 
-@property(nonatomic, assign) NSArray *_urlNames;
+@property(nonatomic, retain) NSDictionary *_urlLinks;
+@property(nonatomic, retain) NSString *_userName;
 
 // Automatically determined instrumentation variables.
 @property(nonatomic, retain) NSString *deviceId;
@@ -110,6 +116,7 @@
 + (Yozio *)getInstance; 
 + (void)log:(NSString *)format, ...;
 + (void)openedApp;
++ (void)badUrlName:(NSString *)urlName;
 
 // Notification observer methods.
 - (void)onApplicationWillTerminate:(NSNotification *)notification;
@@ -127,7 +134,7 @@
 - (void)doFlush;
 - (NSString *)buildPayload;
 - (NSString *)notNil:(NSString *)str;
-- (NSArray *)arrayNotNil:(NSArray *)arr;
+- (NSDictionary *)dictNotNil:(NSDictionary *)dict;
 
 // Instrumentation data helper methods.
 - (NSString *)timeStampString;

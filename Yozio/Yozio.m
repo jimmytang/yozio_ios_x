@@ -16,7 +16,8 @@
 @synthesize _appKey;
 @synthesize _secretKey;
 @synthesize _async;
-@synthesize _urlNames;
+@synthesize _urlLinks;
+@synthesize _userName;
 
 // Automatically determined instrumentation variables.
 @synthesize deviceId;
@@ -131,14 +132,14 @@ static Yozio *instance = nil;
 
 + (void)configure:(NSString *)appKey 
         secretKey:(NSString *)secretKey 
-         urlNames:(NSArray *)urlNames
+         urlLinks:(NSDictionary *)urlLinks
 {
-  [Yozio configure:appKey secretKey:secretKey urlNames:urlNames async:true];
+  [Yozio configure:appKey secretKey:secretKey urlLinks:urlLinks async:true];
 }
 
 + (void)configure:(NSString *)appKey 
         secretKey:(NSString *)secretKey 
-         urlNames:(NSArray *)urlNames 
+         urlLinks:(NSDictionary *)urlLinks 
             async:(BOOL)async
 {
   if (appKey == nil) {
@@ -150,7 +151,7 @@ static Yozio *instance = nil;
   instance._appKey = appKey;
   instance._secretKey = secretKey;
   instance._async = async;
-  instance._urlNames = urlNames;
+  instance._urlLinks = urlLinks;
   
   [instance updateConfig];
   [Yozio openedApp];
@@ -162,8 +163,21 @@ static Yozio *instance = nil;
   [instance doFlush];
 }
 
-+ (NSString *)getUrl:(NSString *)urlName defaultUrl:(NSString *)defaultUrl
++ (void)setUserName:(NSString *)userName
 {
+  instance._userName = userName;
+}
+
++ (NSString *)getUrl:(NSString *)urlName
+{
+  NSString *defaultUrl = nil;
+  if(instance._urlLinks != nil) {
+    defaultUrl = [instance._urlLinks objectForKey:urlName];
+    if (defaultUrl == nil) {
+      [Yozio badUrlName:urlName];
+      defaultUrl = [[instance._urlLinks allValues] lastObject];
+    }
+  }
   if (instance.config == nil) {
     return defaultUrl;
   }
@@ -194,6 +208,15 @@ static Yozio *instance = nil;
               urlName:@""
              maxQueue:YOZIO_ACTION_DATA_LIMIT];
 }
+
++ (void)badUrlName:(NSString *)urlName
+{
+  [instance doCollect:YOZIO_T_ERROR
+                 name:YOZIO_BAD_URL_NAME
+              urlName:urlName
+             maxQueue:YOZIO_ACTION_DATA_LIMIT];
+}
+
 
 
 /*******************************************
@@ -322,6 +345,12 @@ static Yozio *instance = nil;
   [payload setObject:digest forKey:YOZIO_P_DIGEST];
   [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
   [payload setObject:[self notNil:[self loadOrCreateDeviceId]] forKey:YOZIO_P_DEVICE_ID];
+  [payload setObject:[self notNil:self.hardware] forKey:YOZIO_P_HARDWARE];
+  [payload setObject:[self notNil:self.os] forKey:YOZIO_P_OPERATING_SYSTEM];
+  [payload setObject:[self notNil:self.countryName] forKey:YOZIO_P_COUNTRY];
+  [payload setObject:[self notNil:self.language] forKey:YOZIO_P_LANGUAGE];
+  [payload setObject:self.timezone forKey:YOZIO_P_TIMEZONE];
+  [payload setObject:self._userName forKey:YOZIO_P_USER_NAME];
   [payload setObject:packetCount forKey:YOZIO_P_PAYLOAD_COUNT];
   [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];
@@ -338,12 +367,12 @@ static Yozio *instance = nil;
   }
 }
 
-- (NSArray *)arrayNotNil:(NSArray *)arr
+- (NSDictionary *)dictNotNil:(NSDictionary *)dict
 {
-  if (arr == nil) {
-    return [NSArray array];
+  if (dict == nil) {
+    return [NSDictionary dictionary];
   } else {
-    return arr;
+    return dict;
   }
 }
 
@@ -500,7 +529,8 @@ static Yozio *instance = nil;
   [payload setObject:[self notNil:self.countryName] forKey:YOZIO_P_COUNTRY];
   [payload setObject:[self notNil:self.language] forKey:YOZIO_P_LANGUAGE];
   [payload setObject:self.timezone forKey:YOZIO_P_TIMEZONE];
-  [payload setObject:[self arrayNotNil:self._urlNames] forKey:YOZIO_P_URLNAMES];
+  [payload setObject:self._userName forKey:YOZIO_P_USER_NAME];
+  [payload setObject:[self dictNotNil:self._urlLinks] forKey:YOZIO_P_URL_LINKS];
 
   NSString *urlParams = [NSString stringWithFormat:@"data=%@", [payload JSONString]];
   NSString *urlString =
@@ -548,7 +578,7 @@ static Yozio *instance = nil;
 {
   [_appKey release], _appKey = nil;
   [_secretKey release], _secretKey = nil;
-  [_urlNames release], _urlNames = nil;
+  [_urlLinks release], _urlLinks = nil;
   [deviceId release], deviceId = nil;
   [dateFormatter release], dateFormatter = nil;
   [super dealloc];
