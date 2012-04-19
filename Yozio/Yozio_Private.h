@@ -58,7 +58,7 @@
 #define YOZIO_FLUSH_DATA_COUNT 1
 
 // Actions
-#define YOZIO_VIEWED_LINK_ACTION @"Viewed Link"
+#define YOZIO_FETCHED_LINK_ACTION @"Fetched Link"
 #define YOZIO_SHARED_LINK_ACTION @"Shared Link"
 #define YOZIO_OPENED_APP_ACTION @"Opened App"
 

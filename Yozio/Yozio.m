@@ -188,7 +188,7 @@ static Yozio *instance = nil;
 + (void)viewedLink:(NSString *)urlName
 {
   [instance doCollect:YOZIO_T_ACTION
-                 name:YOZIO_VIEWED_LINK_ACTION
+                 name:YOZIO_FETCHED_LINK_ACTION
               urlName:urlName
              maxQueue:YOZIO_ACTION_DATA_LIMIT];
 }
