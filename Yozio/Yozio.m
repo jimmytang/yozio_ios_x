@@ -5,7 +5,7 @@
 #import <UIKit/UIKit.h>
 #import "JSONKit.h"
 #import "Seriously.h"
-#import "YSFHFKeychainUtils.h"
+#import "OpenUDID.h"
 #import "Yozio.h"
 #import "Yozio_Private.h"
 
@@ -16,8 +16,6 @@
 @synthesize _appKey;
 @synthesize _secretKey;
 @synthesize _async;
-@synthesize _urlLinks;
-@synthesize _userName;
 
 // Automatically determined instrumentation variables.
 @synthesize deviceId;
@@ -132,14 +130,12 @@ static Yozio *instance = nil;
 
 + (void)configure:(NSString *)appKey 
         secretKey:(NSString *)secretKey 
-         urlLinks:(NSDictionary *)urlLinks
 {
-  [Yozio configure:appKey secretKey:secretKey urlLinks:urlLinks async:true];
+  [Yozio configure:appKey secretKey:secretKey async:true];
 }
 
 + (void)configure:(NSString *)appKey 
         secretKey:(NSString *)secretKey 
-         urlLinks:(NSDictionary *)urlLinks 
             async:(BOOL)async
 {
   if (appKey == nil) {
@@ -151,7 +147,6 @@ static Yozio *instance = nil;
   instance._appKey = appKey;
   instance._secretKey = secretKey;
   instance._async = async;
-  instance._urlLinks = urlLinks;
   
   [instance updateConfig];
   [Yozio openedApp];
@@ -163,61 +158,30 @@ static Yozio *instance = nil;
   [instance doFlush];
 }
 
-+ (void)setUserName:(NSString *)userName
++ (NSString *)getUrl:(NSString *)linkName defaultUrl:(NSString *)defaultUrl
 {
-  instance._userName = userName;
-}
-
-+ (NSString *)getUrl:(NSString *)urlName
-{
-  NSString *defaultUrl = nil;
-  if(instance._urlLinks != nil) {
-    defaultUrl = [instance._urlLinks objectForKey:urlName];
-    if (defaultUrl == nil) {
-      [Yozio badUrlName:urlName];
-      defaultUrl = [[instance._urlLinks allValues] lastObject];
-    }
-  }
   if (instance.config == nil) {
     return defaultUrl;
   }
-  NSString *val = [instance.config objectForKey:urlName];
+  NSString *val = [instance.config objectForKey:linkName];
   return val != nil ? val : defaultUrl;
 }
 
-+ (void)viewedLink:(NSString *)urlName
++ (void)viewedLink:(NSString *)linkName
 {
   [instance doCollect:YOZIO_T_ACTION
                  name:YOZIO_FETCHED_LINK_ACTION
-              urlName:urlName
+             linkName:linkName
              maxQueue:YOZIO_ACTION_DATA_LIMIT];
 }
 
-+ (void)sharedLink:(NSString *)urlName
++ (void)sharedLink:(NSString *)linkName
 {
   [instance doCollect:YOZIO_T_ACTION
                  name:YOZIO_SHARED_LINK_ACTION
-              urlName:urlName
+             linkName:linkName
              maxQueue:YOZIO_ACTION_DATA_LIMIT];
 }
-
-+ (void)openedApp
-{
-  [instance doCollect:YOZIO_T_ACTION
-                 name:YOZIO_OPENED_APP_ACTION
-              urlName:@""
-             maxQueue:YOZIO_ACTION_DATA_LIMIT];
-}
-
-+ (void)badUrlName:(NSString *)urlName
-{
-  [instance doCollect:YOZIO_T_ERROR
-                 name:YOZIO_BAD_URL_NAME
-              urlName:urlName
-             maxQueue:YOZIO_ACTION_DATA_LIMIT];
-}
-
-
 
 /*******************************************
  * Notification observer methods.
@@ -228,17 +192,9 @@ static Yozio *instance = nil;
   [self saveUnsentData];
 }
 
-- (void)onApplicationWillResignActive:(NSNotification *)notification
-{
-}
-
 - (void)onApplicationWillEnterForeground:(NSNotification *)notification
 {
   [self updateConfig];
-}
-
-- (void)onApplicationDidEnterBackground:(NSNotification *)notification
-{
 }
 
 /*******************************************
@@ -259,7 +215,7 @@ static Yozio *instance = nil;
 
 - (void)doCollect:(NSString *)type
              name:(NSString *)name
-          urlName:(NSString *)urlName
+         linkName:(NSString *)linkName
          maxQueue:(NSInteger)maxQueue
 {
   if (![self validateConfiguration]) {
@@ -271,7 +227,7 @@ static Yozio *instance = nil;
     [NSMutableDictionary dictionaryWithObjectsAndKeys:
      [self notNil:type], YOZIO_D_TYPE,
      [self notNil:name], YOZIO_D_NAME,
-     [self notNil:urlName], YOZIO_D_URL_NAME,
+     [self notNil:linkName], YOZIO_D_LINK_NAME,
      [self notNil:[self timeStampString]], YOZIO_D_TIMESTAMP,
      [NSNumber numberWithInteger:dataCount], YOZIO_D_DATA_COUNT,
      nil];
@@ -279,6 +235,14 @@ static Yozio *instance = nil;
     [Yozio log:@"doCollect: %@", d];
   }
   [self checkDataQueueSize];
+}
+
++ (void)openedApp
+{
+    [instance doCollect:YOZIO_T_ACTION
+                   name:YOZIO_OPENED_APP_ACTION
+               linkName:@""
+               maxQueue:YOZIO_ACTION_DATA_LIMIT];
 }
 
 - (void)checkDataQueueSize
@@ -350,7 +314,6 @@ static Yozio *instance = nil;
   [payload setObject:[self notNil:self.countryName] forKey:YOZIO_P_COUNTRY];
   [payload setObject:[self notNil:self.language] forKey:YOZIO_P_LANGUAGE];
   [payload setObject:self.timezone forKey:YOZIO_P_TIMEZONE];
-  [payload setObject:self._userName forKey:YOZIO_P_USER_NAME];
   [payload setObject:packetCount forKey:YOZIO_P_PAYLOAD_COUNT];
   [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];
@@ -441,64 +404,83 @@ static Yozio *instance = nil;
  *******************************************/
 
 /**
+ * Using OpenUDID to generate a unique device identifier since the native device's UDID is deprecated.
+ * 
+ * @return The deviceId or nil if any error occurred while loading/creating/storing the UUID.
+ */
+
+- (NSString *)loadOrCreateDeviceId
+{
+  self.deviceId = [OpenUDID value];
+  return self.deviceId;
+}
+
+
+
+
+
+
+
+
+/**
  * Loads the deviceId from keychain. If one doesn't exist, create a new deviceId, store it in the
  * keychain, and return the new deviceId.
  *
  * @return The deviceId or nil if any error occurred while loading/creating/storing the UUID.
  */
-- (NSString *)loadOrCreateDeviceId
-{
-  if (self.deviceId != nil) {
-    [Yozio log:@"deviceId: %@", self.deviceId];
-    return self.deviceId;
-  }
+//- (NSString *)loadOrCreateDeviceId
+//{
+//  if (self.deviceId != nil) {
+//    [Yozio log:@"deviceId: %@", self.deviceId];
+//    return self.deviceId;
+//  }
+//
+//  NSError *loadError = nil;
+//  NSString *uuid = [YSFHFKeychainUtils getPasswordForUsername:YOZIO_UUID_KEYCHAIN_USERNAME
+//                                              andServiceName:YOZIO_KEYCHAIN_SERVICE
+//                                                       error:&loadError];
+//  NSInteger loadErrorCode = [loadError code];
+//  if (loadErrorCode == errSecItemNotFound || uuid == nil) {
+//    // No deviceId stored in keychain yet.
+//    uuid = [self makeUUID];
+//    [Yozio log:@"Generated device id: %@", uuid];
+//    if (![self storeDeviceId:uuid]) {
+//      return nil;
+//    }
+//  } else if (loadErrorCode != errSecSuccess) {
+//    [Yozio log:@"Error loading UUID from keychain."];
+//    [Yozio log:@"%@", [loadError localizedDescription]];
+//    return nil;
+//  }
+//  self.deviceId = uuid;
+//  return self.deviceId;
+//}
 
-  NSError *loadError = nil;
-  NSString *uuid = [YSFHFKeychainUtils getPasswordForUsername:YOZIO_UUID_KEYCHAIN_USERNAME
-                                              andServiceName:YOZIO_KEYCHAIN_SERVICE
-                                                       error:&loadError];
-  NSInteger loadErrorCode = [loadError code];
-  if (loadErrorCode == errSecItemNotFound || uuid == nil) {
-    // No deviceId stored in keychain yet.
-    uuid = [self makeUUID];
-    [Yozio log:@"Generated device id: %@", uuid];
-    if (![self storeDeviceId:uuid]) {
-      return nil;
-    }
-  } else if (loadErrorCode != errSecSuccess) {
-    [Yozio log:@"Error loading UUID from keychain."];
-    [Yozio log:@"%@", [loadError localizedDescription]];
-    return nil;
-  }
-  self.deviceId = uuid;
-  return self.deviceId;
-}
-
-- (BOOL)storeDeviceId:(NSString *)uuid
-{
-  NSError *storeError = nil;
-  [YSFHFKeychainUtils storeUsername:YOZIO_UUID_KEYCHAIN_USERNAME
-                       andPassword:uuid
-                    forServiceName:YOZIO_KEYCHAIN_SERVICE
-                    updateExisting:true
-                             error:&storeError];
-  if ([storeError code] != errSecSuccess) {
-    [Yozio log:@"Error storing UUID to keychain."];
-    [Yozio log:@"%@", [storeError localizedDescription]];
-    return NO;
-  }
-  return YES;
-}
-
-// Code taken from http://www.jayfuerstenberg.com/blog/overcoming-udid-deprecation-by-using-guids
-- (NSString *)makeUUID
-{
-  CFUUIDRef theUUID = CFUUIDCreate(NULL);
-  NSString *uuidString = (NSString *) CFUUIDCreateString(NULL, theUUID);
-  CFRelease(theUUID);
-  [uuidString autorelease];
-  return uuidString;
-}
+//- (BOOL)storeDeviceId:(NSString *)uuid
+//{
+//  NSError *storeError = nil;
+//  [YSFHFKeychainUtils storeUsername:YOZIO_UUID_KEYCHAIN_USERNAME
+//                       andPassword:uuid
+//                    forServiceName:YOZIO_KEYCHAIN_SERVICE
+//                    updateExisting:true
+//                             error:&storeError];
+//  if ([storeError code] != errSecSuccess) {
+//    [Yozio log:@"Error storing UUID to keychain."];
+//    [Yozio log:@"%@", [storeError localizedDescription]];
+//    return NO;
+//  }
+//  return YES;
+//}
+//
+//// Code taken from http://www.jayfuerstenberg.com/blog/overcoming-udid-deprecation-by-using-guids
+//- (NSString *)makeUUID
+//{
+//  CFUUIDRef theUUID = CFUUIDCreate(NULL);
+//  NSString *uuidString = (NSString *) CFUUIDCreateString(NULL, theUUID);
+//  CFRelease(theUUID);
+//  [uuidString autorelease];
+//  return uuidString;
+//}
 
 
 /*******************************************
@@ -529,8 +511,6 @@ static Yozio *instance = nil;
   [payload setObject:[self notNil:self.countryName] forKey:YOZIO_P_COUNTRY];
   [payload setObject:[self notNil:self.language] forKey:YOZIO_P_LANGUAGE];
   [payload setObject:self.timezone forKey:YOZIO_P_TIMEZONE];
-  [payload setObject:self._userName forKey:YOZIO_P_USER_NAME];
-  [payload setObject:[self dictNotNil:self._urlLinks] forKey:YOZIO_P_URL_LINKS];
 
   NSString *urlParams = [NSString stringWithFormat:@"data=%@", [payload JSONString]];
   NSString *urlString =
@@ -578,7 +558,6 @@ static Yozio *instance = nil;
 {
   [_appKey release], _appKey = nil;
   [_secretKey release], _secretKey = nil;
-  [_urlLinks release], _urlLinks = nil;
   [deviceId release], deviceId = nil;
   [dateFormatter release], dateFormatter = nil;
   [super dealloc];

@@ -10,8 +10,8 @@
 #import "Yozio.h"
 
 #define YOZIO_BEACON_SCHEMA_VERSION @"1"
-#define YOZIO_TRACKING_SERVER_URL @"192.168.1.131:3000"
-#define YOZIO_CONFIGURATION_SERVER_URL @"192.168.1.131:3000"
+#define YOZIO_TRACKING_SERVER_URL @"192.168.1.24:3000"
+#define YOZIO_CONFIGURATION_SERVER_URL @"192.168.1.24:3000"
 
 // Set to true to show log messages.
 #define YOZIO_LOG true
@@ -26,17 +26,13 @@
 #define YOZIO_P_COUNTRY @"ctry"
 #define YOZIO_P_LANGUAGE @"lg"
 #define YOZIO_P_TIMEZONE @"tz"
-#define YOZIO_P_URL_LINKS @"ul"
-#define YOZIO_P_USER_NAME @"usn"
-// TODO: UDID
-// TODO: MAC
 #define YOZIO_P_PAYLOAD_COUNT @"plc"
 #define YOZIO_P_PAYLOAD @"pl"
 
 // Payload data entry keys.
 #define YOZIO_D_TYPE @"tp"
 #define YOZIO_D_NAME @"en"
-#define YOZIO_D_URL_NAME @"un"
+#define YOZIO_D_LINK_NAME @"un"
 #define YOZIO_D_APP_VERSION @"av"
 #define YOZIO_D_TIMESTAMP @"ts"
 #define YOZIO_D_DATA_COUNT @"dc"
@@ -74,7 +70,6 @@
   NSString *_appKey;
   NSString *_secretKey;
   BOOL _async;
-  NSDictionary *_urlLinks;
   NSString *_userName;
 
   // Automatically determined instrumentation variables.
@@ -94,8 +89,6 @@
 @property(nonatomic, retain) NSString *_appKey;
 @property(nonatomic, retain) NSString *_secretKey;
 @property(nonatomic, assign) BOOL _async; 
-@property(nonatomic, retain) NSDictionary *_urlLinks;
-@property(nonatomic, retain) NSString *_userName;
 
 // Automatically determined instrumentation variables.
 @property(nonatomic, retain) NSString *deviceId;
@@ -116,19 +109,16 @@
 + (Yozio *)getInstance; 
 + (void)log:(NSString *)format, ...;
 + (void)openedApp;
-+ (void)badUrlName:(NSString *)urlName;
 
 // Notification observer methods.
 - (void)onApplicationWillTerminate:(NSNotification *)notification;
-- (void)onApplicationWillResignActive:(NSNotification *)notification;
 - (void)onApplicationWillEnterForeground:(NSNotification *)notification;
-- (void)onApplicationDidEnterBackground:(NSNotification *)notification;
 
 // Data collection helper methods.
 - (BOOL)validateConfiguration;
 - (void)doCollect:(NSString *)type
              name:(NSString *)name
-          urlName:(NSString *)urlName
+         linkName:(NSString *)linkName
          maxQueue:(NSInteger)maxQueue;
 - (void)checkDataQueueSize;
 - (void)doFlush;
@@ -148,8 +138,6 @@
 
 // UUID helper methods.
 - (NSString *)loadOrCreateDeviceId;
-- (BOOL)storeDeviceId:(NSString *)uuid;
-- (NSString *)makeUUID;
 
 // Configuration related helper methods.
 - (void)updateConfig;

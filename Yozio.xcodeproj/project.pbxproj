@@ -55,8 +55,8 @@
 		F7595BFE1516A19B0042ADB5 /* OCMockObject.h in Headers */ = {isa = PBXBuildFile; fileRef = F7595BF61516A19B0042ADB5 /* OCMockObject.h */; };
 		F7595BFF1516A19B0042ADB5 /* OCMockRecorder.h in Headers */ = {isa = PBXBuildFile; fileRef = F7595BF71516A19B0042ADB5 /* OCMockRecorder.h */; };
 		F7595C021516B0CF0042ADB5 /* libobjc.A.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F7595C011516B0CF0042ADB5 /* libobjc.A.dylib */; };
-		F7B6822E15169ABD00FF7DA6 /* YSFHFKeychainUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F7B6822A15169ABD00FF7DA6 /* YSFHFKeychainUtils.h */; };
-		F7B6822F15169ABD00FF7DA6 /* YSFHFKeychainUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6822B15169ABD00FF7DA6 /* YSFHFKeychainUtils.m */; };
+		F7ADDEE2157C256700BF92EB /* OpenUDID.h in Headers */ = {isa = PBXBuildFile; fileRef = F7ADDEDF157C256700BF92EB /* OpenUDID.h */; };
+		F7ADDEE3157C256700BF92EB /* OpenUDID.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ADDEE0157C256700BF92EB /* OpenUDID.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,7 +75,6 @@
 		0E5009A4146A74C200F0CD4D /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKit.m; sourceTree = "<group>"; };
 		0E5009A5146A74C200F0CD4D /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		0E5009B2146A756900F0CD4D /* Yozio_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Yozio_Private.h; sourceTree = "<group>"; };
-		0E5009E9146A7ACF00F0CD4D /* testCases */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = testCases; path = Yozio/testCases; sourceTree = "<group>"; };
 		0E7848A2146A7468004269C5 /* libYozio.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libYozio.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E7848A5146A7468004269C5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		0E7848A9146A7468004269C5 /* Yozio-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Yozio-Prefix.pch"; sourceTree = "<group>"; };
@@ -125,8 +124,9 @@
 		F7595BF71516A19B0042ADB5 /* OCMockRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMockRecorder.h; sourceTree = "<group>"; };
 		F7595BF91516A19B0042ADB5 /* libOCMock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libOCMock.a; sourceTree = "<group>"; };
 		F7595C011516B0CF0042ADB5 /* libobjc.A.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libobjc.A.dylib; path = usr/lib/libobjc.A.dylib; sourceTree = SDKROOT; };
-		F7B6822A15169ABD00FF7DA6 /* YSFHFKeychainUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YSFHFKeychainUtils.h; path = Yozio/YSFHFKeychainUtils.h; sourceTree = SOURCE_ROOT; };
-		F7B6822B15169ABD00FF7DA6 /* YSFHFKeychainUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YSFHFKeychainUtils.m; path = Yozio/YSFHFKeychainUtils.m; sourceTree = SOURCE_ROOT; };
+		F7ADDEDF157C256700BF92EB /* OpenUDID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDID.h; sourceTree = "<group>"; };
+		F7ADDEE0157C256700BF92EB /* OpenUDID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenUDID.m; sourceTree = "<group>"; };
+		F7ADDEE1157C256700BF92EB /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,8 +157,7 @@
 		0E5009A0146A74C200F0CD4D /* lib */ = {
 			isa = PBXGroup;
 			children = (
-				F7B6822A15169ABD00FF7DA6 /* YSFHFKeychainUtils.h */,
-				F7B6822B15169ABD00FF7DA6 /* YSFHFKeychainUtils.m */,
+				F7ADDEDE157C256700BF92EB /* OpenUDID */,
 				0EBCF569148F563D0079C9F3 /* seriously */,
 				0E5009A1146A74C200F0CD4D /* johnezang-JSONKit-465adc1 */,
 			);
@@ -183,7 +182,6 @@
 				F7595C011516B0CF0042ADB5 /* libobjc.A.dylib */,
 				F7595BD715169D420042ADB5 /* UIKit.framework */,
 				F7595BD415169D2F0042ADB5 /* Security.framework */,
-				0E5009E9146A7ACF00F0CD4D /* testCases */,
 				0E5009A0146A74C200F0CD4D /* lib */,
 				0E7848A7146A7468004269C5 /* Yozio */,
 				0E7848BB146A7468004269C5 /* YozioTests */,
@@ -346,6 +344,16 @@
 			path = lib;
 			sourceTree = SOURCE_ROOT;
 		};
+		F7ADDEDE157C256700BF92EB /* OpenUDID */ = {
+			isa = PBXGroup;
+			children = (
+				F7ADDEDF157C256700BF92EB /* OpenUDID.h */,
+				F7ADDEE0157C256700BF92EB /* OpenUDID.m */,
+				F7ADDEE1157C256700BF92EB /* README.md */,
+			);
+			path = OpenUDID;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -373,13 +381,13 @@
 				0EBCF5A1148F563D0079C9F3 /* SeriouslyConstants.h in Headers */,
 				0EBCF5A2148F563D0079C9F3 /* SeriouslyOperation.h in Headers */,
 				0EBCF5A4148F563D0079C9F3 /* SeriouslyXML.h in Headers */,
-				F7B6822E15169ABD00FF7DA6 /* YSFHFKeychainUtils.h in Headers */,
 				F7595BFA1516A19B0042ADB5 /* NSNotificationCenter+OCMAdditions.h in Headers */,
 				F7595BFB1516A19B0042ADB5 /* OCMArg.h in Headers */,
 				F7595BFC1516A19B0042ADB5 /* OCMConstraint.h in Headers */,
 				F7595BFD1516A19B0042ADB5 /* OCMock.h in Headers */,
 				F7595BFE1516A19B0042ADB5 /* OCMockObject.h in Headers */,
 				F7595BFF1516A19B0042ADB5 /* OCMockRecorder.h in Headers */,
+				F7ADDEE2157C256700BF92EB /* OpenUDID.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -508,7 +516,7 @@
 				0EBCF5A0148F563D0079C9F3 /* Seriously.m in Sources */,
 				0EBCF5A3148F563D0079C9F3 /* SeriouslyOperation.m in Sources */,
 				0EBCF5A5148F563D0079C9F3 /* SeriouslyXML.m in Sources */,
-				F7B6822F15169ABD00FF7DA6 /* YSFHFKeychainUtils.m in Sources */,
+				F7ADDEE3157C256700BF92EB /* OpenUDID.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
