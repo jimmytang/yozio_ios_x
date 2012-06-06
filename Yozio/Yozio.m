@@ -24,6 +24,7 @@
 @synthesize countryName;
 @synthesize language;
 @synthesize timezone;
+@synthesize deviceName;
 
 // Internal variables.
 @synthesize dataQueue;
@@ -60,7 +61,8 @@ static Yozio *instance = nil;
   [self loadOrCreateDeviceId];
   self.hardware = device.model;
   self.os = [device systemVersion];
-  
+  self.deviceName = [device name];
+
   // Initialize  mutable instrumentation variables.
   [self updateCountryName];
   [self updateLanguage];
@@ -169,16 +171,14 @@ static Yozio *instance = nil;
 
 + (void)viewedLink:(NSString *)linkName
 {
-  [instance doCollect:YOZIO_T_ACTION
-                 name:YOZIO_FETCHED_LINK_ACTION
+  [instance doCollect:YOZIO_FETCHED_LINK_ACTION
              linkName:linkName
              maxQueue:YOZIO_ACTION_DATA_LIMIT];
 }
 
 + (void)sharedLink:(NSString *)linkName
 {
-  [instance doCollect:YOZIO_T_ACTION
-                 name:YOZIO_SHARED_LINK_ACTION
+  [instance doCollect:YOZIO_SHARED_LINK_ACTION
              linkName:linkName
              maxQueue:YOZIO_ACTION_DATA_LIMIT];
 }
@@ -214,7 +214,6 @@ static Yozio *instance = nil;
 }
 
 - (void)doCollect:(NSString *)type
-             name:(NSString *)name
          linkName:(NSString *)linkName
          maxQueue:(NSInteger)maxQueue
 {
@@ -226,7 +225,6 @@ static Yozio *instance = nil;
     NSMutableDictionary *d =
     [NSMutableDictionary dictionaryWithObjectsAndKeys:
      [self notNil:type], YOZIO_D_TYPE,
-     [self notNil:name], YOZIO_D_NAME,
      [self notNil:linkName], YOZIO_D_LINK_NAME,
      [self notNil:[self timeStampString]], YOZIO_D_TIMESTAMP,
      [NSNumber numberWithInteger:dataCount], YOZIO_D_DATA_COUNT,
@@ -239,8 +237,7 @@ static Yozio *instance = nil;
 
 + (void)openedApp
 {
-    [instance doCollect:YOZIO_T_ACTION
-                   name:YOZIO_OPENED_APP_ACTION
+    [instance doCollect:YOZIO_OPENED_APP_ACTION
                linkName:@""
                maxQueue:YOZIO_ACTION_DATA_LIMIT];
 }
@@ -314,6 +311,7 @@ static Yozio *instance = nil;
   [payload setObject:[self notNil:self.countryName] forKey:YOZIO_P_COUNTRY];
   [payload setObject:[self notNil:self.language] forKey:YOZIO_P_LANGUAGE];
   [payload setObject:self.timezone forKey:YOZIO_P_TIMEZONE];
+  [payload setObject:self.deviceName forKey:YOZIO_P_DEVICE_NAME];
   [payload setObject:packetCount forKey:YOZIO_P_PAYLOAD_COUNT];
   [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];

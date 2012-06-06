@@ -20,33 +20,27 @@
 #define YOZIO_P_SCHEMA_VERSION @"sv"
 #define YOZIO_P_DIGEST @"di"
 #define YOZIO_P_APP_KEY @"ak"
-#define YOZIO_P_DEVICE_ID @"did"
+#define YOZIO_P_DEVICE_ID @"udid"
 #define YOZIO_P_HARDWARE @"hw"
 #define YOZIO_P_OPERATING_SYSTEM @"os"
 #define YOZIO_P_COUNTRY @"ctry"
 #define YOZIO_P_LANGUAGE @"lg"
 #define YOZIO_P_TIMEZONE @"tz"
+#define YOZIO_P_DEVICE_NAME @"dn"
 #define YOZIO_P_PAYLOAD_COUNT @"plc"
 #define YOZIO_P_PAYLOAD @"pl"
 
 // Payload data entry keys.
 #define YOZIO_D_TYPE @"tp"
 #define YOZIO_D_NAME @"en"
-#define YOZIO_D_LINK_NAME @"un"
+#define YOZIO_D_LINK_NAME @"ln"
 #define YOZIO_D_APP_VERSION @"av"
 #define YOZIO_D_TIMESTAMP @"ts"
 #define YOZIO_D_DATA_COUNT @"dc"
 
-// Instrumentation entry types.
-#define YOZIO_T_ACTION @"a"
-#define YOZIO_T_ERROR @"e"
-
 // Mobile configuration data keys.
 #define YOZIO_CONFIG_KEY @"config"
 #define YOZIO_URLS_KEY @"urls"
-
-#define YOZIO_UUID_KEYCHAIN_USERNAME @"yozioUuid"
-#define YOZIO_KEYCHAIN_SERVICE @"yozioKeychain"
 
 #define YOZIO_DATA_QUEUE_FILE [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
 
@@ -54,11 +48,10 @@
 #define YOZIO_FLUSH_DATA_COUNT 1
 
 // Actions
-#define YOZIO_FETCHED_LINK_ACTION @"Fetched Link"
-#define YOZIO_SHARED_LINK_ACTION @"Shared Link"
-#define YOZIO_OPENED_APP_ACTION @"Opened App"
+#define YOZIO_FETCHED_LINK_ACTION @"11"
+#define YOZIO_SHARED_LINK_ACTION @"12"
+#define YOZIO_OPENED_APP_ACTION @"13"
 
-#define YOZIO_BAD_URL_NAME @"Bad URL"
 // XX_DATA_LIMIT describes the required number of items in the queue before that instrumentation
 // event type starts being dropped.
 #define YOZIO_ACTION_DATA_LIMIT 5000
@@ -97,6 +90,7 @@
 @property(nonatomic, retain) NSString *countryName;
 @property(nonatomic, retain) NSString *language;
 @property(nonatomic, retain) NSNumber *timezone;
+@property(nonatomic, retain) NSString *deviceName;
 
 // Internal variables.
 @property(nonatomic, assign) NSInteger dataCount;
@@ -116,8 +110,7 @@
 
 // Data collection helper methods.
 - (BOOL)validateConfiguration;
-- (void)doCollect:(NSString *)type
-             name:(NSString *)name
+- (void)doCollect:(NSString *)name
          linkName:(NSString *)linkName
          maxQueue:(NSInteger)maxQueue;
 - (void)checkDataQueueSize;
