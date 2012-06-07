@@ -10,8 +10,8 @@
 #import "Yozio.h"
 
 #define YOZIO_BEACON_SCHEMA_VERSION @"1"
-#define YOZIO_TRACKING_SERVER_URL @"192.168.1.24:3000"
-#define YOZIO_CONFIGURATION_SERVER_URL @"192.168.1.24:3000"
+#define YOZIO_TRACKING_SERVER_URL @"yoz.io"
+#define YOZIO_CONFIGURATION_SERVER_URL @"yoz.io"
 
 // Set to true to show log messages.
 #define YOZIO_LOG true
@@ -50,7 +50,7 @@
 // Actions
 #define YOZIO_VIEWED_LINK_ACTION @"11"
 #define YOZIO_SHARED_LINK_ACTION @"12"
-#define YOZIO_OPENED_APP_ACTION @"13"
+#define YOZIO_OPENED_APP_ACTION @"14"
 
 // XX_DATA_LIMIT describes the required number of items in the queue before that instrumentation
 // event type starts being dropped.
