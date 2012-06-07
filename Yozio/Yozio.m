@@ -133,7 +133,7 @@ static Yozio *instance = nil;
 + (void)configure:(NSString *)appKey 
         secretKey:(NSString *)secretKey 
 {
-  [Yozio configure:appKey secretKey:secretKey async:true];
+  [Yozio configure:appKey secretKey:secretKey async:false];
 }
 
 + (void)configure:(NSString *)appKey 
@@ -171,7 +171,7 @@ static Yozio *instance = nil;
 
 + (void)viewedLink:(NSString *)linkName
 {
-  [instance doCollect:YOZIO_FETCHED_LINK_ACTION
+  [instance doCollect:YOZIO_VIEWED_LINK_ACTION
              linkName:linkName
              maxQueue:YOZIO_ACTION_DATA_LIMIT];
 }
@@ -272,9 +272,9 @@ static Yozio *instance = nil;
   NSString *urlParams = [NSString stringWithFormat:@"data=%@", dataStr];
   // TODO(jt): try to avoid having to escape urlParams if possible
   NSString *escapedUrlParams =
-  [urlParams stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+  [urlParams stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
   NSString *urlString =
-  [NSString stringWithFormat:@"http://%@/p.gif?%@", YOZIO_TRACKING_SERVER_URL, escapedUrlParams];
+  [NSString stringWithFormat:@"http://%@/isdk?%@", YOZIO_TRACKING_SERVER_URL, escapedUrlParams];
   
   [Yozio log:@"Final get request url: %@", urlString];
   
