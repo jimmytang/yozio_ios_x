@@ -18,19 +18,24 @@
 + (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey;
 
 /**
- * getUrl returns back a shortened url based on the url keyword.
- * @param urlName: 
- * @param fallbackUrl: 
+ * Retrieve the shortened url for the linkName.
+ *
+ * @param linkName  the name of the link. Must match one of the link names created online.
+ * @param fallbackUrl  the url to return if retrieving the short url fails.
  */
 + (NSString *)getUrl:(NSString *)linkName fallbackUrl:(NSString *)fallbackUrl;
 
 /**
- * Alerts Yozio about when a user has viewed a link. Place this on pages where the link is loaded.
+ * Alert Yozio that a user has viewed a link.
+ *
+ * @param linkName  the name of the link. Must match one of the link names created online.
  */
 + (void)viewedLink:(NSString *)linkName;
 
 /**
- * Alerts us about when a user has clicked on a link. Place this as a callback to your button links.
+ * Alert Yozio that a user has clicked on a link.
+ *
+ * @param linkName  the name of the link. Must match one of the link names created online.
  */
 + (void)sharedLink:(NSString *)linkName;
 
