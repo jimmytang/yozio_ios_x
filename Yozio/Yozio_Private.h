@@ -75,7 +75,7 @@
   NSArray *dataToSend;
   NSMutableDictionary *config;
   NSDateFormatter *dateFormatter;
-  BOOL stopConfigLoading;
+  BOOL stopBlocking;
 }
 
 // User set instrumentation variables.
@@ -98,7 +98,7 @@
 @property(nonatomic, retain) NSArray *dataToSend;
 @property(nonatomic, retain) NSMutableDictionary *config;
 @property(nonatomic, retain) NSDateFormatter *dateFormatter;
-@property(nonatomic, assign) BOOL stopConfigLoading;
+@property(nonatomic, assign) BOOL stopBlocking;
 
 + (Yozio *)getInstance; 
 + (void)log:(NSString *)format, ...;
@@ -106,7 +106,6 @@
 
 // Notification observer methods.
 - (void)onApplicationWillTerminate:(NSNotification *)notification;
-- (void)onApplicationWillEnterForeground:(NSNotification *)notification;
 
 // Data collection helper methods.
 - (BOOL)validateConfiguration;
@@ -115,7 +114,7 @@
          maxQueue:(NSInteger)maxQueue;
 - (void)checkDataQueueSize;
 - (void)doFlush;
-- (NSString *)buildPayload;
+- (NSString *)buildPayload:(NSData *)iv;
 - (NSString *)notNil:(NSString *)str;
 - (NSDictionary *)dictNotNil:(NSDictionary *)dict;
 

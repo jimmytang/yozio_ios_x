@@ -46,6 +46,8 @@
 		0EBCF5A3148F563D0079C9F3 /* SeriouslyOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EBCF586148F563D0079C9F3 /* SeriouslyOperation.m */; };
 		0EBCF5A4148F563D0079C9F3 /* SeriouslyXML.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EBCF588148F563D0079C9F3 /* SeriouslyXML.h */; };
 		0EBCF5A5148F563D0079C9F3 /* SeriouslyXML.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EBCF589148F563D0079C9F3 /* SeriouslyXML.m */; };
+		F71CA3C41581DF5200735950 /* NSString+MD5.h in Headers */ = {isa = PBXBuildFile; fileRef = F71CA3C21581DF5200735950 /* NSString+MD5.h */; };
+		F71CA3C51581DF5200735950 /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = F71CA3C31581DF5200735950 /* NSString+MD5.m */; };
 		F7595BD515169D2F0042ADB5 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7595BD415169D2F0042ADB5 /* Security.framework */; };
 		F7595BD815169D420042ADB5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7595BD715169D420042ADB5 /* UIKit.framework */; };
 		F7595BFA1516A19B0042ADB5 /* NSNotificationCenter+OCMAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = F7595BF21516A19B0042ADB5 /* NSNotificationCenter+OCMAdditions.h */; };
@@ -57,6 +59,10 @@
 		F7595C021516B0CF0042ADB5 /* libobjc.A.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F7595C011516B0CF0042ADB5 /* libobjc.A.dylib */; };
 		F7ADDEE2157C256700BF92EB /* OpenUDID.h in Headers */ = {isa = PBXBuildFile; fileRef = F7ADDEDF157C256700BF92EB /* OpenUDID.h */; };
 		F7ADDEE3157C256700BF92EB /* OpenUDID.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ADDEE0157C256700BF92EB /* OpenUDID.m */; };
+		F7F048C01581CAAB004C4772 /* FBEncryptorAES.h in Headers */ = {isa = PBXBuildFile; fileRef = F7F048BC1581CAAB004C4772 /* FBEncryptorAES.h */; };
+		F7F048C11581CAAB004C4772 /* FBEncryptorAES.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F048BD1581CAAB004C4772 /* FBEncryptorAES.m */; };
+		F7F048C21581CAAB004C4772 /* NSData+Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = F7F048BE1581CAAB004C4772 /* NSData+Base64.h */; };
+		F7F048C31581CAAB004C4772 /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F048BF1581CAAB004C4772 /* NSData+Base64.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -114,6 +120,8 @@
 		0EBCF586148F563D0079C9F3 /* SeriouslyOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SeriouslyOperation.m; sourceTree = "<group>"; };
 		0EBCF588148F563D0079C9F3 /* SeriouslyXML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SeriouslyXML.h; sourceTree = "<group>"; };
 		0EBCF589148F563D0079C9F3 /* SeriouslyXML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SeriouslyXML.m; sourceTree = "<group>"; };
+		F71CA3C21581DF5200735950 /* NSString+MD5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+MD5.h"; sourceTree = "<group>"; };
+		F71CA3C31581DF5200735950 /* NSString+MD5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MD5.m"; sourceTree = "<group>"; };
 		F7595BD415169D2F0042ADB5 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		F7595BD715169D420042ADB5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		F7595BF21516A19B0042ADB5 /* NSNotificationCenter+OCMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNotificationCenter+OCMAdditions.h"; sourceTree = "<group>"; };
@@ -127,6 +135,10 @@
 		F7ADDEDF157C256700BF92EB /* OpenUDID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDID.h; sourceTree = "<group>"; };
 		F7ADDEE0157C256700BF92EB /* OpenUDID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenUDID.m; sourceTree = "<group>"; };
 		F7ADDEE1157C256700BF92EB /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		F7F048BC1581CAAB004C4772 /* FBEncryptorAES.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBEncryptorAES.h; sourceTree = "<group>"; };
+		F7F048BD1581CAAB004C4772 /* FBEncryptorAES.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FBEncryptorAES.m; sourceTree = "<group>"; };
+		F7F048BE1581CAAB004C4772 /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
+		F7F048BF1581CAAB004C4772 /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Base64.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +169,8 @@
 		0E5009A0146A74C200F0CD4D /* lib */ = {
 			isa = PBXGroup;
 			children = (
+				F71CA3C01581DF4300735950 /* NSString+MD5 */,
+				F7F048BB1581CAAB004C4772 /* FBEncrypt */,
 				F7ADDEDE157C256700BF92EB /* OpenUDID */,
 				0EBCF569148F563D0079C9F3 /* seriously */,
 				0E5009A1146A74C200F0CD4D /* johnezang-JSONKit-465adc1 */,
@@ -315,6 +329,15 @@
 			path = xml;
 			sourceTree = "<group>";
 		};
+		F71CA3C01581DF4300735950 /* NSString+MD5 */ = {
+			isa = PBXGroup;
+			children = (
+				F71CA3C21581DF5200735950 /* NSString+MD5.h */,
+				F71CA3C31581DF5200735950 /* NSString+MD5.m */,
+			);
+			path = "NSString+MD5";
+			sourceTree = "<group>";
+		};
 		F7595BF01516A19B0042ADB5 /* include */ = {
 			isa = PBXGroup;
 			children = (
@@ -354,6 +377,17 @@
 			path = OpenUDID;
 			sourceTree = "<group>";
 		};
+		F7F048BB1581CAAB004C4772 /* FBEncrypt */ = {
+			isa = PBXGroup;
+			children = (
+				F7F048BC1581CAAB004C4772 /* FBEncryptorAES.h */,
+				F7F048BD1581CAAB004C4772 /* FBEncryptorAES.m */,
+				F7F048BE1581CAAB004C4772 /* NSData+Base64.h */,
+				F7F048BF1581CAAB004C4772 /* NSData+Base64.m */,
+			);
+			path = FBEncrypt;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -388,6 +422,9 @@
 				F7595BFE1516A19B0042ADB5 /* OCMockObject.h in Headers */,
 				F7595BFF1516A19B0042ADB5 /* OCMockRecorder.h in Headers */,
 				F7ADDEE2157C256700BF92EB /* OpenUDID.h in Headers */,
+				F7F048C01581CAAB004C4772 /* FBEncryptorAES.h in Headers */,
+				F7F048C21581CAAB004C4772 /* NSData+Base64.h in Headers */,
+				F71CA3C41581DF5200735950 /* NSString+MD5.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -517,6 +554,9 @@
 				0EBCF5A3148F563D0079C9F3 /* SeriouslyOperation.m in Sources */,
 				0EBCF5A5148F563D0079C9F3 /* SeriouslyXML.m in Sources */,
 				F7ADDEE3157C256700BF92EB /* OpenUDID.m in Sources */,
+				F7F048C11581CAAB004C4772 /* FBEncryptorAES.m in Sources */,
+				F7F048C31581CAAB004C4772 /* NSData+Base64.m in Sources */,
+				F71CA3C51581DF5200735950 /* NSString+MD5.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

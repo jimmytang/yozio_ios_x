@@ -2,10 +2,15 @@
 //  Copyright 2011 Yozio. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "UIKit/UIKit.h"
+#import "CommonCrypto/CommonCryptor.h"
+#import "FBEncryptorAES.h"
+#import "NSData+Base64.h"
+#import "NSString+MD5.h"
 #import "JSONKit.h"
 #import "Seriously.h"
 #import "OpenUDID.h"
+
 #import "Yozio.h"
 #import "Yozio_Private.h"
 
@@ -32,7 +37,7 @@
 @synthesize dataCount;
 @synthesize dateFormatter;
 @synthesize config;
-@synthesize stopConfigLoading;
+@synthesize stopBlocking;
 
 
 /*******************************************
@@ -62,12 +67,12 @@ static Yozio *instance = nil;
   self.hardware = device.model;
   self.os = [device systemVersion];
   self.deviceName = [device name];
-
+  
   // Initialize  mutable instrumentation variables.
   [self updateCountryName];
   [self updateLanguage];
   [self updateTimezone];
-
+  
   self.dataCount = 0;
   self.dataQueue = [[NSMutableArray alloc] init];
   self.dataToSend = nil;
@@ -136,37 +141,13 @@ static Yozio *instance = nil;
   [Yozio configure:appKey secretKey:secretKey async:false];
 }
 
-+ (void)configure:(NSString *)appKey 
-        secretKey:(NSString *)secretKey 
-            async:(BOOL)async
-{
-  if (appKey == nil) {
-    [NSException raise:NSInvalidArgumentException format:@"appKey cannot be nil."];
-  }
-  if (secretKey == nil) {
-    [NSException raise:NSInvalidArgumentException format:@"secretKey cannot be nil."];
-  }
-  instance._appKey = appKey;
-  instance._secretKey = secretKey;
-  instance._async = async;
-  
-  [instance updateConfig];
-  [Yozio openedApp];
-
-  // Load any previous data and try to flush it.
-  // Perform this here instead of on applicationDidFinishLoading because instrumentation calls
-  // could be made before an application is finished loading.
-  [instance loadUnsentData];
-  [instance doFlush];
-}
-
-+ (NSString *)getUrl:(NSString *)linkName defaultUrl:(NSString *)defaultUrl
++ (NSString *)getUrl:(NSString *)linkName fallbackUrl:(NSString *)fallbackUrl
 {
   if (instance.config == nil) {
-    return defaultUrl;
+    return fallbackUrl;
   }
   NSString *val = [instance.config objectForKey:linkName];
-  return val != nil ? val : defaultUrl;
+  return val != nil ? val : fallbackUrl;
 }
 
 + (void)viewedLink:(NSString *)linkName
@@ -190,11 +171,6 @@ static Yozio *instance = nil;
 - (void)onApplicationWillTerminate:(NSNotification *)notification
 {
   [self saveUnsentData];
-}
-
-- (void)onApplicationWillEnterForeground:(NSNotification *)notification
-{
-  [self updateConfig];
 }
 
 /*******************************************
@@ -237,9 +213,9 @@ static Yozio *instance = nil;
 
 + (void)openedApp
 {
-    [instance doCollect:YOZIO_OPENED_APP_ACTION
-               linkName:@""
-               maxQueue:YOZIO_ACTION_DATA_LIMIT];
+  [instance doCollect:YOZIO_OPENED_APP_ACTION
+             linkName:@""
+             maxQueue:YOZIO_ACTION_DATA_LIMIT];
 }
 
 - (void)checkDataQueueSize
@@ -268,11 +244,15 @@ static Yozio *instance = nil;
     self.dataToSend = [NSArray arrayWithArray:self.dataQueue];
   }
   [Yozio log:@"Flushing..."];
-  NSString *dataStr = [self buildPayload];
-  NSString *urlParams = [NSString stringWithFormat:@"data=%@", dataStr];
+  NSData *iv = [FBEncryptorAES generateIv];
+  NSString *ivBase64 = [iv base64EncodedString];
+  
+  NSString *dataStr = [self buildPayload:iv];
+  
+  NSString *urlParams = [NSString stringWithFormat:@"data=%@&%@=%@&iv=%@", dataStr, YOZIO_P_APP_KEY, self._appKey, ivBase64];
   // TODO(jt): try to avoid having to escape urlParams if possible
   NSString *escapedUrlParams =
-  [urlParams stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+  [[urlParams stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"];
   NSString *urlString =
   [NSString stringWithFormat:@"http://%@/isdk?%@", YOZIO_TRACKING_SERVER_URL, escapedUrlParams];
   
@@ -296,14 +276,12 @@ static Yozio *instance = nil;
   }];
 }
 
-- (NSString *)buildPayload
-{
+- (NSString *)buildPayload:(NSData *)iv
+{  
   // TODO(jt): compute real digest from shared key
-  NSString *digest = @"";
   NSNumber *packetCount = [NSNumber numberWithInteger:[self.dataToSend count]];
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
   [payload setObject:YOZIO_BEACON_SCHEMA_VERSION forKey:YOZIO_P_SCHEMA_VERSION];
-  [payload setObject:digest forKey:YOZIO_P_DIGEST];
   [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
   [payload setObject:[self notNil:[self loadOrCreateDeviceId]] forKey:YOZIO_P_DEVICE_ID];
   [payload setObject:[self notNil:self.hardware] forKey:YOZIO_P_HARDWARE];
@@ -315,7 +293,23 @@ static Yozio *instance = nil;
   [payload setObject:packetCount forKey:YOZIO_P_PAYLOAD_COUNT];
   [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];
-  return [payload JSONString];
+  
+  //  JSONify
+  NSString *jsonPayload = [payload JSONString];
+  //  Convert to Data
+  NSData *data = [jsonPayload dataUsingEncoding:NSUTF8StringEncoding];
+  
+  NSString* md5 = [self._secretKey MD5String];
+  NSData *key = [md5 dataUsingEncoding:NSUTF8StringEncoding];
+  
+  //  AES Encrypt
+  NSData *encryptedData = [FBEncryptorAES encryptData:data
+                                                  key:key
+                                                   iv:iv];
+  //  Base64 encode
+  NSString *base64EncryptedData = [encryptedData base64EncodedString];
+  
+  return base64EncryptedData;
 }
 
 
@@ -414,80 +408,38 @@ static Yozio *instance = nil;
 }
 
 
-
-
-
-
-
-
-/**
- * Loads the deviceId from keychain. If one doesn't exist, create a new deviceId, store it in the
- * keychain, and return the new deviceId.
- *
- * @return The deviceId or nil if any error occurred while loading/creating/storing the UUID.
- */
-//- (NSString *)loadOrCreateDeviceId
-//{
-//  if (self.deviceId != nil) {
-//    [Yozio log:@"deviceId: %@", self.deviceId];
-//    return self.deviceId;
-//  }
-//
-//  NSError *loadError = nil;
-//  NSString *uuid = [YSFHFKeychainUtils getPasswordForUsername:YOZIO_UUID_KEYCHAIN_USERNAME
-//                                              andServiceName:YOZIO_KEYCHAIN_SERVICE
-//                                                       error:&loadError];
-//  NSInteger loadErrorCode = [loadError code];
-//  if (loadErrorCode == errSecItemNotFound || uuid == nil) {
-//    // No deviceId stored in keychain yet.
-//    uuid = [self makeUUID];
-//    [Yozio log:@"Generated device id: %@", uuid];
-//    if (![self storeDeviceId:uuid]) {
-//      return nil;
-//    }
-//  } else if (loadErrorCode != errSecSuccess) {
-//    [Yozio log:@"Error loading UUID from keychain."];
-//    [Yozio log:@"%@", [loadError localizedDescription]];
-//    return nil;
-//  }
-//  self.deviceId = uuid;
-//  return self.deviceId;
-//}
-
-//- (BOOL)storeDeviceId:(NSString *)uuid
-//{
-//  NSError *storeError = nil;
-//  [YSFHFKeychainUtils storeUsername:YOZIO_UUID_KEYCHAIN_USERNAME
-//                       andPassword:uuid
-//                    forServiceName:YOZIO_KEYCHAIN_SERVICE
-//                    updateExisting:true
-//                             error:&storeError];
-//  if ([storeError code] != errSecSuccess) {
-//    [Yozio log:@"Error storing UUID to keychain."];
-//    [Yozio log:@"%@", [storeError localizedDescription]];
-//    return NO;
-//  }
-//  return YES;
-//}
-//
-//// Code taken from http://www.jayfuerstenberg.com/blog/overcoming-udid-deprecation-by-using-guids
-//- (NSString *)makeUUID
-//{
-//  CFUUIDRef theUUID = CFUUIDCreate(NULL);
-//  NSString *uuidString = (NSString *) CFUUIDCreateString(NULL, theUUID);
-//  CFRelease(theUUID);
-//  [uuidString autorelease];
-//  return uuidString;
-//}
-
-
 /*******************************************
  * Configuration helper methods.
  *******************************************/
 
++ (void)configure:(NSString *)appKey 
+        secretKey:(NSString *)secretKey 
+            async:(BOOL)async
+{
+  if (appKey == nil) {
+    [NSException raise:NSInvalidArgumentException format:@"appKey cannot be nil."];
+  }
+  if (secretKey == nil) {
+    [NSException raise:NSInvalidArgumentException format:@"secretKey cannot be nil."];
+  }
+  instance._appKey = appKey;
+  instance._secretKey = secretKey;
+  instance._async = async;
+  
+  [instance updateConfig];
+  [Yozio openedApp];
+  
+  // Load any previous data and try to flush it.
+  // Perform this here instead of on applicationDidFinishLoading because instrumentation calls
+  // could be made before an application is finished loading.
+  [instance loadUnsentData];
+  [instance doFlush];
+}
+
 /**
  * Update self.configs with data from server.
  */
+
 - (void)updateConfig
 {
   if (self._appKey == nil) {
@@ -509,47 +461,47 @@ static Yozio *instance = nil;
   [payload setObject:[self notNil:self.countryName] forKey:YOZIO_P_COUNTRY];
   [payload setObject:[self notNil:self.language] forKey:YOZIO_P_LANGUAGE];
   [payload setObject:self.timezone forKey:YOZIO_P_TIMEZONE];
-
+  
   NSString *urlParams = [NSString stringWithFormat:@"data=%@", [payload JSONString]];
   NSString *urlString =
   [NSString stringWithFormat:@"http://%@/get_config?%@", YOZIO_CONFIGURATION_SERVER_URL, urlParams];
   NSString* escapedUrlString =  [urlString stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
   [Yozio log:@"Final configuration request url: %@", escapedUrlString];
-
+  
   if (!self._async) {
-    [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(cancelURLConnection) userInfo:nil repeats:NO];
+    [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
   }
-
+  
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
   //  add some timing check before and on response
   [Seriously get:escapedUrlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
     if (error) {
-      self.stopConfigLoading = true;
+      self.stopBlocking = true;
       [Yozio log:@"updateConfig error %@", error];
     } else {
       if ([response statusCode] == 200) {
         [Yozio log:@"config before update: %@", self.config];
         self.config = [body objectForKey:YOZIO_URLS_KEY];
-        self.stopConfigLoading = true;
+        self.stopBlocking = true;
         [Yozio log:@"urls after update: %@", self.config];
       }
     }
     [Yozio log:@"configuration request complete"];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-    // TODO(jt): stop background task if running in background
   }];
-
+  
+  // TODO(jt): look into why currentRunLoop is needed
+  
   if (!self._async) {
     NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
-    while (!self.stopConfigLoading && [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil]) {
-      [Yozio log:@"Still waiting: %@", [self timeStampString]];
+    while (!self.stopBlocking && [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil]) {
       loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
     }
   }
 }
 
-- (void)cancelURLConnection {
-  self.stopConfigLoading = true;
+- (void)stopBlockingApp {
+  self.stopBlocking = true;
 }
 
 - (void)dealloc

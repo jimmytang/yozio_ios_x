@@ -17,14 +17,12 @@
  */
 + (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey;
 
-+ (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey async:(BOOL)async;
-
 /**
  * getUrl returns back a shortened url based on the url keyword.
  * @param urlName: 
- * @param defaultUrl: 
+ * @param fallbackUrl: 
  */
-+ (NSString *)getUrl:(NSString *)linkName defaultUrl:(NSString *)defaultUrl;
++ (NSString *)getUrl:(NSString *)linkName fallbackUrl:(NSString *)fallbackUrl;
 
 /**
  * Alerts Yozio about when a user has viewed a link. Place this on pages where the link is loaded.
