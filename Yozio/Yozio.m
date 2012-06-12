@@ -20,7 +20,6 @@
 // User set instrumentation variables.
 @synthesize _appKey;
 @synthesize _secretKey;
-@synthesize _async;
 
 // Automatically determined instrumentation variables.
 @synthesize deviceId;
@@ -63,7 +62,7 @@ static Yozio *instance = nil;
   
   // Initialize constant intrumentation variables.
   UIDevice* device = [UIDevice currentDevice];
-  [self loadOrCreateDeviceId];
+  self.deviceId = [OpenUDID value];
   self.hardware = device.model;
   self.os = [device systemVersion];
   self.deviceName = [device name];
@@ -138,7 +137,22 @@ static Yozio *instance = nil;
 + (void)configure:(NSString *)appKey 
         secretKey:(NSString *)secretKey 
 {
-  [Yozio configure:appKey secretKey:secretKey async:false];
+  if (appKey == nil) {
+    [NSException raise:NSInvalidArgumentException format:@"appKey cannot be nil."];
+  }
+  if (secretKey == nil) {
+    [NSException raise:NSInvalidArgumentException format:@"secretKey cannot be nil."];
+  }
+  instance._appKey = appKey;
+  instance._secretKey = secretKey;
+  [instance updateConfig];
+  
+  // Load any previous data.
+  // Perform this here instead of on applicationDidFinishLoading because instrumentation calls
+  // could be made before an application is finished loading.
+  [instance loadUnsentData];
+  [Yozio openedApp];
+  [instance doFlush];
 }
 
 + (NSString *)getUrl:(NSString *)linkName fallbackUrl:(NSString *)fallbackUrl
@@ -278,7 +292,6 @@ static Yozio *instance = nil;
 
 - (NSString *)buildPayload:(NSData *)iv
 {  
-  // TODO(jt): compute real digest from shared key
   NSNumber *packetCount = [NSNumber numberWithInteger:[self.dataToSend count]];
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
   [payload setObject:YOZIO_BEACON_SCHEMA_VERSION forKey:YOZIO_P_SCHEMA_VERSION];
@@ -362,7 +375,7 @@ static Yozio *instance = nil;
 - (void)updateTimezone
 {
   [NSTimeZone resetSystemTimeZone];
-  NSInteger timezoneOffset = [[NSTimeZone systemTimeZone] secondsFromGMT]/3600;
+  NSInteger timezoneOffset = [[NSTimeZone systemTimeZone] secondsFromGMT] / 3600;
   self.timezone = [NSNumber numberWithInteger:timezoneOffset];
 }
 
@@ -390,51 +403,9 @@ static Yozio *instance = nil;
 }
 
 
-
-/*******************************************
- * UUID helper methods.
- *******************************************/
-
-/**
- * Using OpenUDID to generate a unique device identifier since the native device's UDID is deprecated.
- * 
- * @return The deviceId or nil if any error occurred while loading/creating/storing the UUID.
- */
-
-- (NSString *)loadOrCreateDeviceId
-{
-  self.deviceId = [OpenUDID value];
-  return self.deviceId;
-}
-
-
 /*******************************************
  * Configuration helper methods.
  *******************************************/
-
-+ (void)configure:(NSString *)appKey 
-        secretKey:(NSString *)secretKey 
-            async:(BOOL)async
-{
-  if (appKey == nil) {
-    [NSException raise:NSInvalidArgumentException format:@"appKey cannot be nil."];
-  }
-  if (secretKey == nil) {
-    [NSException raise:NSInvalidArgumentException format:@"secretKey cannot be nil."];
-  }
-  instance._appKey = appKey;
-  instance._secretKey = secretKey;
-  instance._async = async;
-  
-  [instance updateConfig];
-  [Yozio openedApp];
-  
-  // Load any previous data and try to flush it.
-  // Perform this here instead of on applicationDidFinishLoading because instrumentation calls
-  // could be made before an application is finished loading.
-  [instance loadUnsentData];
-  [instance doFlush];
-}
 
 /**
  * Update self.configs with data from server.
@@ -455,7 +426,7 @@ static Yozio *instance = nil;
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
   [payload setObject:YOZIO_BEACON_SCHEMA_VERSION forKey:YOZIO_P_SCHEMA_VERSION];
   [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
-  [payload setObject:[self notNil:[self loadOrCreateDeviceId]] forKey:YOZIO_P_DEVICE_ID];
+  [payload setObject:[self notNil:self.deviceId] forKey:YOZIO_P_DEVICE_ID];
   [payload setObject:[self notNil:self.hardware] forKey:YOZIO_P_HARDWARE];
   [payload setObject:[self notNil:self.os] forKey:YOZIO_P_OPERATING_SYSTEM];
   [payload setObject:[self notNil:self.countryName] forKey:YOZIO_P_COUNTRY];
@@ -468,9 +439,8 @@ static Yozio *instance = nil;
   NSString* escapedUrlString =  [urlString stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
   [Yozio log:@"Final configuration request url: %@", escapedUrlString];
   
-  if (!self._async) {
-    [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
-  }
+  // Blocking
+  [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
   
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
   //  add some timing check before and on response
@@ -491,12 +461,10 @@ static Yozio *instance = nil;
   }];
   
   // TODO(jt): look into why currentRunLoop is needed
-  
-  if (!self._async) {
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
-    while (!self.stopBlocking && [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil]) {
-      loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
-    }
+  // Blocking
+  NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
+  while (!self.stopBlocking && [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil]) {
+    loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
   }
 }
 
