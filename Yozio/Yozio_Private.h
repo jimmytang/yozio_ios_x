@@ -2,8 +2,6 @@
 //  Yozio_Private.h
 //
 
-// Private method declarations.
-
 #if !defined(__YOZIO_PRIVATE__)
 #define __YOZIO_PRIVATE__ 1
 
@@ -26,13 +24,11 @@
 
 // Payload data entry keys.
 #define YOZIO_D_TYPE @"tp"
-#define YOZIO_D_NAME @"en"
 #define YOZIO_D_LINK_NAME @"ln"
 #define YOZIO_D_TIMESTAMP @"ts"
 #define YOZIO_D_DATA_COUNT @"dc"
 
 // Mobile configuration data keys.
-#define YOZIO_CONFIG_KEY @"config"
 #define YOZIO_URLS_KEY @"urls"
 
 #define YOZIO_DATA_QUEUE_FILE [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
@@ -55,7 +51,6 @@
   // User set instrumentation variables.
   NSString *_appKey;
   NSString *_secretKey;
-  BOOL _async;
   NSString *_userName;
 
   // Automatically determined instrumentation variables.
@@ -74,7 +69,6 @@
 // User set instrumentation variables.
 @property(nonatomic, retain) NSString *_appKey;
 @property(nonatomic, retain) NSString *_secretKey;
-@property(nonatomic, assign) BOOL _async; 
 
 // Automatically determined instrumentation variables.
 @property(nonatomic, retain) NSString *deviceId;
@@ -120,9 +114,6 @@
 // File system helper methods.
 - (void)saveUnsentData;
 - (void)loadUnsentData;
-
-// UUID helper methods.
-- (NSString *)loadOrCreateDeviceId;
 
 // Configuration related helper methods.
 - (void)updateConfig;
