@@ -55,7 +55,6 @@
 
   // Automatically determined instrumentation variables.
   NSString *deviceId;
-  NSString *countryName;
 
   // Internal variables.
   NSInteger dataCount;
@@ -72,11 +71,6 @@
 
 // Automatically determined instrumentation variables.
 @property(nonatomic, retain) NSString *deviceId;
-@property(nonatomic, retain) NSString *hardware;
-@property(nonatomic, retain) NSString *os;
-@property(nonatomic, retain) NSString *countryName;
-@property(nonatomic, retain) NSString *language;
-@property(nonatomic, retain) NSNumber *timezone;
 @property(nonatomic, retain) NSString *deviceName;
 
 // Internal variables.
@@ -107,9 +101,6 @@
 
 // Instrumentation data helper methods.
 - (NSString *)timeStampString;
-- (void)updateCountryName;
-- (void)updateLanguage;
-- (void)updateTimezone;
 
 // File system helper methods.
 - (void)saveUnsentData;

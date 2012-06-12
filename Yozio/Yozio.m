@@ -23,11 +23,6 @@
 
 // Automatically determined instrumentation variables.
 @synthesize deviceId;
-@synthesize hardware;
-@synthesize os;
-@synthesize countryName;
-@synthesize language;
-@synthesize timezone;
 @synthesize deviceName;
 
 // Internal variables.
@@ -63,14 +58,9 @@ static Yozio *instance = nil;
   // Initialize constant intrumentation variables.
   UIDevice* device = [UIDevice currentDevice];
   self.deviceId = [YOpenUDID value];
-  self.hardware = device.model;
-  self.os = [device systemVersion];
   self.deviceName = [device name];
   
   // Initialize  mutable instrumentation variables.
-  [self updateCountryName];
-  [self updateLanguage];
-  [self updateTimezone];
   
   self.dataCount = 0;
   self.dataQueue = [[NSMutableArray alloc] init];
@@ -264,7 +254,6 @@ static Yozio *instance = nil;
   NSString *dataStr = [self buildPayload:iv];
   
   NSString *urlParams = [NSString stringWithFormat:@"data=%@&%@=%@&iv=%@", dataStr, YOZIO_P_APP_KEY, self._appKey, ivBase64];
-  // TODO(jt): try to avoid having to escape urlParams if possible
   NSString *escapedUrlParams =
   [[urlParams stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"];
   NSString *urlString =
@@ -281,7 +270,6 @@ static Yozio *instance = nil;
         [Yozio log:@"dataQueue before remove: %@", self.dataQueue];
         [self.dataQueue removeObjectsInArray:self.dataToSend];
         [Yozio log:@"dataQueue after remove: %@", self.dataQueue];
-        // TODO(jt): stop background task if running in background
       }
     }
     [Yozio log:@"flush request complete"];
@@ -312,8 +300,8 @@ static Yozio *instance = nil;
   
   //  AES Encrypt
   NSData *encryptedData = [YFBEncryptorAES encryptData:data
-                                                  key:key
-                                                   iv:iv];
+                                                   key:key
+                                                    iv:iv];
   //  Base64 encode
   NSString *base64EncryptedData = [encryptedData base64EncodedString];
   
@@ -353,25 +341,6 @@ static Yozio *instance = nil;
   [self.dateFormatter setTimeZone:gmt];
   NSString *timeStamp = [self.dateFormatter stringFromDate:[NSDate date]];
   return timeStamp;
-}
-
-- (void)updateCountryName
-{
-  NSLocale *locale = [NSLocale currentLocale];
-  NSString *countryCode = [locale objectForKey: NSLocaleCountryCode];
-  self.countryName = [locale displayNameForKey:NSLocaleCountryCode value:countryCode];
-}
-
-- (void)updateLanguage
-{
-  self.language = [[NSLocale preferredLanguages] objectAtIndex:0];
-}
-
-- (void)updateTimezone
-{
-  [NSTimeZone resetSystemTimeZone];
-  NSInteger timezoneOffset = [[NSTimeZone systemTimeZone] secondsFromGMT] / 3600;
-  self.timezone = [NSNumber numberWithInteger:timezoneOffset];
 }
 
 /*******************************************
@@ -417,7 +386,6 @@ static Yozio *instance = nil;
     return;
   }
   
-  
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
   [payload setObject:YOZIO_BEACON_SCHEMA_VERSION forKey:YOZIO_P_SCHEMA_VERSION];
   [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
@@ -450,7 +418,6 @@ static Yozio *instance = nil;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
   }];
   
-  // TODO(jt): look into why currentRunLoop is needed
   // Blocking
   NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
   while (!self.stopBlocking && [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil]) {
