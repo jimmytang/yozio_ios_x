@@ -6,6 +6,9 @@
 //  Copyright 2010 Probably Interactive. All rights reserved.
 //
 
+#if !defined(__YSeriouslyOperation__)
+#define __YSeriouslyOperation__ 1
+
 #import <Foundation/Foundation.h>
 #import "YSeriouslyConstants.h"
 
@@ -31,3 +34,5 @@
 + (id)operationWithRequest:(NSURLRequest *)urlRequest handler:(SeriouslyHandler)handler progressHandler:(SeriouslyProgressHandler)progressHandler;
 
 @end
+
+#endif /* ! __YSeriouslyOperation__ */

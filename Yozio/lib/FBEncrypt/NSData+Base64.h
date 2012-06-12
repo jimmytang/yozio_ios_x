@@ -21,6 +21,10 @@
 //     distribution.
 //
 
+#if !defined(__NSData_Base64__)
+#define __NSData_Base64__ 1
+
+
 #import <Foundation/Foundation.h>
 
 void *NewBase64Decode(
@@ -43,3 +47,5 @@ char *NewBase64Encode(
 - (NSString *)base64EncodedStringWithSeparateLines:(BOOL)separateLines;
 
 @end
+
+#endif /* ! __NSData_Base64__ */

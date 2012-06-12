@@ -6,6 +6,9 @@
 //  Copyright 2010 Probably Interactive. All rights reserved.
 //
 
+#if !defined(__YSeriously__)
+#define __YSeriously__ 1
+
 #import <Foundation/Foundation.h>
 #import "YSeriouslyConstants.h"
 
@@ -33,3 +36,5 @@
 + (NSString *)escapeQueryParam:(id)param;
 
 @end
+
+#endif /* ! __YSeriously__ */

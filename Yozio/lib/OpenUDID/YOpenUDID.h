@@ -44,6 +44,10 @@
  distribution.
 */
 
+
+#if !defined(__YOpenUDID__)
+#define __YOpenUDID__ 1
+
 #import <Foundation/Foundation.h>
 
 //
@@ -64,3 +68,4 @@
 
 @end
 
+#endif /* ! __YOpenUDID__ */

@@ -20,6 +20,9 @@
 // THE SOFTWARE.
 //
 
+#if !defined(__YFBEncryptorAES__)
+#define __YFBEncryptorAES__ 1
+
 #import <CommonCrypto/CommonCryptor.h>
 #import <Foundation/Foundation.h>
 
@@ -55,3 +58,5 @@
 
 
 @end
+
+#endif /* ! __YFBEncryptorAES__ */

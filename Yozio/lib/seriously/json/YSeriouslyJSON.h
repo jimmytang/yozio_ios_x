@@ -6,6 +6,10 @@
 //  Copyright 2010 Probably Interactive. All rights reserved.
 //
 
+#if !defined(__YSeriouslyJSON__)
+#define __YSeriouslyJSON__ 1
+
+
 #import <Foundation/Foundation.h>
 
 
@@ -18,3 +22,5 @@
 + (id)parse:(NSString *)string;
 
 @end
+
+#endif /* ! __YSeriouslyJSON__ */

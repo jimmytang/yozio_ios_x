@@ -7,6 +7,9 @@
  *
  */
 
+#if !defined(__YSeriouslyConstants__)
+#define __YSeriouslyConstants__ 1
+
 @class YSeriouslyOperation;
 
 typedef void(^SeriouslyHandler)(id body, NSHTTPURLResponse *response, NSError *error);
@@ -17,3 +20,5 @@ extern const NSString *kSeriouslyTimeout;
 extern const NSString *kSeriouslyHeaders;
 extern const NSString *kSeriouslyBody;
 extern const NSString *kSeriouslyProgressHandler;
+
+#endif /* ! __YSeriouslyConstants__ */
