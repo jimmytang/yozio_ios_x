@@ -33,8 +33,6 @@ const NSString *kSeriouslyProgressHandler = @"kSeriouslyProgressHandler";
     if ([[request HTTPMethod] isEqual:@"POST"] || [[request HTTPMethod] isEqual:@"PUT"]) {
         [request setHTTPBody:[options objectForKey:kSeriouslyBody]];
     }
-
-    NSLog(@"(%@) %@", [request HTTPMethod], [request URL]);
     
     SeriouslyProgressHandler progressHandler = [options objectForKey:kSeriouslyProgressHandler];
     
@@ -132,7 +130,6 @@ const NSString *kSeriouslyProgressHandler = @"kSeriouslyProgressHandler";
     
     NSString *urlString = [NSString stringWithFormat:@"%@?%@", url, [self formatQueryParams:params]];    
     
-    NSLog(@"GOT IT %@", urlString);
     return [NSURL URLWithString:urlString];    
 }
 
