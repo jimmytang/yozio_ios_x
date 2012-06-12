@@ -283,12 +283,7 @@ static Yozio *instance = nil;
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
   [payload setObject:YOZIO_BEACON_SCHEMA_VERSION forKey:YOZIO_P_SCHEMA_VERSION];
   [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
-  [payload setObject:[self notNil:[self loadOrCreateDeviceId]] forKey:YOZIO_P_DEVICE_ID];
-  [payload setObject:[self notNil:self.hardware] forKey:YOZIO_P_HARDWARE];
-  [payload setObject:[self notNil:self.os] forKey:YOZIO_P_OPERATING_SYSTEM];
-  [payload setObject:[self notNil:self.countryName] forKey:YOZIO_P_COUNTRY];
-  [payload setObject:[self notNil:self.language] forKey:YOZIO_P_LANGUAGE];
-  [payload setObject:self.timezone forKey:YOZIO_P_TIMEZONE];
+  [payload setObject:[self notNil:[self loadOrCreateDeviceId]] forKey:YOZIO_P_OPEN_UDID];
   [payload setObject:self.deviceName forKey:YOZIO_P_DEVICE_NAME];
   [payload setObject:packetCount forKey:YOZIO_P_PAYLOAD_COUNT];
   [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
@@ -455,12 +450,7 @@ static Yozio *instance = nil;
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
   [payload setObject:YOZIO_BEACON_SCHEMA_VERSION forKey:YOZIO_P_SCHEMA_VERSION];
   [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
-  [payload setObject:[self notNil:[self loadOrCreateDeviceId]] forKey:YOZIO_P_DEVICE_ID];
-  [payload setObject:[self notNil:self.hardware] forKey:YOZIO_P_HARDWARE];
-  [payload setObject:[self notNil:self.os] forKey:YOZIO_P_OPERATING_SYSTEM];
-  [payload setObject:[self notNil:self.countryName] forKey:YOZIO_P_COUNTRY];
-  [payload setObject:[self notNil:self.language] forKey:YOZIO_P_LANGUAGE];
-  [payload setObject:self.timezone forKey:YOZIO_P_TIMEZONE];
+  [payload setObject:[self notNil:[self loadOrCreateDeviceId]] forKey:YOZIO_P_OPEN_UDID];
   
   NSString *urlParams = [NSString stringWithFormat:@"data=%@", [payload JSONString]];
   NSString *urlString =

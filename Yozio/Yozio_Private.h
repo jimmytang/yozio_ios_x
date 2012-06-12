@@ -14,18 +14,12 @@
 #define YOZIO_CONFIGURATION_SERVER_URL @"yoz.io"
 
 // Set to true to show log messages.
-#define YOZIO_LOG true
+#define YOZIO_LOG false
 
 // Payload keys.
 #define YOZIO_P_SCHEMA_VERSION @"sv"
-#define YOZIO_P_DIGEST @"di"
 #define YOZIO_P_APP_KEY @"ak"
-#define YOZIO_P_DEVICE_ID @"udid"
-#define YOZIO_P_HARDWARE @"hw"
-#define YOZIO_P_OPERATING_SYSTEM @"os"
-#define YOZIO_P_COUNTRY @"ctry"
-#define YOZIO_P_LANGUAGE @"lg"
-#define YOZIO_P_TIMEZONE @"tz"
+#define YOZIO_P_OPEN_UDID @"ou"
 #define YOZIO_P_DEVICE_NAME @"dn"
 #define YOZIO_P_PAYLOAD_COUNT @"plc"
 #define YOZIO_P_PAYLOAD @"pl"
@@ -34,7 +28,6 @@
 #define YOZIO_D_TYPE @"tp"
 #define YOZIO_D_NAME @"en"
 #define YOZIO_D_LINK_NAME @"ln"
-#define YOZIO_D_APP_VERSION @"av"
 #define YOZIO_D_TIMESTAMP @"ts"
 #define YOZIO_D_DATA_COUNT @"dc"
 
