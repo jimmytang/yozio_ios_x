@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0E5009AA146A74C200F0CD4D /* JSONKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E5009A3146A74C200F0CD4D /* JSONKit.h */; };
-		0E5009AB146A74C200F0CD4D /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E5009A4146A74C200F0CD4D /* JSONKit.m */; };
+		0E5009AA146A74C200F0CD4D /* YJSONKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E5009A3146A74C200F0CD4D /* YJSONKit.h */; };
+		0E5009AB146A74C200F0CD4D /* YJSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E5009A4146A74C200F0CD4D /* YJSONKit.m */; };
 		0E5009B1146A754500F0CD4D /* Yozio.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E7848AA146A7468004269C5 /* Yozio.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0E5009B3146A756900F0CD4D /* Yozio_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E5009B2146A756900F0CD4D /* Yozio_Private.h */; };
 		0E7848A6146A7468004269C5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E7848A5146A7468004269C5 /* Foundation.framework */; };
@@ -18,8 +18,8 @@
 		0E7848BA146A7468004269C5 /* libYozio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E7848A2146A7468004269C5 /* libYozio.a */; };
 		0E7848C0146A7468004269C5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0E7848BE146A7468004269C5 /* InfoPlist.strings */; };
 		0E7848C3146A7468004269C5 /* YozioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7848C2146A7468004269C5 /* YozioTests.m */; };
-		0EBCF58A148F563D0079C9F3 /* SeriouslyJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EBCF56B148F563D0079C9F3 /* SeriouslyJSON.h */; };
-		0EBCF58B148F563D0079C9F3 /* SeriouslyJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EBCF56C148F563D0079C9F3 /* SeriouslyJSON.m */; };
+		0EBCF58A148F563D0079C9F3 /* YSeriouslyJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EBCF56B148F563D0079C9F3 /* YSeriouslyJSON.h */; };
+		0EBCF58B148F563D0079C9F3 /* YSeriouslyJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EBCF56C148F563D0079C9F3 /* YSeriouslyJSON.m */; };
 		0EBCF58C148F563D0079C9F3 /* yajl_common.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EBCF56F148F563D0079C9F3 /* yajl_common.h */; };
 		0EBCF58D148F563D0079C9F3 /* yajl_gen.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EBCF570148F563D0079C9F3 /* yajl_gen.h */; };
 		0EBCF58E148F563D0079C9F3 /* yajl_parse.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EBCF571148F563D0079C9F3 /* yajl_parse.h */; };
@@ -39,13 +39,11 @@
 		0EBCF59C148F563D0079C9F3 /* yajl_parse.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EBCF57F148F563D0079C9F3 /* yajl_parse.h */; };
 		0EBCF59D148F563D0079C9F3 /* yajl_parser.c in Sources */ = {isa = PBXBuildFile; fileRef = 0EBCF580148F563D0079C9F3 /* yajl_parser.c */; };
 		0EBCF59E148F563D0079C9F3 /* yajl_parser.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EBCF581148F563D0079C9F3 /* yajl_parser.h */; };
-		0EBCF59F148F563D0079C9F3 /* Seriously.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EBCF582148F563D0079C9F3 /* Seriously.h */; };
-		0EBCF5A0148F563D0079C9F3 /* Seriously.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EBCF583148F563D0079C9F3 /* Seriously.m */; };
-		0EBCF5A1148F563D0079C9F3 /* SeriouslyConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EBCF584148F563D0079C9F3 /* SeriouslyConstants.h */; };
-		0EBCF5A2148F563D0079C9F3 /* SeriouslyOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EBCF585148F563D0079C9F3 /* SeriouslyOperation.h */; };
-		0EBCF5A3148F563D0079C9F3 /* SeriouslyOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EBCF586148F563D0079C9F3 /* SeriouslyOperation.m */; };
-		0EBCF5A4148F563D0079C9F3 /* SeriouslyXML.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EBCF588148F563D0079C9F3 /* SeriouslyXML.h */; };
-		0EBCF5A5148F563D0079C9F3 /* SeriouslyXML.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EBCF589148F563D0079C9F3 /* SeriouslyXML.m */; };
+		0EBCF59F148F563D0079C9F3 /* YSeriously.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EBCF582148F563D0079C9F3 /* YSeriously.h */; };
+		0EBCF5A0148F563D0079C9F3 /* YSeriously.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EBCF583148F563D0079C9F3 /* YSeriously.m */; };
+		0EBCF5A1148F563D0079C9F3 /* YSeriouslyConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EBCF584148F563D0079C9F3 /* YSeriouslyConstants.h */; };
+		0EBCF5A2148F563D0079C9F3 /* YSeriouslyOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EBCF585148F563D0079C9F3 /* YSeriouslyOperation.h */; };
+		0EBCF5A3148F563D0079C9F3 /* YSeriouslyOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EBCF586148F563D0079C9F3 /* YSeriouslyOperation.m */; };
 		F71CA3C41581DF5200735950 /* NSString+MD5.h in Headers */ = {isa = PBXBuildFile; fileRef = F71CA3C21581DF5200735950 /* NSString+MD5.h */; };
 		F71CA3C51581DF5200735950 /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = F71CA3C31581DF5200735950 /* NSString+MD5.m */; };
 		F7595BD515169D2F0042ADB5 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7595BD415169D2F0042ADB5 /* Security.framework */; };
@@ -57,10 +55,10 @@
 		F7595BFE1516A19B0042ADB5 /* OCMockObject.h in Headers */ = {isa = PBXBuildFile; fileRef = F7595BF61516A19B0042ADB5 /* OCMockObject.h */; };
 		F7595BFF1516A19B0042ADB5 /* OCMockRecorder.h in Headers */ = {isa = PBXBuildFile; fileRef = F7595BF71516A19B0042ADB5 /* OCMockRecorder.h */; };
 		F7595C021516B0CF0042ADB5 /* libobjc.A.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F7595C011516B0CF0042ADB5 /* libobjc.A.dylib */; };
-		F7ADDEE2157C256700BF92EB /* OpenUDID.h in Headers */ = {isa = PBXBuildFile; fileRef = F7ADDEDF157C256700BF92EB /* OpenUDID.h */; };
-		F7ADDEE3157C256700BF92EB /* OpenUDID.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ADDEE0157C256700BF92EB /* OpenUDID.m */; };
-		F7F048C01581CAAB004C4772 /* FBEncryptorAES.h in Headers */ = {isa = PBXBuildFile; fileRef = F7F048BC1581CAAB004C4772 /* FBEncryptorAES.h */; };
-		F7F048C11581CAAB004C4772 /* FBEncryptorAES.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F048BD1581CAAB004C4772 /* FBEncryptorAES.m */; };
+		F7ADDEE2157C256700BF92EB /* YOpenUDID.h in Headers */ = {isa = PBXBuildFile; fileRef = F7ADDEDF157C256700BF92EB /* YOpenUDID.h */; };
+		F7ADDEE3157C256700BF92EB /* YOpenUDID.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ADDEE0157C256700BF92EB /* YOpenUDID.m */; };
+		F7F048C01581CAAB004C4772 /* YFBEncryptorAES.h in Headers */ = {isa = PBXBuildFile; fileRef = F7F048BC1581CAAB004C4772 /* YFBEncryptorAES.h */; };
+		F7F048C11581CAAB004C4772 /* YFBEncryptorAES.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F048BD1581CAAB004C4772 /* YFBEncryptorAES.m */; };
 		F7F048C21581CAAB004C4772 /* NSData+Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = F7F048BE1581CAAB004C4772 /* NSData+Base64.h */; };
 		F7F048C31581CAAB004C4772 /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F048BF1581CAAB004C4772 /* NSData+Base64.m */; };
 /* End PBXBuildFile section */
@@ -76,9 +74,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0E5009A2146A74C200F0CD4D /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGELOG.md; sourceTree = "<group>"; };
-		0E5009A3146A74C200F0CD4D /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKit.h; sourceTree = "<group>"; };
-		0E5009A4146A74C200F0CD4D /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKit.m; sourceTree = "<group>"; };
+		0E5009A3146A74C200F0CD4D /* YJSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YJSONKit.h; sourceTree = "<group>"; };
+		0E5009A4146A74C200F0CD4D /* YJSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YJSONKit.m; sourceTree = "<group>"; };
 		0E5009A5146A74C200F0CD4D /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		0E5009B2146A756900F0CD4D /* Yozio_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Yozio_Private.h; sourceTree = "<group>"; };
 		0E7848A2146A7468004269C5 /* libYozio.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libYozio.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -92,8 +89,8 @@
 		0E7848BF146A7468004269C5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		0E7848C1146A7468004269C5 /* YozioTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YozioTests.h; sourceTree = "<group>"; };
 		0E7848C2146A7468004269C5 /* YozioTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YozioTests.m; sourceTree = "<group>"; };
-		0EBCF56B148F563D0079C9F3 /* SeriouslyJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SeriouslyJSON.h; sourceTree = "<group>"; };
-		0EBCF56C148F563D0079C9F3 /* SeriouslyJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SeriouslyJSON.m; sourceTree = "<group>"; };
+		0EBCF56B148F563D0079C9F3 /* YSeriouslyJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSeriouslyJSON.h; sourceTree = "<group>"; };
+		0EBCF56C148F563D0079C9F3 /* YSeriouslyJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSeriouslyJSON.m; sourceTree = "<group>"; };
 		0EBCF56F148F563D0079C9F3 /* yajl_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yajl_common.h; sourceTree = "<group>"; };
 		0EBCF570148F563D0079C9F3 /* yajl_gen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yajl_gen.h; sourceTree = "<group>"; };
 		0EBCF571148F563D0079C9F3 /* yajl_parse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yajl_parse.h; sourceTree = "<group>"; };
@@ -113,13 +110,11 @@
 		0EBCF57F148F563D0079C9F3 /* yajl_parse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yajl_parse.h; sourceTree = "<group>"; };
 		0EBCF580148F563D0079C9F3 /* yajl_parser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = yajl_parser.c; sourceTree = "<group>"; };
 		0EBCF581148F563D0079C9F3 /* yajl_parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yajl_parser.h; sourceTree = "<group>"; };
-		0EBCF582148F563D0079C9F3 /* Seriously.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Seriously.h; sourceTree = "<group>"; };
-		0EBCF583148F563D0079C9F3 /* Seriously.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Seriously.m; sourceTree = "<group>"; };
-		0EBCF584148F563D0079C9F3 /* SeriouslyConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SeriouslyConstants.h; sourceTree = "<group>"; };
-		0EBCF585148F563D0079C9F3 /* SeriouslyOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SeriouslyOperation.h; sourceTree = "<group>"; };
-		0EBCF586148F563D0079C9F3 /* SeriouslyOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SeriouslyOperation.m; sourceTree = "<group>"; };
-		0EBCF588148F563D0079C9F3 /* SeriouslyXML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SeriouslyXML.h; sourceTree = "<group>"; };
-		0EBCF589148F563D0079C9F3 /* SeriouslyXML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SeriouslyXML.m; sourceTree = "<group>"; };
+		0EBCF582148F563D0079C9F3 /* YSeriously.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSeriously.h; sourceTree = "<group>"; };
+		0EBCF583148F563D0079C9F3 /* YSeriously.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSeriously.m; sourceTree = "<group>"; };
+		0EBCF584148F563D0079C9F3 /* YSeriouslyConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSeriouslyConstants.h; sourceTree = "<group>"; };
+		0EBCF585148F563D0079C9F3 /* YSeriouslyOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSeriouslyOperation.h; sourceTree = "<group>"; };
+		0EBCF586148F563D0079C9F3 /* YSeriouslyOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSeriouslyOperation.m; sourceTree = "<group>"; };
 		F71CA3C21581DF5200735950 /* NSString+MD5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+MD5.h"; sourceTree = "<group>"; };
 		F71CA3C31581DF5200735950 /* NSString+MD5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MD5.m"; sourceTree = "<group>"; };
 		F7595BD415169D2F0042ADB5 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -132,11 +127,11 @@
 		F7595BF71516A19B0042ADB5 /* OCMockRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMockRecorder.h; sourceTree = "<group>"; };
 		F7595BF91516A19B0042ADB5 /* libOCMock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libOCMock.a; sourceTree = "<group>"; };
 		F7595C011516B0CF0042ADB5 /* libobjc.A.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libobjc.A.dylib; path = usr/lib/libobjc.A.dylib; sourceTree = SDKROOT; };
-		F7ADDEDF157C256700BF92EB /* OpenUDID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDID.h; sourceTree = "<group>"; };
-		F7ADDEE0157C256700BF92EB /* OpenUDID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenUDID.m; sourceTree = "<group>"; };
+		F7ADDEDF157C256700BF92EB /* YOpenUDID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YOpenUDID.h; sourceTree = "<group>"; };
+		F7ADDEE0157C256700BF92EB /* YOpenUDID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YOpenUDID.m; sourceTree = "<group>"; };
 		F7ADDEE1157C256700BF92EB /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
-		F7F048BC1581CAAB004C4772 /* FBEncryptorAES.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBEncryptorAES.h; sourceTree = "<group>"; };
-		F7F048BD1581CAAB004C4772 /* FBEncryptorAES.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FBEncryptorAES.m; sourceTree = "<group>"; };
+		F7F048BC1581CAAB004C4772 /* YFBEncryptorAES.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YFBEncryptorAES.h; sourceTree = "<group>"; };
+		F7F048BD1581CAAB004C4772 /* YFBEncryptorAES.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YFBEncryptorAES.m; sourceTree = "<group>"; };
 		F7F048BE1581CAAB004C4772 /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
 		F7F048BF1581CAAB004C4772 /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Base64.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -170,23 +165,23 @@
 			isa = PBXGroup;
 			children = (
 				F71CA3C01581DF4300735950 /* NSString+MD5 */,
-				F7F048BB1581CAAB004C4772 /* FBEncrypt */,
-				F7ADDEDE157C256700BF92EB /* OpenUDID */,
-				0EBCF569148F563D0079C9F3 /* seriously */,
-				0E5009A1146A74C200F0CD4D /* johnezang-JSONKit-465adc1 */,
+				F7F048BB1581CAAB004C4772 /* YFBEncrypt */,
+				F7ADDEDE157C256700BF92EB /* YOpenUDID */,
+				0EBCF569148F563D0079C9F3 /* YSeriously */,
+				0E5009A1146A74C200F0CD4D /* YJSONKit */,
 			);
 			name = lib;
 			path = Yozio/lib;
 			sourceTree = "<group>";
 		};
-		0E5009A1146A74C200F0CD4D /* johnezang-JSONKit-465adc1 */ = {
+		0E5009A1146A74C200F0CD4D /* YJSONKit */ = {
 			isa = PBXGroup;
 			children = (
-				0E5009A2146A74C200F0CD4D /* CHANGELOG.md */,
-				0E5009A3146A74C200F0CD4D /* JSONKit.h */,
-				0E5009A4146A74C200F0CD4D /* JSONKit.m */,
+				0E5009A3146A74C200F0CD4D /* YJSONKit.h */,
+				0E5009A4146A74C200F0CD4D /* YJSONKit.m */,
 				0E5009A5146A74C200F0CD4D /* README.md */,
 			);
+			name = YJSONKit;
 			path = "johnezang-JSONKit-465adc1";
 			sourceTree = "<group>";
 		};
@@ -262,25 +257,25 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		0EBCF569148F563D0079C9F3 /* seriously */ = {
+		0EBCF569148F563D0079C9F3 /* YSeriously */ = {
 			isa = PBXGroup;
 			children = (
 				0EBCF56A148F563D0079C9F3 /* json */,
-				0EBCF582148F563D0079C9F3 /* Seriously.h */,
-				0EBCF583148F563D0079C9F3 /* Seriously.m */,
-				0EBCF584148F563D0079C9F3 /* SeriouslyConstants.h */,
-				0EBCF585148F563D0079C9F3 /* SeriouslyOperation.h */,
-				0EBCF586148F563D0079C9F3 /* SeriouslyOperation.m */,
-				0EBCF587148F563D0079C9F3 /* xml */,
+				0EBCF582148F563D0079C9F3 /* YSeriously.h */,
+				0EBCF583148F563D0079C9F3 /* YSeriously.m */,
+				0EBCF584148F563D0079C9F3 /* YSeriouslyConstants.h */,
+				0EBCF585148F563D0079C9F3 /* YSeriouslyOperation.h */,
+				0EBCF586148F563D0079C9F3 /* YSeriouslyOperation.m */,
 			);
+			name = YSeriously;
 			path = seriously;
 			sourceTree = "<group>";
 		};
 		0EBCF56A148F563D0079C9F3 /* json */ = {
 			isa = PBXGroup;
 			children = (
-				0EBCF56B148F563D0079C9F3 /* SeriouslyJSON.h */,
-				0EBCF56C148F563D0079C9F3 /* SeriouslyJSON.m */,
+				0EBCF56B148F563D0079C9F3 /* YSeriouslyJSON.h */,
+				0EBCF56C148F563D0079C9F3 /* YSeriouslyJSON.m */,
 				0EBCF56D148F563D0079C9F3 /* yajl */,
 			);
 			path = json;
@@ -318,15 +313,6 @@
 				0EBCF571148F563D0079C9F3 /* yajl_parse.h */,
 			);
 			path = api;
-			sourceTree = "<group>";
-		};
-		0EBCF587148F563D0079C9F3 /* xml */ = {
-			isa = PBXGroup;
-			children = (
-				0EBCF588148F563D0079C9F3 /* SeriouslyXML.h */,
-				0EBCF589148F563D0079C9F3 /* SeriouslyXML.m */,
-			);
-			path = xml;
 			sourceTree = "<group>";
 		};
 		F71CA3C01581DF4300735950 /* NSString+MD5 */ = {
@@ -367,24 +353,26 @@
 			path = lib;
 			sourceTree = SOURCE_ROOT;
 		};
-		F7ADDEDE157C256700BF92EB /* OpenUDID */ = {
+		F7ADDEDE157C256700BF92EB /* YOpenUDID */ = {
 			isa = PBXGroup;
 			children = (
-				F7ADDEDF157C256700BF92EB /* OpenUDID.h */,
-				F7ADDEE0157C256700BF92EB /* OpenUDID.m */,
+				F7ADDEDF157C256700BF92EB /* YOpenUDID.h */,
+				F7ADDEE0157C256700BF92EB /* YOpenUDID.m */,
 				F7ADDEE1157C256700BF92EB /* README.md */,
 			);
+			name = YOpenUDID;
 			path = OpenUDID;
 			sourceTree = "<group>";
 		};
-		F7F048BB1581CAAB004C4772 /* FBEncrypt */ = {
+		F7F048BB1581CAAB004C4772 /* YFBEncrypt */ = {
 			isa = PBXGroup;
 			children = (
-				F7F048BC1581CAAB004C4772 /* FBEncryptorAES.h */,
-				F7F048BD1581CAAB004C4772 /* FBEncryptorAES.m */,
+				F7F048BC1581CAAB004C4772 /* YFBEncryptorAES.h */,
+				F7F048BD1581CAAB004C4772 /* YFBEncryptorAES.m */,
 				F7F048BE1581CAAB004C4772 /* NSData+Base64.h */,
 				F7F048BF1581CAAB004C4772 /* NSData+Base64.m */,
 			);
+			name = YFBEncrypt;
 			path = FBEncrypt;
 			sourceTree = "<group>";
 		};
@@ -396,9 +384,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E5009B1146A754500F0CD4D /* Yozio.h in Headers */,
-				0E5009AA146A74C200F0CD4D /* JSONKit.h in Headers */,
+				0E5009AA146A74C200F0CD4D /* YJSONKit.h in Headers */,
 				0E5009B3146A756900F0CD4D /* Yozio_Private.h in Headers */,
-				0EBCF58A148F563D0079C9F3 /* SeriouslyJSON.h in Headers */,
+				0EBCF58A148F563D0079C9F3 /* YSeriouslyJSON.h in Headers */,
 				0EBCF58C148F563D0079C9F3 /* yajl_common.h in Headers */,
 				0EBCF58D148F563D0079C9F3 /* yajl_gen.h in Headers */,
 				0EBCF58E148F563D0079C9F3 /* yajl_parse.h in Headers */,
@@ -411,18 +399,17 @@
 				0EBCF59B148F563D0079C9F3 /* yajl_lex.h in Headers */,
 				0EBCF59C148F563D0079C9F3 /* yajl_parse.h in Headers */,
 				0EBCF59E148F563D0079C9F3 /* yajl_parser.h in Headers */,
-				0EBCF59F148F563D0079C9F3 /* Seriously.h in Headers */,
-				0EBCF5A1148F563D0079C9F3 /* SeriouslyConstants.h in Headers */,
-				0EBCF5A2148F563D0079C9F3 /* SeriouslyOperation.h in Headers */,
-				0EBCF5A4148F563D0079C9F3 /* SeriouslyXML.h in Headers */,
+				0EBCF59F148F563D0079C9F3 /* YSeriously.h in Headers */,
+				0EBCF5A1148F563D0079C9F3 /* YSeriouslyConstants.h in Headers */,
+				0EBCF5A2148F563D0079C9F3 /* YSeriouslyOperation.h in Headers */,
 				F7595BFA1516A19B0042ADB5 /* NSNotificationCenter+OCMAdditions.h in Headers */,
 				F7595BFB1516A19B0042ADB5 /* OCMArg.h in Headers */,
 				F7595BFC1516A19B0042ADB5 /* OCMConstraint.h in Headers */,
 				F7595BFD1516A19B0042ADB5 /* OCMock.h in Headers */,
 				F7595BFE1516A19B0042ADB5 /* OCMockObject.h in Headers */,
 				F7595BFF1516A19B0042ADB5 /* OCMockRecorder.h in Headers */,
-				F7ADDEE2157C256700BF92EB /* OpenUDID.h in Headers */,
-				F7F048C01581CAAB004C4772 /* FBEncryptorAES.h in Headers */,
+				F7ADDEE2157C256700BF92EB /* YOpenUDID.h in Headers */,
+				F7F048C01581CAAB004C4772 /* YFBEncryptorAES.h in Headers */,
 				F7F048C21581CAAB004C4772 /* NSData+Base64.h in Headers */,
 				F71CA3C41581DF5200735950 /* NSString+MD5.h in Headers */,
 			);
@@ -541,8 +528,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E7848AC146A7468004269C5 /* Yozio.m in Sources */,
-				0E5009AB146A74C200F0CD4D /* JSONKit.m in Sources */,
-				0EBCF58B148F563D0079C9F3 /* SeriouslyJSON.m in Sources */,
+				0E5009AB146A74C200F0CD4D /* YJSONKit.m in Sources */,
+				0EBCF58B148F563D0079C9F3 /* YSeriouslyJSON.m in Sources */,
 				0EBCF58F148F563D0079C9F3 /* yajl.c in Sources */,
 				0EBCF590148F563D0079C9F3 /* yajl_alloc.c in Sources */,
 				0EBCF592148F563D0079C9F3 /* yajl_buf.c in Sources */,
@@ -550,11 +537,10 @@
 				0EBCF598148F563D0079C9F3 /* yajl_gen.c in Sources */,
 				0EBCF59A148F563D0079C9F3 /* yajl_lex.c in Sources */,
 				0EBCF59D148F563D0079C9F3 /* yajl_parser.c in Sources */,
-				0EBCF5A0148F563D0079C9F3 /* Seriously.m in Sources */,
-				0EBCF5A3148F563D0079C9F3 /* SeriouslyOperation.m in Sources */,
-				0EBCF5A5148F563D0079C9F3 /* SeriouslyXML.m in Sources */,
-				F7ADDEE3157C256700BF92EB /* OpenUDID.m in Sources */,
-				F7F048C11581CAAB004C4772 /* FBEncryptorAES.m in Sources */,
+				0EBCF5A0148F563D0079C9F3 /* YSeriously.m in Sources */,
+				0EBCF5A3148F563D0079C9F3 /* YSeriouslyOperation.m in Sources */,
+				F7ADDEE3157C256700BF92EB /* YOpenUDID.m in Sources */,
+				F7F048C11581CAAB004C4772 /* YFBEncryptorAES.m in Sources */,
 				F7F048C31581CAAB004C4772 /* NSData+Base64.m in Sources */,
 				F71CA3C51581DF5200735950 /* NSString+MD5.m in Sources */,
 			);

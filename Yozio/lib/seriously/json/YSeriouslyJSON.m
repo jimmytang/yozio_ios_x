@@ -6,7 +6,7 @@
 //  Copyright 2010 Probably Interactive. All rights reserved.
 //
 
-#import "SeriouslyJSON.h"
+#import "YSeriouslyJSON.h"
 #include <string.h>
 #include "yajl_parse.h"
 #include "yajl_lex.h"
@@ -23,7 +23,7 @@ enum {
     state_hash
 };
 
-@interface SeriouslyJSON (Private)
+@interface YSeriouslyJSON (Private)
 
 - (id)parse:(NSString *)string;
 - (void)pushDictionary;
@@ -116,7 +116,7 @@ static yajl_callbacks callbacks = {
     push_end_array
 };
 
-@implementation SeriouslyJSON
+@implementation YSeriouslyJSON
 
 - (void)dealloc {
     [_currentObject release];

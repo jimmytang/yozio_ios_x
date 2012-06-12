@@ -20,10 +20,10 @@
 // THE SOFTWARE.
 //
 
-#import "FBEncryptorAES.h"
+#import "YFBEncryptorAES.h"
 #import "NSData+Base64.h"
 
-@implementation FBEncryptorAES
+@implementation YFBEncryptorAES
 
 #pragma mark -
 #pragma mark Initialization and deallcation

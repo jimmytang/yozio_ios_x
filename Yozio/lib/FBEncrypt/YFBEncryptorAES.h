@@ -27,7 +27,7 @@
 #define FBENCRYPT_BLOCK_SIZE    kCCBlockSizeAES128
 #define FBENCRYPT_KEY_SIZE      kCCKeySizeAES128
 
-@interface FBEncryptorAES : NSObject {
+@interface YFBEncryptorAES : NSObject {
     
 }
 

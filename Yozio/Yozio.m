@@ -4,12 +4,12 @@
 
 #import "UIKit/UIKit.h"
 #import "CommonCrypto/CommonCryptor.h"
-#import "FBEncryptorAES.h"
+#import "YFBEncryptorAES.h"
 #import "NSData+Base64.h"
 #import "NSString+MD5.h"
-#import "JSONKit.h"
-#import "Seriously.h"
-#import "OpenUDID.h"
+#import "YJSONKit.h"
+#import "YSeriously.h"
+#import "YOpenUDID.h"
 
 #import "Yozio.h"
 #import "Yozio_Private.h"
@@ -62,7 +62,7 @@ static Yozio *instance = nil;
   
   // Initialize constant intrumentation variables.
   UIDevice* device = [UIDevice currentDevice];
-  self.deviceId = [OpenUDID value];
+  self.deviceId = [YOpenUDID value];
   self.hardware = device.model;
   self.os = [device systemVersion];
   self.deviceName = [device name];
@@ -258,7 +258,7 @@ static Yozio *instance = nil;
     self.dataToSend = [NSArray arrayWithArray:self.dataQueue];
   }
   [Yozio log:@"Flushing..."];
-  NSData *iv = [FBEncryptorAES generateIv];
+  NSData *iv = [YFBEncryptorAES generateIv];
   NSString *ivBase64 = [iv base64EncodedString];
   
   NSString *dataStr = [self buildPayload:iv];
@@ -273,7 +273,7 @@ static Yozio *instance = nil;
   [Yozio log:@"Final get request url: %@", urlString];
   
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-  [Seriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+  [YSeriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
     if (error) {
       [Yozio log:@"Flush error %@", error];
     } else {
@@ -296,7 +296,7 @@ static Yozio *instance = nil;
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
   [payload setObject:YOZIO_BEACON_SCHEMA_VERSION forKey:YOZIO_P_SCHEMA_VERSION];
   [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
-  [payload setObject:[self notNil:[self loadOrCreateDeviceId]] forKey:YOZIO_P_OPEN_UDID];
+  [payload setObject:[self notNil:self.deviceId] forKey:YOZIO_P_OPEN_UDID];
   [payload setObject:self.deviceName forKey:YOZIO_P_DEVICE_NAME];
   [payload setObject:packetCount forKey:YOZIO_P_PAYLOAD_COUNT];
   [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
@@ -311,7 +311,7 @@ static Yozio *instance = nil;
   NSData *key = [md5 dataUsingEncoding:NSUTF8StringEncoding];
   
   //  AES Encrypt
-  NSData *encryptedData = [FBEncryptorAES encryptData:data
+  NSData *encryptedData = [YFBEncryptorAES encryptData:data
                                                   key:key
                                                    iv:iv];
   //  Base64 encode
@@ -434,7 +434,7 @@ static Yozio *instance = nil;
   
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
   //  add some timing check before and on response
-  [Seriously get:escapedUrlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+  [YSeriously get:escapedUrlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
     if (error) {
       self.stopBlocking = true;
       [Yozio log:@"updateConfig error %@", error];

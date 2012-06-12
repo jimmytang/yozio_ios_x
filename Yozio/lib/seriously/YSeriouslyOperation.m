@@ -6,15 +6,15 @@
 //  Copyright 2010 Probably Interactive. All rights reserved.
 //
 
-#import "SeriouslyOperation.h"
-#import "SeriouslyJSON.h"
+#import "YSeriouslyOperation.h"
+#import "YSeriouslyJSON.h"
 
 #define KVO_SET(_key_, _value_) [self willChangeValueForKey:@#_key_]; \
 self._key_ = (_value_); \
 [self didChangeValueForKey:@#_key_]; 
 
 
-@interface SeriouslyOperation (Private)
+@interface YSeriouslyOperation (Private)
 
 - (id)initWithRequest:(NSURLRequest *)urlRequest handler:(SeriouslyHandler)handler progressHandler:(SeriouslyProgressHandler)progressHandler;
 - (id)parsedData;
@@ -22,7 +22,7 @@ self._key_ = (_value_); \
 @end
 
 
-@implementation SeriouslyOperation
+@implementation YSeriouslyOperation
 
 @synthesize isFinished = _isFinished;
 @synthesize isExecuting = _isExecuting;
@@ -112,7 +112,7 @@ self._key_ = (_value_); \
         [contentType hasPrefix:@"text/javascript"]) {
         
         NSString *text = [[NSString alloc] initWithData:_data encoding:NSUTF8StringEncoding];
-        id result = [SeriouslyJSON parse:text];
+        id result = [YSeriouslyJSON parse:text];
         [text release];
      
         return result;

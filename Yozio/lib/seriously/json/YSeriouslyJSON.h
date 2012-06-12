@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 
-@interface SeriouslyJSON : NSObject {
+@interface YSeriouslyJSON : NSObject {
     id _currentObject;
     NSMutableArray *_stack;
     NSMutableArray *_keys;

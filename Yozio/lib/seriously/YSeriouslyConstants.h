@@ -1,5 +1,5 @@
 /*
- *  SeriouslyConstants.h
+ *  YSeriouslyConstants.h
  *  Seriously
  *
  *  Created by Corey Johnson on 7/6/10.
@@ -7,7 +7,7 @@
  *
  */
 
-@class SeriouslyOperation;
+@class YSeriouslyOperation;
 
 typedef void(^SeriouslyHandler)(id body, NSHTTPURLResponse *response, NSError *error);
 typedef void(^SeriouslyProgressHandler)(float progress, NSData *data);
