@@ -63,7 +63,7 @@ static Yozio *instance = nil;
   // Initialize  mutable instrumentation variables.
   
   self.dataCount = 0;
-  self.dataQueue = [[NSMutableArray alloc] init];
+  self.dataQueue = [NSMutableArray array];
   self.dataToSend = nil;
   self.config = nil;
   
@@ -435,6 +435,7 @@ static Yozio *instance = nil;
   [_secretKey release], _secretKey = nil;
   [deviceId release], deviceId = nil;
   [dateFormatter release], dateFormatter = nil;
+  [dataQueue release], dataQueue = nil;
   [super dealloc];
 }
 
