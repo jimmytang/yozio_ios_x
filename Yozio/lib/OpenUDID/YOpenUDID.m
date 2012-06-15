@@ -136,6 +136,7 @@ static int const kOpenUDIDRedundancySlots = 100;
         const char *cStr = CFStringGetCStringPtr(cfstring,CFStringGetFastestEncoding(cfstring));
         unsigned char result[16];
         CC_MD5( cStr, strlen(cStr), result );
+        CFRelease(cfstring);
         CFRelease(uuid);
 
         _openUDID = [NSString stringWithFormat:
@@ -346,6 +347,7 @@ static int const kOpenUDIDRedundancySlots = 100;
                                      userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"OpenUDID succesfully retrieved",@"description", nil]];
     }
     kOpenUDIDSessionCache = [openUDID retain];
+    [appUID release];
     return kOpenUDIDSessionCache;
 }
 

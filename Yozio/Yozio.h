@@ -26,6 +26,15 @@
 + (NSString *)getUrl:(NSString *)linkName fallbackUrl:(NSString *)fallbackUrl;
 
 /**
+ * Retrieve the shortened url for a dynamic link. (blocking)
+ *
+ * @param linkName  the name of the link. Must match one of the link names created online.
+ * @param destinationUrl  the url that the shortened url must redirect to.
+ * @param fallbackUrl  the url to return if retrieving the short url fails.
+ */
++ (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl fallbackUrl:(NSString *)fallbackUrl;
+
+/**
  * Alert Yozio that a user has viewed a link.
  *
  * @param linkName  the name of the link. Must match one of the link names created online.

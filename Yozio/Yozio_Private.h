@@ -45,6 +45,7 @@
 // event type starts being dropped.
 #define YOZIO_ACTION_DATA_LIMIT 5000
 
+#define YOZIO_DEVICE_TYPE_IOS @"2"
 
 @interface Yozio()
 {
