@@ -147,41 +147,50 @@ static Yozio *instance = nil;
 
 + (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl fallbackUrl:(NSString *)fallbackUrl
 {
-  NSString *urlParams = [NSString stringWithFormat:
-                         @"app_key=%@&yozio_udid=%@&device_type=%@&link_name=%@&dest_url=%@&external_user_id=%@", 
-                         instance._appKey, instance.deviceId, YOZIO_DEVICE_TYPE_IOS, linkName, destinationUrl, @""];
-  NSString *urlString =
-  [NSString stringWithFormat:@"http://%@/api/v1/get_url?%@", YOZIO_CONFIGURATION_SERVER_URL, urlParams];
-  NSString* escapedUrlString =  [urlString stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
-  [Yozio log:@"Final getUrl Request: %@", escapedUrlString];
-  
-  // Blocking
-  [NSTimer scheduledTimerWithTimeInterval:5 target:instance selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
-  
-  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-  //  add some timing check before and on response
-  [YSeriously get:escapedUrlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
-    if (error) {
-      instance.stopBlocking = true;
-      [Yozio log:@"getUrl error %@", error];
-    } else {
-      if ([response statusCode] == 200) {
-        NSString *shortenedUrl = [body objectForKey:@"url"];
-        [instance.config setObject:shortenedUrl forKey:destinationUrl];
-      }
-      instance.stopBlocking = true;
-    }
-    [Yozio log:@"getUrl request complete"];
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-  }];
-  
-  // Blocking
-  NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
-  while (!instance.stopBlocking && [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil]) {
-    loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
+  if (instance.config == nil) {
+    instance.config = [NSMutableDictionary dictionary];
   }
-
-  return [Yozio getUrl:destinationUrl fallbackUrl:fallbackUrl];
+  NSString *val = [instance.config objectForKey:destinationUrl];
+  if (val != nil) {
+    return val;
+  }
+  else {
+    NSString *urlParams = 
+        [NSString stringWithFormat:@"app_key=%@&yozio_udid=%@&device_type=%@&link_name=%@&dest_url=%@&external_user_id=%@", 
+             instance._appKey, instance.deviceId, YOZIO_DEVICE_TYPE_IOS, linkName, destinationUrl, @""];
+    NSString *urlString =
+        [NSString stringWithFormat:@"http://%@/api/v1/get_url?%@", YOZIO_CONFIGURATION_SERVER_URL, urlParams];
+    NSString* escapedUrlString =  [urlString stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+    [Yozio log:@"Final getUrl Request: %@", escapedUrlString];
+    
+    instance.stopBlocking = false;
+    // Blocking
+    [NSTimer scheduledTimerWithTimeInterval:5 target:instance selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
+    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+    //  add some timing check before and on response
+    [YSeriously get:escapedUrlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+      if (error) {
+        instance.stopBlocking = true;
+        [Yozio log:@"getUrl error %@", error];
+      } else {
+        if ([response statusCode] == 200) {
+          NSString *shortenedUrl = [body objectForKey:@"url"];
+          [instance.config setObject:shortenedUrl forKey:destinationUrl];
+        }
+        instance.stopBlocking = true;
+      }
+      [Yozio log:@"getUrl request complete"];
+      [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+    }];
+    
+    // Blocking
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
+    while (!instance.stopBlocking && [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil]) {
+      loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
+    }
+    return [Yozio getUrl:destinationUrl fallbackUrl:fallbackUrl];
+  }
 }
 
 + (NSString *)getUrl:(NSString *)linkName fallbackUrl:(NSString *)fallbackUrl
