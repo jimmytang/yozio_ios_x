@@ -198,7 +198,7 @@
 #endif // defined (__GNUC__) && (__GNUC__ >= 4) && (__GNUC_MINOR__ >= 3)
 
 
-@class JKArray, JKDictionaryEnumerator, JKDictionary;
+@class YJKArray, YJKDictionaryEnumerator, YJKDictionary;
 
 enum {
   JSONNumberStateStart                 = 0,
@@ -449,7 +449,7 @@ struct JKEncodeState {
 };
 
 // This is a JSONKit private class.
-@interface JKSerializer : NSObject {
+@interface YJKSerializer : NSObject {
   JKEncodeState *encodeState;
 }
 
@@ -510,28 +510,28 @@ static const UTF8  firstByteMark[7]   = { 0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0x
 static void jk_swizzleInstanceMethod(Class fromClass, Class toClass, SEL selector);
 static void jk_swizzleClassMethod(Class fromClass, Class toClass, SEL selector);
 
-static JKArray          *_JKArrayCreate(id *objects, NSUInteger count, BOOL mutableCollection);
-static NSUInteger        _JKArrayCount(JKArray *array);
-static void              _JKArrayIncrementMutations(JKArray *array);
-static void              _JKArrayInsertObjectAtIndex(JKArray *array, id newObject, NSUInteger objectIndex);
-static void              _JKArrayReplaceObjectAtIndexWithObject(JKArray *array, NSUInteger objectIndex, id newObject);
-static void              _JKArrayRemoveObjectAtIndex(JKArray *array, NSUInteger objectIndex);
+static YJKArray          *_JKArrayCreate(id *objects, NSUInteger count, BOOL mutableCollection);
+static NSUInteger        _JKArrayCount(YJKArray *array);
+static void              _JKArrayIncrementMutations(YJKArray *array);
+static void              _JKArrayInsertObjectAtIndex(YJKArray *array, id newObject, NSUInteger objectIndex);
+static void              _JKArrayReplaceObjectAtIndexWithObject(YJKArray *array, NSUInteger objectIndex, id newObject);
+static void              _JKArrayRemoveObjectAtIndex(YJKArray *array, NSUInteger objectIndex);
 
 
 static NSUInteger        _JKDictionaryCapacityForCount(NSUInteger count);
-static JKDictionary     *_JKDictionaryCreate(id *keys, NSUInteger *keyHashes, id *objects, NSUInteger count, BOOL mutableCollection);
-static JKHashTableEntry *_JKDictionaryHashEntry(JKDictionary *dictionary);
-static NSUInteger        _JKDictionaryCapacity(JKDictionary *dictionary);
-static NSUInteger        _JKDictionaryCount(JKDictionary *dictionary);
-static void              _JKDictionaryIncrementMutations(JKDictionary *dictionary);
-static void              _JKDictionaryResizeIfNeccessary(JKDictionary *dictionary);
-static void              _JKDictionaryRemoveObjectWithEntry(JKDictionary *dictionary, JKHashTableEntry *entry);
-static void              _JKDictionaryAddObject(JKDictionary *dictionary, NSUInteger keyHash, id key, id object);
-static JKHashTableEntry *_JKDictionaryHashTableEntryForKey(JKDictionary *dictionary, id aKey);
-static NSUInteger        _JKDictionaryGetKeysAndObjects(JKDictionary *dictionary, NSUInteger arrayLength, id keys[arrayLength], id objects[arrayLength]);
+static YJKDictionary     *_JKDictionaryCreate(id *keys, NSUInteger *keyHashes, id *objects, NSUInteger count, BOOL mutableCollection);
+static JKHashTableEntry *_JKDictionaryHashEntry(YJKDictionary *dictionary);
+static NSUInteger        _JKDictionaryCapacity(YJKDictionary *dictionary);
+static NSUInteger        _JKDictionaryCount(YJKDictionary *dictionary);
+static void              _JKDictionaryIncrementMutations(YJKDictionary *dictionary);
+static void              _JKDictionaryResizeIfNeccessary(YJKDictionary *dictionary);
+static void              _JKDictionaryRemoveObjectWithEntry(YJKDictionary *dictionary, JKHashTableEntry *entry);
+static void              _JKDictionaryAddObject(YJKDictionary *dictionary, NSUInteger keyHash, id key, id object);
+static JKHashTableEntry *_JKDictionaryHashTableEntryForKey(YJKDictionary *dictionary, id aKey);
+static NSUInteger        _JKDictionaryGetKeysAndObjects(YJKDictionary *dictionary, NSUInteger arrayLength, id keys[arrayLength], id objects[arrayLength]);
 
 
-static void _JSONDecoderCleanup(JSONDecoder *decoder);
+static void _JSONDecoderCleanup(YJSONDecoder *decoder);
 
 static id _NSStringObjectFromJSONString(NSString *jsonString, JKParseOptionFlags parseOptionFlags, NSError **error, BOOL mutableCollection);
 
@@ -595,13 +595,13 @@ static void jk_swizzleClassMethod(Class fromClass, Class toClass, SEL selector) 
 }
 
 #pragma mark -
-@interface JKArray : NSArray <NSCopying, NSMutableCopying, NSFastEnumeration> {
+@interface YJKArray : NSArray <NSCopying, NSMutableCopying, NSFastEnumeration> {
   id         *objects;
   NSUInteger  count, capacity, mutations;
 }
 @end
 
-@implementation JKArray
+@implementation YJKArray
 
 static Class _JKArrayClass         = NULL;
 static Class _JKMutableArrayClass  = NULL;
@@ -625,10 +625,10 @@ static size_t _JKArrayInstanceSize = 0UL;
   return(NULL);
 }
 
-static JKArray *_JKArrayCreate(id *objects, NSUInteger count, BOOL mutableCollection) {
+static YJKArray *_JKArrayCreate(id *objects, NSUInteger count, BOOL mutableCollection) {
   NSCParameterAssert((objects != NULL) && (_JKArrayClass != NULL) && (_JKArrayInstanceSize > 0UL));
-  JKArray *array = NULL;
-  if(JK_EXPECT_T((array = (JKArray *)calloc(1UL, _JKArrayInstanceSize)) != NULL)) { // Directly allocate the JKArray instance via calloc.
+  YJKArray *array = NULL;
+  if(JK_EXPECT_T((array = (YJKArray *)calloc(1UL, _JKArrayInstanceSize)) != NULL)) { // Directly allocate the JKArray instance via calloc.
     array->isa      = (mutableCollection == NO) ? _JKArrayClass : _JKMutableArrayClass;
     if((array = [array init]) == NULL) { return(NULL); }
     array->capacity = count;
@@ -639,18 +639,18 @@ static JKArray *_JKArrayCreate(id *objects, NSUInteger count, BOOL mutableCollec
   return(array);
 }
 
-static NSUInteger _JKArrayCount(JKArray *array) {
+static NSUInteger _JKArrayCount(YJKArray *array) {
   NSCParameterAssert((array != NULL) && (array->objects != NULL) && (array->count <= array->capacity));
   return(array->count);
 }
 
-static void _JKArrayIncrementMutations(JKArray *array) {
+static void _JKArrayIncrementMutations(YJKArray *array) {
   NSCParameterAssert((array != NULL) && (array->objects != NULL) && (array->count <= array->capacity));
   array->mutations++;
 }
 
 // Note: The caller is responsible for -retaining the object that is to be added.
-static void _JKArrayInsertObjectAtIndex(JKArray *array, id newObject, NSUInteger objectIndex) {
+static void _JKArrayInsertObjectAtIndex(YJKArray *array, id newObject, NSUInteger objectIndex) {
   NSCParameterAssert((array != NULL) && (array->objects != NULL) && (array->count <= array->capacity) && (objectIndex <= array->count) && (newObject != NULL));
   if(!((array != NULL) && (array->objects != NULL) && (objectIndex <= array->count) && (newObject != NULL))) { [newObject autorelease]; return; }
   array->count++;
@@ -666,7 +666,7 @@ static void _JKArrayInsertObjectAtIndex(JKArray *array, id newObject, NSUInteger
 }
 
 // Note: The caller is responsible for -retaining the object that is to be added.
-static void _JKArrayReplaceObjectAtIndexWithObject(JKArray *array, NSUInteger objectIndex, id newObject) {
+static void _JKArrayReplaceObjectAtIndexWithObject(YJKArray *array, NSUInteger objectIndex, id newObject) {
   NSCParameterAssert((array != NULL) && (array->objects != NULL) && (array->count <= array->capacity) && (objectIndex < array->count) && (array->objects[objectIndex] != NULL) && (newObject != NULL));
   if(!((array != NULL) && (array->objects != NULL) && (objectIndex < array->count) && (array->objects[objectIndex] != NULL) && (newObject != NULL))) { [newObject autorelease]; return; }
   CFRelease(array->objects[objectIndex]);
@@ -674,7 +674,7 @@ static void _JKArrayReplaceObjectAtIndexWithObject(JKArray *array, NSUInteger ob
   array->objects[objectIndex] = newObject;
 }
 
-static void _JKArrayRemoveObjectAtIndex(JKArray *array, NSUInteger objectIndex) {
+static void _JKArrayRemoveObjectAtIndex(YJKArray *array, NSUInteger objectIndex) {
   NSCParameterAssert((array != NULL) && (array->objects != NULL) && (array->count <= array->capacity) && (objectIndex < array->count) && (array->objects[objectIndex] != NULL));
   if(!((array != NULL) && (array->objects != NULL) && (objectIndex < array->count) && (array->objects[objectIndex] != NULL))) { return; }
   CFRelease(array->objects[objectIndex]);
@@ -743,10 +743,10 @@ static void _JKArrayRemoveObjectAtIndex(JKArray *array, NSUInteger objectIndex) 
 @end
 
 #pragma mark -
-@interface JKMutableArray : NSMutableArray
+@interface YJKMutableArray : NSMutableArray
 @end
 
-@implementation JKMutableArray
+@implementation YJKMutableArray
 
 + (void)load
 {
@@ -770,26 +770,26 @@ static void _JKArrayRemoveObjectAtIndex(JKArray *array, NSUInteger objectIndex) 
 - (void)insertObject:(id)anObject atIndex:(NSUInteger)objectIndex
 {
   if(anObject    == NULL)                           { [NSException raise:NSInvalidArgumentException format:@"*** -[%@ %@]: attempt to insert nil", NSStringFromClass([self class]), NSStringFromSelector(_cmd)]; }
-  if(objectIndex >  _JKArrayCount((JKArray *)self)) { [NSException raise:NSRangeException format:@"*** -[%@ %@]: index (%lu) beyond bounds (%lu)", NSStringFromClass([self class]), NSStringFromSelector(_cmd), objectIndex, _JKArrayCount((JKArray *)self) + 1UL]; }
+  if(objectIndex >  _JKArrayCount((YJKArray *)self)) { [NSException raise:NSRangeException format:@"*** -[%@ %@]: index (%lu) beyond bounds (%lu)", NSStringFromClass([self class]), NSStringFromSelector(_cmd), objectIndex, _JKArrayCount((YJKArray *)self) + 1UL]; }
   anObject = [anObject retain];
-  _JKArrayInsertObjectAtIndex((JKArray *)self, anObject, objectIndex);
-  _JKArrayIncrementMutations((JKArray *)self);
+  _JKArrayInsertObjectAtIndex((YJKArray *)self, anObject, objectIndex);
+  _JKArrayIncrementMutations((YJKArray *)self);
 }
 
 - (void)removeObjectAtIndex:(NSUInteger)objectIndex
 {
-  if(objectIndex >= _JKArrayCount((JKArray *)self)) { [NSException raise:NSRangeException format:@"*** -[%@ %@]: index (%lu) beyond bounds (%lu)", NSStringFromClass([self class]), NSStringFromSelector(_cmd), objectIndex, _JKArrayCount((JKArray *)self)]; }
-  _JKArrayRemoveObjectAtIndex((JKArray *)self, objectIndex);
-  _JKArrayIncrementMutations((JKArray *)self);
+  if(objectIndex >= _JKArrayCount((YJKArray *)self)) { [NSException raise:NSRangeException format:@"*** -[%@ %@]: index (%lu) beyond bounds (%lu)", NSStringFromClass([self class]), NSStringFromSelector(_cmd), objectIndex, _JKArrayCount((YJKArray *)self)]; }
+  _JKArrayRemoveObjectAtIndex((YJKArray *)self, objectIndex);
+  _JKArrayIncrementMutations((YJKArray *)self);
 }
 
 - (void)replaceObjectAtIndex:(NSUInteger)objectIndex withObject:(id)anObject
 {
   if(anObject    == NULL)                           { [NSException raise:NSInvalidArgumentException format:@"*** -[%@ %@]: attempt to insert nil", NSStringFromClass([self class]), NSStringFromSelector(_cmd)]; }
-  if(objectIndex >= _JKArrayCount((JKArray *)self)) { [NSException raise:NSRangeException format:@"*** -[%@ %@]: index (%lu) beyond bounds (%lu)", NSStringFromClass([self class]), NSStringFromSelector(_cmd), objectIndex, _JKArrayCount((JKArray *)self)]; }
+  if(objectIndex >= _JKArrayCount((YJKArray *)self)) { [NSException raise:NSRangeException format:@"*** -[%@ %@]: index (%lu) beyond bounds (%lu)", NSStringFromClass([self class]), NSStringFromSelector(_cmd), objectIndex, _JKArrayCount((YJKArray *)self)]; }
   anObject = [anObject retain];
-  _JKArrayReplaceObjectAtIndexWithObject((JKArray *)self, objectIndex, anObject);
-  _JKArrayIncrementMutations((JKArray *)self);
+  _JKArrayReplaceObjectAtIndexWithObject((YJKArray *)self, objectIndex, anObject);
+  _JKArrayIncrementMutations((YJKArray *)self);
 }
 
 - (id)copyWithZone:(NSZone *)zone
@@ -814,20 +814,20 @@ static void _JKArrayRemoveObjectAtIndex(JKArray *array, NSUInteger objectIndex) 
 
 
 #pragma mark -
-@interface JKDictionaryEnumerator : NSEnumerator {
+@interface YJKDictionaryEnumerator : NSEnumerator {
   id         collection;
   NSUInteger nextObject;
 }
 
-- (id)initWithJKDictionary:(JKDictionary *)initDictionary;
+- (id)initWithJKDictionary:(YJKDictionary *)initDictionary;
 - (NSArray *)allObjects;
 - (id)nextObject;
 
 @end
 
-@implementation JKDictionaryEnumerator
+@implementation YJKDictionaryEnumerator
 
-- (id)initWithJKDictionary:(JKDictionary *)initDictionary
+- (id)initWithJKDictionary:(YJKDictionary *)initDictionary
 {
   NSParameterAssert(initDictionary != NULL);
   if((self = [super init]) == NULL) { return(NULL); }
@@ -867,13 +867,13 @@ static void _JKArrayRemoveObjectAtIndex(JKArray *array, NSUInteger objectIndex) 
 @end
 
 #pragma mark -
-@interface JKDictionary : NSDictionary <NSCopying, NSMutableCopying, NSFastEnumeration> {
+@interface YJKDictionary : NSDictionary <NSCopying, NSMutableCopying, NSFastEnumeration> {
   NSUInteger count, capacity, mutations;
   JKHashTableEntry *entry;
 }
 @end
 
-@implementation JKDictionary
+@implementation YJKDictionary
 
 static Class  _JKDictionaryClass        = NULL;
 static Class  _JKMutableDictionaryClass = NULL;
@@ -912,7 +912,7 @@ static NSUInteger _JKDictionaryCapacityForCount(NSUInteger count) {
   return(jk_dictionaryCapacities[bottom]);
 }
 
-static void _JKDictionaryResizeIfNeccessary(JKDictionary *dictionary) {
+static void _JKDictionaryResizeIfNeccessary(YJKDictionary *dictionary) {
   NSCParameterAssert((dictionary != NULL) && (dictionary->entry != NULL) && (dictionary->count <= dictionary->capacity));
 
   NSUInteger capacityForCount = 0UL;
@@ -933,10 +933,10 @@ static void _JKDictionaryResizeIfNeccessary(JKDictionary *dictionary) {
   }
 }
 
-static JKDictionary *_JKDictionaryCreate(id *keys, NSUInteger *keyHashes, id *objects, NSUInteger count, BOOL mutableCollection) {
+static YJKDictionary *_JKDictionaryCreate(id *keys, NSUInteger *keyHashes, id *objects, NSUInteger count, BOOL mutableCollection) {
   NSCParameterAssert((keys != NULL) && (keyHashes != NULL) && (objects != NULL) && (_JKDictionaryClass != NULL) && (_JKDictionaryInstanceSize > 0UL));
-  JKDictionary *dictionary = NULL;
-  if(JK_EXPECT_T((dictionary = (JKDictionary *)calloc(1UL, _JKDictionaryInstanceSize)) != NULL)) { // Directly allocate the JKArray instance via calloc.
+  YJKDictionary *dictionary = NULL;
+  if(JK_EXPECT_T((dictionary = (YJKDictionary *)calloc(1UL, _JKDictionaryInstanceSize)) != NULL)) { // Directly allocate the JKArray instance via calloc.
     dictionary->isa      = (mutableCollection == NO) ? _JKDictionaryClass : _JKMutableDictionaryClass;
     if((dictionary = [dictionary init]) == NULL) { return(NULL); }
     dictionary->capacity = _JKDictionaryCapacityForCount(count);
@@ -965,27 +965,27 @@ static JKDictionary *_JKDictionaryCreate(id *keys, NSUInteger *keyHashes, id *ob
   [super dealloc];
 }
 
-static JKHashTableEntry *_JKDictionaryHashEntry(JKDictionary *dictionary) {
+static JKHashTableEntry *_JKDictionaryHashEntry(YJKDictionary *dictionary) {
   NSCParameterAssert(dictionary != NULL);
   return(dictionary->entry);
 }
 
-static NSUInteger _JKDictionaryCapacity(JKDictionary *dictionary) {
+static NSUInteger _JKDictionaryCapacity(YJKDictionary *dictionary) {
   NSCParameterAssert(dictionary != NULL);
   return(dictionary->capacity);
 }
 
-static NSUInteger _JKDictionaryCount(JKDictionary *dictionary) {
+static NSUInteger _JKDictionaryCount(YJKDictionary *dictionary) {
   NSCParameterAssert(dictionary != NULL);
   return(dictionary->count);
 }
 
-static void _JKDictionaryIncrementMutations(JKDictionary *dictionary) {
+static void _JKDictionaryIncrementMutations(YJKDictionary *dictionary) {
   NSCParameterAssert(dictionary != NULL);
   if(++dictionary->mutations == 0UL) { dictionary->mutations = 1UL; }
 }
 
-static void _JKDictionaryRemoveObjectWithEntry(JKDictionary *dictionary, JKHashTableEntry *entry) {
+static void _JKDictionaryRemoveObjectWithEntry(YJKDictionary *dictionary, JKHashTableEntry *entry) {
   NSCParameterAssert((dictionary != NULL) && (entry != NULL) && (entry->key != NULL) && (entry->object != NULL) && (dictionary->count > 0UL));
   CFRelease(entry->key);    entry->key    = NULL;
   CFRelease(entry->object); entry->object = NULL;
@@ -993,7 +993,7 @@ static void _JKDictionaryRemoveObjectWithEntry(JKDictionary *dictionary, JKHashT
   dictionary->count--;
 }
 
-static void _JKDictionaryAddObject(JKDictionary *dictionary, NSUInteger keyHash, id key, id object) {
+static void _JKDictionaryAddObject(YJKDictionary *dictionary, NSUInteger keyHash, id key, id object) {
   NSCParameterAssert((dictionary != NULL) && (key != NULL) && (object != NULL) && (dictionary->count < dictionary->capacity) && (dictionary->entry != NULL));
   NSUInteger keyEntry = keyHash % dictionary->capacity, idx = 0UL;
   for(idx = 0UL; idx < dictionary->capacity; idx++) {
@@ -1013,7 +1013,7 @@ static void _JKDictionaryAddObject(JKDictionary *dictionary, NSUInteger keyHash,
   return(count);
 }
 
-static JKHashTableEntry *_JKDictionaryHashTableEntryForKey(JKDictionary *dictionary, id aKey) {
+static JKHashTableEntry *_JKDictionaryHashTableEntryForKey(YJKDictionary *dictionary, id aKey) {
   NSCParameterAssert((dictionary != NULL) && (dictionary->entry != NULL) && (dictionary->count <= dictionary->capacity));
   if(aKey == NULL) { return(NULL); }
   NSUInteger        keyHash = CFHash(aKey), keyEntry = (keyHash % dictionary->capacity), idx = 0UL;
@@ -1033,7 +1033,7 @@ static JKHashTableEntry *_JKDictionaryHashTableEntryForKey(JKDictionary *diction
   return((atEntry != NULL) ? atEntry->object : NULL);
 }
 
-static NSUInteger _JKDictionaryGetKeysAndObjects(JKDictionary *dictionary, NSUInteger arrayLength, id keys[arrayLength], id objects[arrayLength]) {
+static NSUInteger _JKDictionaryGetKeysAndObjects(YJKDictionary *dictionary, NSUInteger arrayLength, id keys[arrayLength], id objects[arrayLength]) {
   NSCParameterAssert((dictionary != NULL) && (dictionary->entry != NULL) && (dictionary->count <= dictionary->capacity));
   NSUInteger atEntry = 0UL; NSUInteger arrayIdx = 0UL;
   for(atEntry = 0UL; (atEntry < dictionary->capacity) && (arrayIdx < arrayLength); atEntry++) {
@@ -1068,7 +1068,7 @@ static NSUInteger _JKDictionaryGetKeysAndObjects(JKDictionary *dictionary, NSUIn
 
 - (NSEnumerator *)keyEnumerator
 {
-  return([[[JKDictionaryEnumerator alloc] initWithJKDictionary:self] autorelease]);
+  return([[[YJKDictionaryEnumerator alloc] initWithJKDictionary:self] autorelease]);
 }
 
 - (id)copyWithZone:(NSZone *)zone
@@ -1091,10 +1091,10 @@ static NSUInteger _JKDictionaryGetKeysAndObjects(JKDictionary *dictionary, NSUIn
 
 
 #pragma mark -
-@interface JKMutableDictionary : NSMutableDictionary 
+@interface YJKMutableDictionary : NSMutableDictionary 
 @end
 
-@implementation JKMutableDictionary
+@implementation YJKMutableDictionary
 
 + (void)load
 {
@@ -1121,39 +1121,39 @@ static NSUInteger _JKDictionaryGetKeysAndObjects(JKDictionary *dictionary, NSUIn
   if(aKey     == NULL) { [NSException raise:NSInvalidArgumentException format:@"*** -[%@ %@]: attempt to insert nil key",             NSStringFromClass([self class]), NSStringFromSelector(_cmd)];       }
   if(anObject == NULL) { [NSException raise:NSInvalidArgumentException format:@"*** -[%@ %@]: attempt to insert nil value (key: %@)", NSStringFromClass([self class]), NSStringFromSelector(_cmd), aKey]; }
   
-  _JKDictionaryResizeIfNeccessary((JKDictionary *)self);
+  _JKDictionaryResizeIfNeccessary((YJKDictionary *)self);
 #ifndef __clang_analyzer__
   aKey     = [aKey     copy];   // Why on earth would clang complain that this -copy "might leak", 
   anObject = [anObject retain]; // but this -retain doesn't!?
 #endif // __clang_analyzer__
-  _JKDictionaryAddObject((JKDictionary *)self, CFHash(aKey), aKey, anObject);
-  _JKDictionaryIncrementMutations((JKDictionary *)self);
+  _JKDictionaryAddObject((YJKDictionary *)self, CFHash(aKey), aKey, anObject);
+  _JKDictionaryIncrementMutations((YJKDictionary *)self);
 }
 
 - (void)removeObjectForKey:(id)aKey
 {
   if(aKey == NULL) { [NSException raise:NSInvalidArgumentException format:@"*** -[%@ %@]: attempt to remove nil key", NSStringFromClass([self class]), NSStringFromSelector(_cmd)]; }
-  JKHashTableEntry *entry = _JKDictionaryHashTableEntryForKey((JKDictionary *)self, aKey);
+  JKHashTableEntry *entry = _JKDictionaryHashTableEntryForKey((YJKDictionary *)self, aKey);
   if(entry != NULL) {
-    _JKDictionaryRemoveObjectWithEntry((JKDictionary *)self, entry);
-    _JKDictionaryIncrementMutations((JKDictionary *)self);
+    _JKDictionaryRemoveObjectWithEntry((YJKDictionary *)self, entry);
+    _JKDictionaryIncrementMutations((YJKDictionary *)self);
   }
 }
 
 - (id)copyWithZone:(NSZone *)zone
 {
-  NSUInteger dictionaryCount = _JKDictionaryCount((JKDictionary *)self);
+  NSUInteger dictionaryCount = _JKDictionaryCount((YJKDictionary *)self);
   id stackKeys[dictionaryCount], stackObjects[dictionaryCount];
-  NSUInteger gotCount = _JKDictionaryGetKeysAndObjects((JKDictionary *)self, dictionaryCount, stackKeys, stackObjects);
+  NSUInteger gotCount = _JKDictionaryGetKeysAndObjects((YJKDictionary *)self, dictionaryCount, stackKeys, stackObjects);
   NSParameterAssert(gotCount == dictionaryCount);
   return([[NSDictionary allocWithZone:zone] initWithObjects:stackObjects forKeys:stackKeys count:gotCount]);
 }
 
 - (id)mutableCopyWithZone:(NSZone *)zone
 {
-  NSUInteger dictionaryCount = _JKDictionaryCount((JKDictionary *)self);
+  NSUInteger dictionaryCount = _JKDictionaryCount((YJKDictionary *)self);
   id stackKeys[dictionaryCount], stackObjects[dictionaryCount];
-  NSUInteger gotCount = _JKDictionaryGetKeysAndObjects((JKDictionary *)self, dictionaryCount, stackKeys, stackObjects);
+  NSUInteger gotCount = _JKDictionaryGetKeysAndObjects((YJKDictionary *)self, dictionaryCount, stackKeys, stackObjects);
   NSParameterAssert(gotCount == dictionaryCount);
   return([[NSMutableDictionary allocWithZone:zone] initWithObjects:stackObjects forKeys:stackKeys count:gotCount]);
 }
@@ -2129,7 +2129,7 @@ static void *jk_object_for_token(JKParseState *parseState) {
 }
 
 #pragma mark -
-@implementation JSONDecoder
+@implementation YJSONDecoder
 
 static Class            _jk_NSNumberClass;
 static NSNumberAllocImp _jk_NSNumberAllocImp;
@@ -2195,7 +2195,7 @@ static NSNumberInitWithUnsignedLongLongImp _jk_NSNumberInitWithUnsignedLongLongI
 }
 
 // This is here primarily to support the NSString and NSData convenience functions so the autoreleased JSONDecoder can release most of its resources before the pool pops.
-static void _JSONDecoderCleanup(JSONDecoder *decoder) {
+static void _JSONDecoderCleanup(YJSONDecoder *decoder) {
   if((decoder != NULL) && (decoder->parseState != NULL)) {
     jk_managedBuffer_release(&decoder->parseState->token.tokenBuffer);
     jk_objectStack_release(&decoder->parseState->objectStack);
@@ -2399,7 +2399,7 @@ static id _JKParseUTF8String(JKParseState *parseState, BOOL mutableCollections, 
 static id _NSStringObjectFromJSONString(NSString *jsonString, JKParseOptionFlags parseOptionFlags, NSError **error, BOOL mutableCollection) {
   id                returnObject = NULL;
   CFMutableDataRef  mutableData  = NULL;
-  JSONDecoder      *decoder      = NULL;
+  YJSONDecoder      *decoder      = NULL;
   
   CFIndex    stringLength     = CFStringGetLength((CFStringRef)jsonString);
   NSUInteger stringUTF8Length = [jsonString lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
@@ -2411,8 +2411,8 @@ static id _NSStringObjectFromJSONString(NSString *jsonString, JKParseOptionFlags
     convertedCount = CFStringGetBytes((CFStringRef)jsonString, CFRangeMake(0L, stringLength), kCFStringEncodingUTF8, '?', NO, utf8String, (NSUInteger)stringUTF8Length, &usedBytes);
     if(JK_EXPECT_F(convertedCount != stringLength) || JK_EXPECT_F(usedBytes < 0L)) { if(error != NULL) { *error = [NSError errorWithDomain:@"JKErrorDomain" code:-1L userInfo:[NSDictionary dictionaryWithObject:@"An error occurred converting the contents of a NSString to UTF8." forKey:NSLocalizedDescriptionKey]]; } goto exitNow; }
     
-    if(mutableCollection == NO) { returnObject = [(decoder = [JSONDecoder decoderWithParseOptions:parseOptionFlags])        objectWithUTF8String:(const unsigned char *)utf8String length:(size_t)usedBytes error:error]; }
-    else                        { returnObject = [(decoder = [JSONDecoder decoderWithParseOptions:parseOptionFlags]) mutableObjectWithUTF8String:(const unsigned char *)utf8String length:(size_t)usedBytes error:error]; }
+    if(mutableCollection == NO) { returnObject = [(decoder = [YJSONDecoder decoderWithParseOptions:parseOptionFlags])        objectWithUTF8String:(const unsigned char *)utf8String length:(size_t)usedBytes error:error]; }
+    else                        { returnObject = [(decoder = [YJSONDecoder decoderWithParseOptions:parseOptionFlags]) mutableObjectWithUTF8String:(const unsigned char *)utf8String length:(size_t)usedBytes error:error]; }
   }
   
 exitNow:
@@ -2468,8 +2468,8 @@ exitNow:
 
 - (id)objectFromJSONDataWithParseOptions:(JKParseOptionFlags)parseOptionFlags error:(NSError **)error
 {
-  JSONDecoder *decoder = NULL;
-  id returnObject = [(decoder = [JSONDecoder decoderWithParseOptions:parseOptionFlags]) objectWithData:self error:error];
+  YJSONDecoder *decoder = NULL;
+  id returnObject = [(decoder = [YJSONDecoder decoderWithParseOptions:parseOptionFlags]) objectWithData:self error:error];
   if(decoder != NULL) { _JSONDecoderCleanup(decoder); }
   return(returnObject);
 }
@@ -2486,8 +2486,8 @@ exitNow:
 
 - (id)mutableObjectFromJSONDataWithParseOptions:(JKParseOptionFlags)parseOptionFlags error:(NSError **)error
 {
-  JSONDecoder *decoder = NULL;
-  id returnObject = [(decoder = [JSONDecoder decoderWithParseOptions:parseOptionFlags]) mutableObjectWithData:self error:error];
+  YJSONDecoder *decoder = NULL;
+  id returnObject = [(decoder = [YJSONDecoder decoderWithParseOptions:parseOptionFlags]) mutableObjectWithData:self error:error];
   if(decoder != NULL) { _JSONDecoderCleanup(decoder); }
   return(returnObject);
 }
@@ -2840,7 +2840,7 @@ static int jk_encode_add_atom_to_buffer(JKEncodeState *encodeState, void *object
 }
 
 
-@implementation JKSerializer
+@implementation YJKSerializer
 
 + (id)serializeObject:(id)object options:(JKSerializeOptionFlags)optionFlags encodeOption:(JKEncodeOptionType)encodeOption error:(NSError **)error
 {
@@ -2936,7 +2936,7 @@ errorExit:
 
 - (NSData *)JSONDataWithOptions:(JKSerializeOptionFlags)serializeOptions includeQuotes:(BOOL)includeQuotes error:(NSError **)error
 {
-  return([JKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsData | ((includeQuotes == NO) ? JKEncodeOptionStringObjTrimQuotes : 0UL) | JKEncodeOptionStringObj) error:error]);
+  return([YJKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsData | ((includeQuotes == NO) ? JKEncodeOptionStringObjTrimQuotes : 0UL) | JKEncodeOptionStringObj) error:error]);
 }
 
 - (NSString *)JSONString
@@ -2946,7 +2946,7 @@ errorExit:
 
 - (NSString *)JSONStringWithOptions:(JKSerializeOptionFlags)serializeOptions includeQuotes:(BOOL)includeQuotes error:(NSError **)error
 {
-  return([JKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsString | ((includeQuotes == NO) ? JKEncodeOptionStringObjTrimQuotes : 0UL) | JKEncodeOptionStringObj) error:error]);
+  return([YJKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsString | ((includeQuotes == NO) ? JKEncodeOptionStringObjTrimQuotes : 0UL) | JKEncodeOptionStringObj) error:error]);
 }
 
 @end
@@ -2960,7 +2960,7 @@ errorExit:
 
 - (NSData *)JSONDataWithOptions:(JKSerializeOptionFlags)serializeOptions error:(NSError **)error
 {
-  return([JKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsData | JKEncodeOptionCollectionObj) error:error]);
+  return([YJKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsData | JKEncodeOptionCollectionObj) error:error]);
 }
 
 - (NSString *)JSONString
@@ -2970,7 +2970,7 @@ errorExit:
 
 - (NSString *)JSONStringWithOptions:(JKSerializeOptionFlags)serializeOptions error:(NSError **)error
 {
-  return([JKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsString | JKEncodeOptionCollectionObj) error:error]);
+  return([YJKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsString | JKEncodeOptionCollectionObj) error:error]);
 }
 
 @end
@@ -2984,7 +2984,7 @@ errorExit:
 
 - (NSData *)JSONDataWithOptions:(JKSerializeOptionFlags)serializeOptions error:(NSError **)error
 {
-  return([JKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsData | JKEncodeOptionCollectionObj) error:error]);
+  return([YJKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsData | JKEncodeOptionCollectionObj) error:error]);
 }
 
 - (NSString *)JSONString
@@ -2994,7 +2994,7 @@ errorExit:
 
 - (NSString *)JSONStringWithOptions:(JKSerializeOptionFlags)serializeOptions error:(NSError **)error
 {
-  return([JKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsString | JKEncodeOptionCollectionObj) error:error]);
+  return([YJKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsString | JKEncodeOptionCollectionObj) error:error]);
 }
 
 @end
