@@ -18,6 +18,7 @@
 #define YOZIO_P_SCHEMA_VERSION @"sv"
 #define YOZIO_P_APP_KEY @"ak"
 #define YOZIO_P_OPEN_UDID @"ou"
+#define YOZIO_P_DEVICE_TYPE @"dt"
 #define YOZIO_P_DEVICE_NAME @"dn"
 #define YOZIO_P_PAYLOAD_COUNT @"plc"
 #define YOZIO_P_PAYLOAD @"pl"

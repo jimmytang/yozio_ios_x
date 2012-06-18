@@ -438,6 +438,8 @@ static Yozio *instance = nil;
   [payload setObject:YOZIO_BEACON_SCHEMA_VERSION forKey:YOZIO_P_SCHEMA_VERSION];
   [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
   [payload setObject:[self notNil:self.deviceId] forKey:YOZIO_P_OPEN_UDID];
+  [payload setObject:YOZIO_DEVICE_TYPE_IOS forKey:YOZIO_P_DEVICE_TYPE];
+  
   
   NSString *urlParams = [NSString stringWithFormat:@"data=%@", [payload JSONString]];
   NSString *urlString =
