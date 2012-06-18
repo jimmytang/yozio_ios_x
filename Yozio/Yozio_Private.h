@@ -37,6 +37,9 @@
 // The number of items in the queue before forcing a flush.
 #define YOZIO_FLUSH_DATA_COUNT 1
 
+// The number of items to flush at a time
+#define YOZIO_FLUSH_DATA_SIZE 20
+
 // Actions
 #define YOZIO_VIEWED_LINK_ACTION @"11"
 #define YOZIO_SHARED_LINK_ACTION @"12"
@@ -44,7 +47,7 @@
 
 // XX_DATA_LIMIT describes the required number of items in the queue before that instrumentation
 // event type starts being dropped.
-#define YOZIO_ACTION_DATA_LIMIT 5000
+#define YOZIO_ACTION_DATA_LIMIT 200
 
 #define YOZIO_DEVICE_TYPE_IOS @"2"
 

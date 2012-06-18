@@ -81,16 +81,8 @@ static Yozio *instance = nil;
                          selector:@selector(onApplicationWillTerminate:)
                              name:UIApplicationWillTerminateNotification
                            object:nil];
-  [notificationCenter addObserver:self
-                         selector:@selector(onApplicationWillResignActive:)
-                             name:UIApplicationWillResignActiveNotification
-                           object:nil];
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_4_0
   if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]) {
-    [notificationCenter addObserver:self
-                           selector:@selector(onApplicationWillEnterForeground:)
-                               name:UIApplicationWillEnterForegroundNotification
-                             object:nil];
     [notificationCenter addObserver:self
                            selector:@selector(onApplicationDidEnterBackground:)
                                name:UIApplicationDidEnterBackgroundNotification
@@ -225,6 +217,11 @@ static Yozio *instance = nil;
   [self saveUnsentData];
 }
 
+- (void)onApplicationDidEnterBackground:(NSNotification *)notification
+{
+  [self saveUnsentData];
+}
+
 /*******************************************
  * Data collection helper methods.
  *******************************************/
@@ -290,8 +287,8 @@ static Yozio *instance = nil;
     [Yozio log:@"Already flushing"];
     return;
   }
-  if ([self.dataQueue count] > YOZIO_FLUSH_DATA_COUNT) {
-    self.dataToSend = [self.dataQueue subarrayWithRange:NSMakeRange(0, YOZIO_FLUSH_DATA_COUNT)];
+  if ([self.dataQueue count] > YOZIO_FLUSH_DATA_SIZE) {
+    self.dataToSend = [self.dataQueue subarrayWithRange:NSMakeRange(0, YOZIO_FLUSH_DATA_SIZE)];
   } else {
     self.dataToSend = [NSArray arrayWithArray:self.dataQueue];
   }
@@ -313,15 +310,21 @@ static Yozio *instance = nil;
   [YSeriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
     if (error) {
       [Yozio log:@"Flush error %@", error];
+      self.dataToSend = nil;
     } else {
       if ([response statusCode] == 200) {
         [Yozio log:@"dataQueue before remove: %@", self.dataQueue];
         [self.dataQueue removeObjectsInArray:self.dataToSend];
         [Yozio log:@"dataQueue after remove: %@", self.dataQueue];
+        [Yozio log:@"flush successful. flushing any additional data"];
+        self.dataToSend = nil;
+        [self checkDataQueueSize];
+      }
+      else {
+        self.dataToSend = nil;
       }
     }
     [Yozio log:@"flush request complete"];
-    self.dataToSend = nil;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
   }];
 }
