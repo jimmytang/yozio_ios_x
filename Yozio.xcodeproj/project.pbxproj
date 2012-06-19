@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0E5009AA146A74C200F0CD4D /* YJSONKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E5009A3146A74C200F0CD4D /* YJSONKit.h */; };
-		0E5009AB146A74C200F0CD4D /* YJSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E5009A4146A74C200F0CD4D /* YJSONKit.m */; };
 		0E5009B1146A754500F0CD4D /* Yozio.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E7848AA146A7468004269C5 /* Yozio.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0E5009B3146A756900F0CD4D /* Yozio_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E5009B2146A756900F0CD4D /* Yozio_Private.h */; };
 		0E7848A6146A7468004269C5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E7848A5146A7468004269C5 /* Foundation.framework */; };
@@ -61,6 +59,8 @@
 		F7F048C11581CAAB004C4772 /* YFBEncryptorAES.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F048BD1581CAAB004C4772 /* YFBEncryptorAES.m */; };
 		F7F048C21581CAAB004C4772 /* NSData+Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = F7F048BE1581CAAB004C4772 /* NSData+Base64.h */; };
 		F7F048C31581CAAB004C4772 /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F048BF1581CAAB004C4772 /* NSData+Base64.m */; };
+		F7FB3B0F1591365700863328 /* YJSONKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F7FB3B0D1591365700863328 /* YJSONKit.h */; };
+		F7FB3B101591365700863328 /* YJSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB3B0E1591365700863328 /* YJSONKit.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,9 +74,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0E5009A3146A74C200F0CD4D /* YJSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YJSONKit.h; sourceTree = "<group>"; };
-		0E5009A4146A74C200F0CD4D /* YJSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YJSONKit.m; sourceTree = "<group>"; };
-		0E5009A5146A74C200F0CD4D /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		0E5009B2146A756900F0CD4D /* Yozio_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Yozio_Private.h; sourceTree = "<group>"; };
 		0E7848A2146A7468004269C5 /* libYozio.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libYozio.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E7848A5146A7468004269C5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -134,6 +131,9 @@
 		F7F048BD1581CAAB004C4772 /* YFBEncryptorAES.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YFBEncryptorAES.m; sourceTree = "<group>"; };
 		F7F048BE1581CAAB004C4772 /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
 		F7F048BF1581CAAB004C4772 /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Base64.m"; sourceTree = "<group>"; };
+		F7FB3B071591364600863328 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README.md; path = ../JSONKit/README.md; sourceTree = "<group>"; };
+		F7FB3B0D1591365700863328 /* YJSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YJSONKit.h; path = Yozio/lib/JSONKit/YJSONKit.h; sourceTree = SOURCE_ROOT; };
+		F7FB3B0E1591365700863328 /* YJSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YJSONKit.m; path = Yozio/lib/JSONKit/YJSONKit.m; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -177,9 +177,9 @@
 		0E5009A1146A74C200F0CD4D /* YJSONKit */ = {
 			isa = PBXGroup;
 			children = (
-				0E5009A3146A74C200F0CD4D /* YJSONKit.h */,
-				0E5009A4146A74C200F0CD4D /* YJSONKit.m */,
-				0E5009A5146A74C200F0CD4D /* README.md */,
+				F7FB3B0D1591365700863328 /* YJSONKit.h */,
+				F7FB3B0E1591365700863328 /* YJSONKit.m */,
+				F7FB3B071591364600863328 /* README.md */,
 			);
 			name = YJSONKit;
 			path = "johnezang-JSONKit-465adc1";
@@ -384,7 +384,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E5009B1146A754500F0CD4D /* Yozio.h in Headers */,
-				0E5009AA146A74C200F0CD4D /* YJSONKit.h in Headers */,
 				0E5009B3146A756900F0CD4D /* Yozio_Private.h in Headers */,
 				0EBCF58A148F563D0079C9F3 /* YSeriouslyJSON.h in Headers */,
 				0EBCF58C148F563D0079C9F3 /* yajl_common.h in Headers */,
@@ -412,6 +411,7 @@
 				F7F048C01581CAAB004C4772 /* YFBEncryptorAES.h in Headers */,
 				F7F048C21581CAAB004C4772 /* NSData+Base64.h in Headers */,
 				F71CA3C41581DF5200735950 /* NSString+MD5.h in Headers */,
+				F7FB3B0F1591365700863328 /* YJSONKit.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -528,7 +528,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E7848AC146A7468004269C5 /* Yozio.m in Sources */,
-				0E5009AB146A74C200F0CD4D /* YJSONKit.m in Sources */,
 				0EBCF58B148F563D0079C9F3 /* YSeriouslyJSON.m in Sources */,
 				0EBCF58F148F563D0079C9F3 /* yajl.c in Sources */,
 				0EBCF590148F563D0079C9F3 /* yajl_alloc.c in Sources */,
@@ -543,6 +542,7 @@
 				F7F048C11581CAAB004C4772 /* YFBEncryptorAES.m in Sources */,
 				F7F048C31581CAAB004C4772 /* NSData+Base64.m in Sources */,
 				F71CA3C51581DF5200735950 /* NSString+MD5.m in Sources */,
+				F7FB3B101591365700863328 /* YJSONKit.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
