@@ -21,7 +21,6 @@
 
 // Automatically determined instrumentation variables.
 @synthesize deviceId;
-@synthesize deviceName;
 
 // Internal variables.
 @synthesize dataQueue;
@@ -54,9 +53,7 @@ static Yozio *instance = nil;
   self._secretKey = nil;
   
   // Initialize constant intrumentation variables.
-  UIDevice* device = [UIDevice currentDevice];
   self.deviceId = [YOpenUDID value];
-  self.deviceName = [device name];
   
   // Initialize  mutable instrumentation variables.
   
@@ -250,7 +247,6 @@ static Yozio *instance = nil;
      [self notNil:type], YOZIO_D_TYPE,
      [self notNil:linkName], YOZIO_D_LINK_NAME,
      [self notNil:[self timeStampString]], YOZIO_D_TIMESTAMP,
-     [NSNumber numberWithInteger:dataCount], YOZIO_D_DATA_COUNT,
      nil];
     [self.dataQueue addObject:d];
     [Yozio log:@"doCollect: %@", d];
@@ -298,7 +294,7 @@ static Yozio *instance = nil;
   NSString *escapedUrlParams =
   [[urlParams stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"];
   NSString *urlString =
-  [NSString stringWithFormat:@"http://%@/isdk?%@", YOZIO_TRACKING_SERVER_URL, escapedUrlParams];
+  [NSString stringWithFormat:@"http://%@/api/v1/batch_events?%@", YOZIO_TRACKING_SERVER_URL, escapedUrlParams];
   
   [Yozio log:@"Final get request url: %@", urlString];
   
@@ -327,13 +323,10 @@ static Yozio *instance = nil;
 
 - (NSString *)buildPayload
 {  
-  NSNumber *packetCount = [NSNumber numberWithInteger:[self.dataToSend count]];
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
-  [payload setObject:YOZIO_BEACON_SCHEMA_VERSION forKey:YOZIO_P_SCHEMA_VERSION];
   [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
-  [payload setObject:[self notNil:self.deviceId] forKey:YOZIO_P_OPEN_UDID];
-  [payload setObject:self.deviceName forKey:YOZIO_P_DEVICE_NAME];
-  [payload setObject:packetCount forKey:YOZIO_P_PAYLOAD_COUNT];
+  [payload setObject:[self notNil:self.deviceId] forKey:YOZIO_P_UDID];
+  [payload setObject:YOZIO_DEVICE_TYPE_IOS forKey:YOZIO_P_DEVICE_TYPE];
   [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];
   
@@ -422,9 +415,8 @@ static Yozio *instance = nil;
   }
   
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
-  [payload setObject:YOZIO_BEACON_SCHEMA_VERSION forKey:YOZIO_P_SCHEMA_VERSION];
   [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
-  [payload setObject:[self notNil:self.deviceId] forKey:YOZIO_P_OPEN_UDID];
+  [payload setObject:[self notNil:self.deviceId] forKey:YOZIO_P_UDID];
   [payload setObject:YOZIO_DEVICE_TYPE_IOS forKey:YOZIO_P_DEVICE_TYPE];
   
   

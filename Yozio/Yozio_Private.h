@@ -15,19 +15,15 @@
 #define YOZIO_LOG false
 
 // Payload keys.
-#define YOZIO_P_SCHEMA_VERSION @"sv"
 #define YOZIO_P_APP_KEY @"ak"
-#define YOZIO_P_OPEN_UDID @"ou"
+#define YOZIO_P_UDID @"ud"
 #define YOZIO_P_DEVICE_TYPE @"dt"
-#define YOZIO_P_DEVICE_NAME @"dn"
-#define YOZIO_P_PAYLOAD_COUNT @"plc"
 #define YOZIO_P_PAYLOAD @"pl"
 
 // Payload data entry keys.
 #define YOZIO_D_TYPE @"tp"
 #define YOZIO_D_LINK_NAME @"ln"
 #define YOZIO_D_TIMESTAMP @"ts"
-#define YOZIO_D_DATA_COUNT @"dc"
 
 // Mobile configuration data keys.
 #define YOZIO_URLS_KEY @"urls"
@@ -76,7 +72,6 @@
 
 // Automatically determined instrumentation variables.
 @property(nonatomic, retain) NSString *deviceId;
-@property(nonatomic, retain) NSString *deviceName;
 
 // Internal variables.
 @property(nonatomic, assign) NSInteger dataCount;
