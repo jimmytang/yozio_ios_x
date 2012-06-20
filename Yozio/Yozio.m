@@ -4,8 +4,6 @@
 
 #import "UIKit/UIKit.h"
 #import "CommonCrypto/CommonCryptor.h"
-#import "YFBEncryptorAES.h"
-#import "NSData+Base64.h"
 #import "NSString+MD5.h"
 #import "YJSONKit.h"
 #import "YSeriously.h"
@@ -293,12 +291,10 @@ static Yozio *instance = nil;
     self.dataToSend = [NSArray arrayWithArray:self.dataQueue];
   }
   [Yozio log:@"Flushing..."];
-  NSData *iv = [YFBEncryptorAES generateIv];
-  NSString *ivBase64 = [iv base64EncodedString];
+
+  NSString *dataStr = [self buildPayload];
   
-  NSString *dataStr = [self buildPayload:iv];
-  
-  NSString *urlParams = [NSString stringWithFormat:@"data=%@&%@=%@&iv=%@", dataStr, YOZIO_P_APP_KEY, self._appKey, ivBase64];
+  NSString *urlParams = [NSString stringWithFormat:@"data=%@", dataStr];
   NSString *escapedUrlParams =
   [[urlParams stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"];
   NSString *urlString =
@@ -329,7 +325,7 @@ static Yozio *instance = nil;
   }];
 }
 
-- (NSString *)buildPayload:(NSData *)iv
+- (NSString *)buildPayload
 {  
   NSNumber *packetCount = [NSNumber numberWithInteger:[self.dataToSend count]];
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
@@ -343,20 +339,8 @@ static Yozio *instance = nil;
   
   //  JSONify
   NSString *jsonPayload = [payload JSONString];
-  //  Convert to Data
-  NSData *data = [jsonPayload dataUsingEncoding:NSUTF8StringEncoding];
   
-  NSString* md5 = [self._secretKey MD5String];
-  NSData *key = [md5 dataUsingEncoding:NSUTF8StringEncoding];
-  
-  //  AES Encrypt
-  NSData *encryptedData = [YFBEncryptorAES encryptData:data
-                                                   key:key
-                                                    iv:iv];
-  //  Base64 encode
-  NSString *base64EncryptedData = [encryptedData base64EncodedString];
-  
-  return base64EncryptedData;
+  return jsonPayload;
 }
 
 

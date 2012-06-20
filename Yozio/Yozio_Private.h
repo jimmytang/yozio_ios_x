@@ -100,7 +100,7 @@
          maxQueue:(NSInteger)maxQueue;
 - (void)checkDataQueueSize;
 - (void)doFlush;
-- (NSString *)buildPayload:(NSData *)iv;
+- (NSString *)buildPayload;
 - (NSString *)notNil:(NSString *)str;
 - (NSDictionary *)dictNotNil:(NSDictionary *)dict;
 
