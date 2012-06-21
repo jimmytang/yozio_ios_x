@@ -146,7 +146,6 @@ static yajl_callbacks callbacks = {
     hand = yajl_alloc(&callbacks, &cfg, NULL, self);
     yajl_bs_init(state, &(hand->alloc));
     yajl_bs_push(state, state_begin);
-    NSLog(@"%d", yajl_bs_current(state));
 
     unsigned char *input = (unsigned char *)[string UTF8String];
     unsigned int length = [string lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
