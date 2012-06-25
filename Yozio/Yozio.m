@@ -30,7 +30,6 @@
 @synthesize config;
 @synthesize stopBlocking;
 
-
 /*******************************************
  * Initialization.
  *******************************************/
