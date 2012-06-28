@@ -142,10 +142,10 @@ static Yozio *instance = nil;
   }
   else {
     NSString *urlParams = 
-        [NSString stringWithFormat:@"app_key=%@&yozio_udid=%@&device_type=%@&link_name=%@&dest_url=%@&external_user_id=%@", 
-             instance._appKey, instance.deviceId, YOZIO_DEVICE_TYPE_IOS, linkName, destinationUrl, @""];
+        [NSString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@", 
+             YOZIO_GET_URL_P_APP_KEY, instance._appKey, YOZIO_GET_URL_P_YOZIO_UDID, instance.deviceId, YOZIO_GET_URL_P_DEVICE_TYPE, YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_URL_P_LINK_NAME, linkName, YOZIO_GET_URL_P_DEST_URL, destinationUrl, @""];
     NSString *urlString =
-        [NSString stringWithFormat:@"http://%@/api/v1/get_url?%@", YOZIO_CONFIGURATION_SERVER_URL, urlParams];
+        [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE, urlParams];
     NSString* escapedUrlString =  [urlString stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
     [Yozio log:@"Final getUrl Request: %@", escapedUrlString];
     
@@ -289,11 +289,11 @@ static Yozio *instance = nil;
 
   NSString *dataStr = [self buildPayload];
   
-  NSString *urlParams = [NSString stringWithFormat:@"data=%@", dataStr];
+  NSString *urlParams = [NSString stringWithFormat:@"%@=%@", YOZIO_BATCH_EVENTS_P_DATA, dataStr];
   NSString *escapedUrlParams =
   [[urlParams stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"];
   NSString *urlString =
-  [NSString stringWithFormat:@"http://%@/api/v1/batch_events?%@", YOZIO_TRACKING_SERVER_URL, escapedUrlParams];
+  [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_BATCH_EVENTS_ROUTE, escapedUrlParams];
   
   [Yozio log:@"Final get request url: %@", urlString];
   
@@ -421,7 +421,7 @@ static Yozio *instance = nil;
   
   NSString *urlParams = [NSString stringWithFormat:@"data=%@", [payload JSONString]];
   NSString *urlString =
-  [NSString stringWithFormat:@"http://%@/get_config?%@", YOZIO_CONFIGURATION_SERVER_URL, urlParams];
+  [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_CONFIG_ROUTE, urlParams];
   NSString* escapedUrlString =  [urlString stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
   [Yozio log:@"Final configuration request url: %@", escapedUrlString];
   
