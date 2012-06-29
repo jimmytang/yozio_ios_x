@@ -42,7 +42,7 @@ self._key_ = (_value_); \
 
 + (id)operationWithRequest:(NSURLRequest *)urlRequest handler:(SeriouslyHandler)handler progressHandler:(SeriouslyProgressHandler)progressHandler {
     // Don't you dare release this until everything is finished or canceled
-    return [[self alloc] initWithRequest:urlRequest handler:handler progressHandler:progressHandler];
+    return [[[self alloc] initWithRequest:urlRequest handler:handler progressHandler:progressHandler] autorelease];
 }
 
 - (id)initWithRequest:(NSURLRequest *)urlRequest handler:(SeriouslyHandler)handler progressHandler:(SeriouslyProgressHandler)progressHandler {
