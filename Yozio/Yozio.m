@@ -131,7 +131,7 @@ static Yozio *instance = nil;
   [instance doFlush];
 }
 
-+ (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl fallbackUrl:(NSString *)fallbackUrl
++ (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl
 {
   if (instance.config == nil) {
     instance.config = [NSMutableDictionary dictionary];
@@ -142,10 +142,10 @@ static Yozio *instance = nil;
   }
   else {
     NSString *urlParams = 
-        [NSString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@", 
-             YOZIO_GET_URL_P_APP_KEY, instance._appKey, YOZIO_GET_URL_P_YOZIO_UDID, instance.deviceId, YOZIO_GET_URL_P_DEVICE_TYPE, YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_URL_P_LINK_NAME, linkName, YOZIO_GET_URL_P_DEST_URL, destinationUrl];
+    [NSString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@", 
+     YOZIO_GET_URL_P_APP_KEY, instance._appKey, YOZIO_GET_URL_P_YOZIO_UDID, instance.deviceId, YOZIO_GET_URL_P_DEVICE_TYPE, YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_URL_P_LINK_NAME, linkName, YOZIO_GET_URL_P_DEST_URL, destinationUrl];
     NSString *urlString =
-        [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE, urlParams];
+    [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE, urlParams];
     NSString* escapedUrlString =  [urlString stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
     [Yozio log:@"Final getUrl Request: %@", escapedUrlString];
     
@@ -175,18 +175,16 @@ static Yozio *instance = nil;
     while (!instance.stopBlocking && [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil]) {
       loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
     }
-    return [Yozio getUrl:destinationUrl fallbackUrl:fallbackUrl];
+    
+    // return the short url. Return destinationUrl if it can't the destinationUrl's short url.
+    if (instance.config == nil) {
+      return destinationUrl;
+    }
+    NSString *val = [instance.config objectForKey:destinationUrl];
+    return val != nil ? val : destinationUrl;
   }
 }
 
-+ (NSString *)getUrl:(NSString *)linkName fallbackUrl:(NSString *)fallbackUrl
-{
-  if (instance.config == nil) {
-    return fallbackUrl;
-  }
-  NSString *val = [instance.config objectForKey:linkName];
-  return val != nil ? val : fallbackUrl;
-}
 
 + (void)viewedLink:(NSString *)linkName
 {
