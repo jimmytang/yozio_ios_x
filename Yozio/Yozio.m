@@ -121,7 +121,14 @@ static Yozio *instance = nil;
   }
   instance._appKey = appKey;
   instance._secretKey = secretKey;
-  [instance updateConfig];
+  if (instance._appKey == nil) {
+    [Yozio log:@"updateConfig nil appKey"];
+    return;
+  }
+  if (instance.deviceId == nil) {
+    [Yozio log:@"updateConfig nil deviceId"];
+    return;
+  }
   
   // Load any previous data.
   // Perform this here instead of on applicationDidFinishLoading because instrumentation calls
@@ -395,61 +402,6 @@ static Yozio *instance = nil;
 /*******************************************
  * Configuration helper methods.
  *******************************************/
-
-/**
- * Update self.configs with data from server.
- */
-
-- (void)updateConfig
-{
-  if (self._appKey == nil) {
-    [Yozio log:@"updateConfig nil appKey"];
-    return;
-  }
-  if (self.deviceId == nil) {
-    [Yozio log:@"updateConfig nil deviceId"];
-    return;
-  }
-  
-  NSMutableDictionary* payload = [NSMutableDictionary dictionary];
-  [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
-  [payload setObject:[self notNil:self.deviceId] forKey:YOZIO_P_UDID];
-  [payload setObject:YOZIO_DEVICE_TYPE_IOS forKey:YOZIO_P_DEVICE_TYPE];
-  
-  
-  NSString *urlParams = [NSString stringWithFormat:@"data=%@", [payload JSONString]];
-  NSString *urlString =
-  [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_CONFIG_ROUTE, urlParams];
-  NSString* escapedUrlString =  [urlString stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
-  [Yozio log:@"Final configuration request url: %@", escapedUrlString];
-  
-  // Blocking
-  [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
-  
-  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-  //  add some timing check before and on response
-  [YSeriously get:escapedUrlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
-    if (error) {
-      self.stopBlocking = true;
-      [Yozio log:@"updateConfig error %@", error];
-    } else {
-      if ([response statusCode] == 200) {
-        [Yozio log:@"config before update: %@", self.config];
-        self.config = [body objectForKey:YOZIO_URLS_KEY];
-        self.stopBlocking = true;
-        [Yozio log:@"urls after update: %@", self.config];
-      }
-    }
-    [Yozio log:@"configuration request complete"];
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-  }];
-  
-  // Blocking
-  NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
-  while (!self.stopBlocking && [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil]) {
-    loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
-  }
-}
 
 - (void)stopBlockingApp {
   self.stopBlocking = true;
