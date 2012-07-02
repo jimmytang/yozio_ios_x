@@ -49,7 +49,7 @@
 // Actions
 #define YOZIO_VIEWED_LINK_ACTION @"11"
 #define YOZIO_SHARED_LINK_ACTION @"12"
-#define YOZIO_OPENED_APP_ACTION @"13"
+#define YOZIO_OPENED_APP_ACTION @"5"
 
 // XX_DATA_LIMIT describes the required number of items in the queue before that instrumentation
 // event type starts being dropped.
