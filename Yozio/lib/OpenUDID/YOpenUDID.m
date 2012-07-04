@@ -382,4 +382,31 @@ static int const kOpenUDIDRedundancySlots = 100;
     
 }
 
++ (int)getOpenUDIDSlotCount
+{
+	int slotCount = 0;
+	
+	for (int n=0; n < kOpenUDIDRedundancySlots; n++) 
+	{
+		NSString* slotPBid = [NSString stringWithFormat:@"%@%d",kOpenUDIDSlotPBPrefix,n];
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+		UIPasteboard* slotPB = [UIPasteboard pasteboardWithName:slotPBid create:NO];
+#else
+		NSPasteboard* slotPB = [NSPasteboard pasteboardWithName:slotPBid];
+#endif
+		if (slotPB)
+		{
+			NSDictionary* dict = [YOpenUDID _getDictFromPasteboard:slotPB];
+			NSString* oudid = [dict objectForKey:kOpenUDIDKey];
+			if (oudid && ([oudid length] > 0))
+			{
+				slotCount++;
+			}
+		}
+	}
+	
+	return slotCount;
+}
+
+
 @end

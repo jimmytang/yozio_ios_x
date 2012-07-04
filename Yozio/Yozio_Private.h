@@ -29,6 +29,15 @@
 #define YOZIO_P_UDID @"ud"
 #define YOZIO_P_DEVICE_TYPE @"dt"
 #define YOZIO_P_PAYLOAD @"pl"
+#define YOZIO_P_MAC_ADDRESS @"ma"
+#define YOZIO_P_OPEN_UDID @"ou"
+#define YOZIO_P_OS_VERSION @"osv"
+#define YOZIO_P_COUNTRY_CODE @"cc"
+#define YOZIO_P_LANGUAGE_CODE @"lc"
+#define YOZIO_P_LAD @"lad"
+#define YOZIO_P_OPEN_UDID_COUNT @"ouc"
+#define YOZIO_P_DISPLAY_MULTIPLIER @"dm"
+#define YOZIO_P_HARDWARE @"hw"
 
 // Payload data entry keys.
 #define YOZIO_D_TYPE @"tp"
@@ -66,7 +75,11 @@
 
   // Automatically determined instrumentation variables.
   NSString *deviceId;
-
+  NSString *hardware;
+  NSString *osVersion;
+  NSString *countryCode;
+  NSString *languageCode;
+  
   // Internal variables.
   NSInteger dataCount;
   NSMutableArray *dataQueue;
@@ -82,6 +95,10 @@
 
 // Automatically determined instrumentation variables.
 @property(nonatomic, retain) NSString *deviceId;
+@property(nonatomic, retain) NSString *hardware;
+@property(nonatomic, retain) NSString *osVersion;
+@property(nonatomic, retain) NSString *countryCode;
+@property(nonatomic, retain) NSString *languageCode;
 
 // Internal variables.
 @property(nonatomic, assign) NSInteger dataCount;
@@ -115,9 +132,6 @@
 // File system helper methods.
 - (void)saveUnsentData;
 - (void)loadUnsentData;
-
-// Configuration related helper methods.
-- (void)updateConfig;
 
 @end
 

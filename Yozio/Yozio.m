@@ -8,6 +8,11 @@
 #import "YJSONKit.h"
 #import "YSeriously.h"
 #import "YOpenUDID.h"
+#import <CommonCrypto/CommonHMAC.h>
+#include <sys/socket.h> // Per msqr
+#include <sys/sysctl.h>
+#include <net/if.h>
+#include <net/if_dl.h>
 
 #import "Yozio.h"
 #import "Yozio_Private.h"
@@ -21,6 +26,10 @@
 
 // Automatically determined instrumentation variables.
 @synthesize deviceId;
+@synthesize hardware;
+@synthesize osVersion;
+@synthesize countryCode;
+@synthesize languageCode;
 
 // Internal variables.
 @synthesize dataQueue;
@@ -52,8 +61,11 @@ static Yozio *instance = nil;
   self._secretKey = nil;
   
   // Initialize constant intrumentation variables.
+  UIDevice* device = [UIDevice currentDevice];
   self.deviceId = [YOpenUDID value];
-  
+  self.hardware = [device model];
+  self.osVersion = [device systemVersion];
+
   // Initialize  mutable instrumentation variables.
   
   self.dataCount = 0;
@@ -331,6 +343,15 @@ static Yozio *instance = nil;
   [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
   [payload setObject:[self notNil:self.deviceId] forKey:YOZIO_P_UDID];
   [payload setObject:YOZIO_DEVICE_TYPE_IOS forKey:YOZIO_P_DEVICE_TYPE];
+  [payload setObject:[self notNil:[Yozio getMACAddress]] forKey:YOZIO_P_MAC_ADDRESS];
+  [payload setObject:[self notNil:[YOpenUDID value]] forKey:YOZIO_P_OPEN_UDID];
+  [payload setObject:[NSNumber numberWithInt:[YOpenUDID getOpenUDIDSlotCount]] forKey:YOZIO_P_OPEN_UDID_COUNT];
+  [payload setObject:[self notNil:self.osVersion] forKey:YOZIO_P_OS_VERSION];
+  [payload setObject:[self notNil:self.countryCode] forKey:YOZIO_P_COUNTRY_CODE];
+  [payload setObject:[self notNil:self.languageCode] forKey:YOZIO_P_LANGUAGE_CODE];
+  [payload setObject:[self notNil:[self isJailBrokenStr]] forKey:YOZIO_P_LAD];
+  [payload setObject:[self notNil:[NSString stringWithFormat:@"%f", 1.0f]] forKey:YOZIO_P_DISPLAY_MULTIPLIER];
+  [payload setObject:[self notNil:self.hardware] forKey:YOZIO_P_HARDWARE];
   [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];
   
@@ -339,7 +360,6 @@ static Yozio *instance = nil;
   
   return jsonPayload;
 }
-
 
 - (NSString *)notNil:(NSString *)str
 {
@@ -363,14 +383,146 @@ static Yozio *instance = nil;
  * Instrumentation data helper methods.
  *******************************************/
 
+- (void)updateCountryName
+{
+  NSLocale *locale = [NSLocale currentLocale];
+  self.countryCode = [locale displayNameForKey:NSLocaleCountryCode value:[locale objectForKey: NSLocaleCountryCode]];
+}
+
+- (void)updateLanguage
+{
+  self.languageCode = [[NSLocale preferredLanguages] objectAtIndex:0];
+}
+
+static const char* jailbreak_apps[] =
+{
+	"/bin/bash",
+	"/Applications/Cydia.app", 
+	"/Applications/limera1n.app", 
+	"/Applications/greenpois0n.app", 
+	"/Applications/blackra1n.app",
+	"/Applications/blacksn0w.app",
+	"/Applications/redsn0w.app",
+	NULL,
+};
+
+- (BOOL)isJailBroken
+{
+#if TARGET_IPHONE_SIMULATOR
+	return NO;
+#endif
+	
+	// Check for known jailbreak apps. If we encounter one, the device is jailbroken.
+	for (int i = 0; jailbreak_apps[i] != NULL; ++i)
+	{
+		if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithUTF8String:jailbreak_apps[i]]])
+		{
+			//NSLog(@"isjailbroken: %s", jailbreak_apps[i]);
+			return YES;
+		}		
+	}
+	
+	return NO;
+}
+
+- (NSString*)isJailBrokenStr
+{
+	if ([self isJailBroken])
+	{
+		return @"42";
+	}
+	
+	return @"0";
+}
+
++ (NSString*)getMACAddress
+{
+	int                 mib[6];
+	size_t              len;
+	char                *buf;
+	unsigned char       *ptr;
+	struct if_msghdr    *ifm;
+	struct sockaddr_dl  *sdl;
+	
+	mib[0] = CTL_NET;
+	mib[1] = AF_ROUTE;
+	mib[2] = 0;
+	mib[3] = AF_LINK;
+	mib[4] = NET_RT_IFLIST;
+	
+	if ((mib[5] = if_nametoindex("en0")) == 0) 
+	{
+		NSLog(@"Error: if_nametoindex error\n");
+		return NULL;
+	}
+	
+	if (sysctl(mib, 6, NULL, &len, NULL, 0) < 0)
+	{
+		NSLog(@"Error: sysctl, take 1\n");
+		return NULL;
+	}
+	
+	if ((buf = malloc(len)) == NULL) 
+	{
+		NSLog(@"Could not allocate memory. error!\n");
+		return NULL;
+	}
+	
+	if (sysctl(mib, 6, buf, &len, NULL, 0) < 0) 
+	{
+		NSLog(@"Error: sysctl, take 2");
+		return NULL;
+	}
+	
+	ifm = (struct if_msghdr *)buf;
+	sdl = (struct sockaddr_dl *)(ifm + 1);
+	ptr = (unsigned char *)LLADDR(sdl);
+	NSString *macAddress = [NSString stringWithFormat:@"%02X:%02X:%02X:%02X:%02X:%02X", 
+                          *ptr, *(ptr+1), *(ptr+2), *(ptr+3), *(ptr+4), *(ptr+5)];
+	macAddress = [macAddress lowercaseString];
+	free(buf);
+	
+	return macAddress;
+}
+
+
++ (NSString*)getMACID
+{
+	NSString *macID = [[Yozio getMACAddress] stringByReplacingOccurrencesOfString:@":" withString:@""];
+	
+	return macID;
+}
+
++ (NSString*)getSHA1MacAddress
+{
+	NSString *dataStr = [[Yozio getMACAddress] uppercaseString];
+	
+	unsigned char SHAStr[CC_SHA1_DIGEST_LENGTH];
+	
+	CC_SHA1([dataStr UTF8String],
+          [dataStr lengthOfBytesUsingEncoding:NSUTF8StringEncoding],
+          SHAStr);
+	
+	NSData *SHAData = [[NSData alloc] initWithBytes:SHAStr
+                                           length:sizeof(SHAStr)];
+	
+	NSString *result = [[SHAData description] stringByReplacingOccurrencesOfString:@" " withString:@""];
+	// Chop off '<' and '>'
+	result = [result substringWithRange:NSMakeRange(1, [result length] - 2)];
+	
+	[SHAData release];
+	
+	return result;
+}
+
 - (NSString *)timeStampString
 {
-  NSTimeZone *gmt = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+  NSTimeZone *utc = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
   NSDateFormatter *tmpDateFormatter = [[NSDateFormatter alloc] init];
   self.dateFormatter = tmpDateFormatter;
   [self.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss SSS"];
   [tmpDateFormatter release];
-  [self.dateFormatter setTimeZone:gmt];
+  [self.dateFormatter setTimeZone:utc];
   NSString *timeStamp = [self.dateFormatter stringFromDate:[NSDate date]];
   return timeStamp;
 }
