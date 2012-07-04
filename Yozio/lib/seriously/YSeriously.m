@@ -14,6 +14,7 @@ const NSString *kSeriouslyTimeout = @"kSeriouslyTimeout";
 const NSString *kSeriouslyHeaders = @"kSeriouslyHeaders";
 const NSString *kSeriouslyBody = @"kSeriouslyBody";
 const NSString *kSeriouslyProgressHandler = @"kSeriouslyProgressHandler";
+NSString *yozioUserAgent = @"Yozio iOS SDK";
 
 @implementation YSeriously
 
@@ -29,7 +30,8 @@ const NSString *kSeriouslyProgressHandler = @"kSeriouslyProgressHandler";
     [request setHTTPMethod:[[options objectForKey:kSeriouslyMethod] uppercaseString]];
     [request setTimeoutInterval:[[options objectForKey:kSeriouslyTimeout] doubleValue]];
     [request setAllHTTPHeaderFields:[options objectForKey:kSeriouslyHeaders]];
-    
+    [request setValue:yozioUserAgent forHTTPHeaderField:@"User-Agent"];
+
     if ([[request HTTPMethod] isEqual:@"POST"] || [[request HTTPMethod] isEqual:@"PUT"]) {
         [request setHTTPBody:[options objectForKey:kSeriouslyBody]];
     }
