@@ -168,12 +168,10 @@ static Yozio *instance = nil;
     NSString* escapedUrlString =  [urlString stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
     [Yozio log:@"Final getUrl Request: %@", escapedUrlString];
     
-    instance.stopBlocking = false;
     // Blocking
+    instance.stopBlocking = false;
     [NSTimer scheduledTimerWithTimeInterval:5 target:instance selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
-    
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-    //  add some timing check before and on response
     [YSeriously get:escapedUrlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
       if (error) {
         instance.stopBlocking = true;
@@ -188,8 +186,6 @@ static Yozio *instance = nil;
       [Yozio log:@"getUrl request complete"];
       [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
     }];
-    
-    // Blocking
     NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
     while (!instance.stopBlocking && [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil]) {
       loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
@@ -352,6 +348,8 @@ static Yozio *instance = nil;
   [payload setObject:[self notNil:[self isJailBrokenStr]] forKey:YOZIO_P_LAD];
   [payload setObject:[self notNil:[NSString stringWithFormat:@"%f", 1.0f]] forKey:YOZIO_P_DISPLAY_MULTIPLIER];
   [payload setObject:[self notNil:self.hardware] forKey:YOZIO_P_HARDWARE];
+  [payload setObject:[self notNil:[Yozio bundleVersion]] forKey:YOZIO_P_APP_VERSION];
+
   [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];
   
@@ -435,6 +433,11 @@ static const char* jailbreak_apps[] =
 	return @"0";
 }
 
++ (NSString*)bundleVersion
+{
+ return [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleVersionKey]; 
+}
+
 + (NSString*)getMACAddress
 {
 	int                 mib[6];
@@ -484,7 +487,6 @@ static const char* jailbreak_apps[] =
 	
 	return macAddress;
 }
-
 
 + (NSString*)getMACID
 {

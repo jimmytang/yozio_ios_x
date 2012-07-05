@@ -38,6 +38,7 @@
 #define YOZIO_P_OPEN_UDID_COUNT @"ouc"
 #define YOZIO_P_DISPLAY_MULTIPLIER @"dm"
 #define YOZIO_P_HARDWARE @"hw"
+#define YOZIO_P_APP_VERSION @"av"
 
 // Payload data entry keys.
 #define YOZIO_D_TYPE @"tp"
