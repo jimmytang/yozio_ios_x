@@ -337,7 +337,7 @@ static Yozio *instance = nil;
 {  
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
   [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
-  [payload setObject:[self notNil:self.deviceId] forKey:YOZIO_P_UDID];
+  [payload setObject:[self notNil:self.deviceId] forKey:YOZIO_P_YOZIO_UDID];
   [payload setObject:YOZIO_DEVICE_TYPE_IOS forKey:YOZIO_P_DEVICE_TYPE];
   [payload setObject:[self notNil:[Yozio getMACAddress]] forKey:YOZIO_P_MAC_ADDRESS];
   [payload setObject:[self notNil:[YOpenUDID value]] forKey:YOZIO_P_OPEN_UDID];

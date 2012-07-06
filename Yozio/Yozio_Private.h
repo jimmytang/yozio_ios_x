@@ -25,25 +25,25 @@
 #define YOZIO_LOG false
 
 // Payload keys.
-#define YOZIO_P_APP_KEY @"ak"
-#define YOZIO_P_UDID @"ud"
-#define YOZIO_P_DEVICE_TYPE @"dt"
-#define YOZIO_P_PAYLOAD @"pl"
-#define YOZIO_P_MAC_ADDRESS @"ma"
-#define YOZIO_P_OPEN_UDID @"ou"
-#define YOZIO_P_OS_VERSION @"osv"
-#define YOZIO_P_COUNTRY_CODE @"cc"
-#define YOZIO_P_LANGUAGE_CODE @"lc"
-#define YOZIO_P_IS_JAILBROKEN @"ijb"
-#define YOZIO_P_OPEN_UDID_COUNT @"ouc"
-#define YOZIO_P_DISPLAY_MULTIPLIER @"dm"
-#define YOZIO_P_HARDWARE @"hw"
-#define YOZIO_P_APP_VERSION @"av"
+#define YOZIO_P_APP_KEY @"app_key"
+#define YOZIO_P_APP_VERSION @"app_version"
+#define YOZIO_P_COUNTRY_CODE @"country_code"
+#define YOZIO_P_DEVICE_TYPE @"device_type"
+#define YOZIO_P_DISPLAY_MULTIPLIER @"display_multiplier"
+#define YOZIO_P_MAC_ADDRESS @"mac_address"
+#define YOZIO_P_LANGUAGE_CODE @"language_code"
+#define YOZIO_P_IS_JAILBROKEN @"is_jailbroken"
+#define YOZIO_P_HARDWARE @"hardware"
+#define YOZIO_P_OPEN_UDID @"open_udid"
+#define YOZIO_P_OPEN_UDID_COUNT @"open_udid_count"
+#define YOZIO_P_OS_VERSION @"os_version"
+#define YOZIO_P_PAYLOAD @"payload"
+#define YOZIO_P_YOZIO_UDID @"yozio_udid"
 
 // Payload data entry keys.
-#define YOZIO_D_TYPE @"tp"
-#define YOZIO_D_LINK_NAME @"ln"
-#define YOZIO_D_TIMESTAMP @"ts"
+#define YOZIO_D_TYPE @"type"
+#define YOZIO_D_LINK_NAME @"link_name"
+#define YOZIO_D_TIMESTAMP @"timestamp"
 
 // Mobile configuration data keys.
 #define YOZIO_URLS_KEY @"urls"
