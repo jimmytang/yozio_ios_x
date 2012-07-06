@@ -34,7 +34,7 @@
 #define YOZIO_P_OS_VERSION @"osv"
 #define YOZIO_P_COUNTRY_CODE @"cc"
 #define YOZIO_P_LANGUAGE_CODE @"lc"
-#define YOZIO_P_LAD @"lad"
+#define YOZIO_P_IS_JAILBROKEN @"ijb"
 #define YOZIO_P_OPEN_UDID_COUNT @"ouc"
 #define YOZIO_P_DISPLAY_MULTIPLIER @"dm"
 #define YOZIO_P_HARDWARE @"hw"

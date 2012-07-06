@@ -345,7 +345,7 @@ static Yozio *instance = nil;
   [payload setObject:[self notNil:self.osVersion] forKey:YOZIO_P_OS_VERSION];
   [payload setObject:[self notNil:self.countryCode] forKey:YOZIO_P_COUNTRY_CODE];
   [payload setObject:[self notNil:self.languageCode] forKey:YOZIO_P_LANGUAGE_CODE];
-  [payload setObject:[self notNil:[self isJailBrokenStr]] forKey:YOZIO_P_LAD];
+  [payload setObject:[self notNil:[self isJailBrokenStr]] forKey:YOZIO_P_IS_JAILBROKEN];
   [payload setObject:[self notNil:[NSString stringWithFormat:@"%f", 1.0f]] forKey:YOZIO_P_DISPLAY_MULTIPLIER];
   [payload setObject:[self notNil:self.hardware] forKey:YOZIO_P_HARDWARE];
   [payload setObject:[self notNil:[Yozio bundleVersion]] forKey:YOZIO_P_APP_VERSION];
@@ -427,7 +427,7 @@ static const char* jailbreak_apps[] =
 {
 	if ([self isJailBroken])
 	{
-		return @"42";
+		return @"1";
 	}
 	
 	return @"0";
