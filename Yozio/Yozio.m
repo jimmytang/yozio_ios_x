@@ -488,35 +488,6 @@ static const char* jailbreak_apps[] =
 	return macAddress;
 }
 
-+ (NSString*)getMACID
-{
-	NSString *macID = [[Yozio getMACAddress] stringByReplacingOccurrencesOfString:@":" withString:@""];
-	
-	return macID;
-}
-
-+ (NSString*)getSHA1MacAddress
-{
-	NSString *dataStr = [[Yozio getMACAddress] uppercaseString];
-	
-	unsigned char SHAStr[CC_SHA1_DIGEST_LENGTH];
-	
-	CC_SHA1([dataStr UTF8String],
-          [dataStr lengthOfBytesUsingEncoding:NSUTF8StringEncoding],
-          SHAStr);
-	
-	NSData *SHAData = [[NSData alloc] initWithBytes:SHAStr
-                                           length:sizeof(SHAStr)];
-	
-	NSString *result = [[SHAData description] stringByReplacingOccurrencesOfString:@" " withString:@""];
-	// Chop off '<' and '>'
-	result = [result substringWithRange:NSMakeRange(1, [result length] - 2)];
-	
-	[SHAData release];
-	
-	return result;
-}
-
 - (NSString *)timeStampString
 {
   NSTimeZone *utc = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];

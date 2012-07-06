@@ -27,14 +27,14 @@
 
 /**
  * Alert Yozio that a user has viewed a link.
- *
+ * To edit this linkName, go to the VIRAL section of the Yozio website to find the appropriate link name to track.
  * @param linkName  the name of the link. Must match one of the link names created online.
  */
 + (void)viewedLink:(NSString *)linkName;
 
 /**
  * Alert Yozio that a user has clicked on a link.
- *
+ * To edit this linkName, go to the VIRAL section of the Yozio website to find the appropriate link name to track.
  * @param linkName  the name of the link. Must match one of the link names created online.
  */
 + (void)sharedLink:(NSString *)linkName;
