@@ -41,7 +41,7 @@
 #define YOZIO_P_YOZIO_UDID @"yozio_udid"
 
 // Payload data entry keys.
-#define YOZIO_D_TYPE @"type"
+#define YOZIO_D_EVENT_TYPE @"event_type"
 #define YOZIO_D_LINK_NAME @"link_name"
 #define YOZIO_D_TIMESTAMP @"timestamp"
 

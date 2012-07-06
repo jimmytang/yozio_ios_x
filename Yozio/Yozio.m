@@ -256,7 +256,7 @@ static Yozio *instance = nil;
   if ([self.dataQueue count] < maxQueue) {
     NSMutableDictionary *d =
     [NSMutableDictionary dictionaryWithObjectsAndKeys:
-     [self notNil:type], YOZIO_D_TYPE,
+     [self notNil:type], YOZIO_D_EVENT_TYPE,
      [self notNil:linkName], YOZIO_D_LINK_NAME,
      [self notNil:[self timeStampString]], YOZIO_D_TIMESTAMP,
      nil];
