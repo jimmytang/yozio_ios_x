@@ -522,7 +522,7 @@ static const char* jailbreak_apps[] =
   NSTimeZone *utc = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
   NSDateFormatter *tmpDateFormatter = [[NSDateFormatter alloc] init];
   self.dateFormatter = tmpDateFormatter;
-  [self.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss SSS"];
+  [self.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
   [tmpDateFormatter release];
   [self.dateFormatter setTimeZone:utc];
   NSString *timeStamp = [self.dateFormatter stringFromDate:[NSDate date]];
