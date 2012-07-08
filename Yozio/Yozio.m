@@ -348,7 +348,7 @@ static Yozio *instance = nil;
   [payload setObject:[self notNil:[self isJailBrokenStr]] forKey:YOZIO_P_IS_JAILBROKEN];
   [payload setObject:[self notNil:[NSString stringWithFormat:@"%f", 1.0f]] forKey:YOZIO_P_DISPLAY_MULTIPLIER];
   [payload setObject:[self notNil:self.hardware] forKey:YOZIO_P_HARDWARE];
-  [payload setObject:[self notNil:[Yozio bundleVersion]] forKey:YOZIO_P_APP_VERSION];
+  [payload setObject:[self notNil:[Yozio bundleVersion]] forKey:YOZIO_P_BUNDLE_VERSION];
 
   [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];
