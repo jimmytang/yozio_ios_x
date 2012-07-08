@@ -26,7 +26,7 @@
 
 // Payload keys.
 #define YOZIO_P_APP_KEY @"app_key"
-#define YOZIO_P_BUNDLE_VERSION @"bundle_version"
+#define YOZIO_P_APP_VERSION @"app_version"
 #define YOZIO_P_COUNTRY_CODE @"country_code"
 #define YOZIO_P_DEVICE_TYPE @"device_type"
 #define YOZIO_P_DISPLAY_MULTIPLIER @"display_multiplier"
