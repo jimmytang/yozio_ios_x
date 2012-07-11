@@ -65,7 +65,7 @@
 + (NSString*) value;
 + (NSString*) valueWithError:(NSError**)error;
 + (void) setOptOut:(BOOL)optOutValue;
-+ (int)getOpenUDIDSlotCount;
++ (int) getOpenUDIDSlotCount;
 
 @end
 
