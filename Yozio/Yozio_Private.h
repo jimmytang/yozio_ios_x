@@ -11,7 +11,7 @@
 #define YOZIO_DEFAULT_BASE_URL @"http://yoz.io"
 #define YOZIO_GET_CONFIG_ROUTE @"/api/viral/v1/get_config"
 #define YOZIO_GET_URL_ROUTE @"/api/viral/v1/get_url"
-#define YOZIO_BATCH_EVENTS_ROUTE @"/api/viral/v1/batch_events"
+#define YOZIO_BATCH_EVENTS_ROUTE @"/api/sdk/v1/batch_events"
 
 #define YOZIO_GET_URL_P_APP_KEY @"app_key"
 #define YOZIO_GET_URL_P_YOZIO_UDID @"yozio_udid"
