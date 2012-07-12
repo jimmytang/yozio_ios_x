@@ -264,6 +264,7 @@ static Yozio *instance = nil;
      [self notNil:type], YOZIO_D_EVENT_TYPE,
      [self notNil:linkName], YOZIO_D_LINK_NAME,
      [self notNil:[self timeStampString]], YOZIO_D_TIMESTAMP,
+     [self notNil:[self eventID]], YOZIO_D_EVENT_IDENTIFIER,
      nil];
     [self.dataQueue addObject:d];
     [Yozio log:@"doCollect: %@", d];
@@ -385,6 +386,14 @@ static Yozio *instance = nil;
 /*******************************************
  * Instrumentation data helper methods.
  *******************************************/
+
+- (NSString*)eventID
+{
+  CFUUIDRef uuidObject = CFUUIDCreate(kCFAllocatorDefault);
+  NSString *uuidStr = [(NSString *)CFUUIDCreateString(kCFAllocatorDefault, uuidObject) autorelease];
+  CFRelease(uuidObject);
+  return uuidStr;
+}
 
 - (void)updateCountryName
 {

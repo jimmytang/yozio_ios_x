@@ -52,6 +52,7 @@
 #define YOZIO_D_EVENT_TYPE @"event_type"
 #define YOZIO_D_LINK_NAME @"link_name"
 #define YOZIO_D_TIMESTAMP @"timestamp"
+#define YOZIO_D_EVENT_IDENTIFIER @"event_identifier"
 
 // Mobile configuration data keys.
 #define YOZIO_URLS_KEY @"urls"
