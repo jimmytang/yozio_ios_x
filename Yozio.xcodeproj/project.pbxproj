@@ -18,6 +18,7 @@
 		0E7848C3146A7468004269C5 /* YozioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7848C2146A7468004269C5 /* YozioTests.m */; };
 		F71CA3C41581DF5200735950 /* NSString+MD5.h in Headers */ = {isa = PBXBuildFile; fileRef = F71CA3C21581DF5200735950 /* NSString+MD5.h */; };
 		F71CA3C51581DF5200735950 /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = F71CA3C31581DF5200735950 /* NSString+MD5.m */; };
+		F743F39E15AFE87E00788E0D /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F743F39D15AFE87E00788E0D /* CoreTelephony.framework */; };
 		F7595BD515169D2F0042ADB5 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7595BD415169D2F0042ADB5 /* Security.framework */; };
 		F7595BD815169D420042ADB5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7595BD715169D420042ADB5 /* UIKit.framework */; };
 		F7595BFA1516A19B0042ADB5 /* NSNotificationCenter+OCMAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = F7595BF21516A19B0042ADB5 /* NSNotificationCenter+OCMAdditions.h */; };
@@ -84,6 +85,7 @@
 		0E7848C2146A7468004269C5 /* YozioTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YozioTests.m; sourceTree = "<group>"; };
 		F71CA3C21581DF5200735950 /* NSString+MD5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+MD5.h"; sourceTree = "<group>"; };
 		F71CA3C31581DF5200735950 /* NSString+MD5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MD5.m"; sourceTree = "<group>"; };
+		F743F39D15AFE87E00788E0D /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		F7595BD415169D2F0042ADB5 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		F7595BD715169D420042ADB5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		F7595BF21516A19B0042ADB5 /* NSNotificationCenter+OCMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNotificationCenter+OCMAdditions.h"; sourceTree = "<group>"; };
@@ -133,6 +135,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F743F39E15AFE87E00788E0D /* CoreTelephony.framework in Frameworks */,
 				0E7848A6146A7468004269C5 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -179,6 +182,7 @@
 		0E784897146A7468004269C5 = {
 			isa = PBXGroup;
 			children = (
+				F743F39D15AFE87E00788E0D /* CoreTelephony.framework */,
 				F7595C011516B0CF0042ADB5 /* libobjc.A.dylib */,
 				F7595BD715169D420042ADB5 /* UIKit.framework */,
 				F7595BD415169D2F0042ADB5 /* Security.framework */,
