@@ -322,7 +322,7 @@ static Yozio *instance = nil;
       [Yozio log:@"Flush error %@", error];
       self.dataToSend = nil;
     } else {
-      if ([response statusCode] == 200) {
+      if ([response statusCode] == 200 && [[body objectForKey:@"status"] isEqualToString:@"ok"]) {
         [Yozio log:@"dataQueue before remove: %@", self.dataQueue];
         [self.dataQueue removeObjectsInArray:self.dataToSend];
         [Yozio log:@"dataQueue after remove: %@", self.dataQueue];
