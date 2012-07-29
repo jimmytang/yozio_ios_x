@@ -18,10 +18,7 @@
 #include <sys/sysctl.h>
 #include <net/if.h>
 #include <net/if_dl.h>
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_4_0
-#import <CoreTelephony/CTTelephonyNetworkInfo.h>
-#import <CoreTelephony/CTCarrier.h>
-#endif
+
 #import "Yozio.h"
 #import "Yozio_Private.h"
 
@@ -389,7 +386,7 @@ static Yozio *instance = nil;
 /*******************************************
  * Instrumentation data helper methods.
  *******************************************/
-- (void)addCarrierInfo:(NSMutableDictionary*)payload
+- (void)addCarrierInfo:(NSDictionary*)payload
 {
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_4_0
   CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
