@@ -355,7 +355,7 @@ static Yozio *instance = nil;
   [payload setObject:[self notNil:[NSString stringWithFormat:@"%f", 1.0f]] forKey:YOZIO_P_DISPLAY_MULTIPLIER];
   [payload setObject:[self notNil:self.hardware] forKey:YOZIO_P_HARDWARE];
   [payload setObject:[self notNil:[Yozio bundleVersion]] forKey:YOZIO_P_APP_VERSION];
-  [self addCarrierInfo:payload];
+
   [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];
   
@@ -386,17 +386,6 @@ static Yozio *instance = nil;
 /*******************************************
  * Instrumentation data helper methods.
  *******************************************/
-- (void)addCarrierInfo:(NSDictionary*)payload
-{
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_4_0
-  CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
-  CTCarrier *carrier = [netinfo subscriberCellularProvider];
-  [payload setObject:[self notNil:[carrier carrierName]] forKey:YOZIO_P_CARRIER_NAME];
-  [payload setObject:[self notNil:[carrier isoCountryCode]] forKey:YOZIO_P_CARRIER_COUNTRY_CODE];
-  [payload setObject:[self notNil:[carrier mobileCountryCode]] forKey:YOZIO_P_MOBILE_COUNTRY_CODE];
-  [payload setObject:[self notNil:[carrier mobileNetworkCode]] forKey:YOZIO_P_MOBILE_NETWORK_CODE];
-#endif
-}
 
 - (NSString*)eventID
 {
