@@ -46,6 +46,7 @@
 #define YOZIO_P_OPEN_UDID_COUNT @"open_udid_count"
 #define YOZIO_P_OS_VERSION @"os_version"
 #define YOZIO_P_PAYLOAD @"payload"
+#define YOZIO_P_USER_NAME @"user_name"
 #define YOZIO_P_YOZIO_UDID @"yozio_udid"
 
 // Payload data entry keys.
@@ -102,6 +103,7 @@
 // User set instrumentation variables.
 @property(nonatomic, retain) NSString *_appKey;
 @property(nonatomic, retain) NSString *_secretKey;
+@property(nonatomic, retain) NSString *_userName;
 
 // Automatically determined instrumentation variables.
 @property(nonatomic, retain) NSString *deviceId;

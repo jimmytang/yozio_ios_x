@@ -28,6 +28,7 @@
 // User set instrumentation variables.
 @synthesize _appKey;
 @synthesize _secretKey;
+@synthesize _userName;
 
 // Automatically determined instrumentation variables.
 @synthesize deviceId;
@@ -64,6 +65,7 @@ static Yozio *instance = nil;
   // User set instrumentation variables.
   self._appKey = nil;
   self._secretKey = nil;
+  self._userName = nil;
   
   // Initialize constant intrumentation variables.
   UIDevice* device = [UIDevice currentDevice];
@@ -155,6 +157,12 @@ static Yozio *instance = nil;
   [instance doFlush];
 }
 
++ (void)setUserName:(NSString *)userName
+{
+  instance._userName = userName;
+}
+
+
 + (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl
 {
   if (instance.config == nil) {
@@ -204,7 +212,6 @@ static Yozio *instance = nil;
     return val != nil ? val : destinationUrl;
   }
 }
-
 
 + (void)viewedLink:(NSString *)linkName
 {
@@ -343,6 +350,7 @@ static Yozio *instance = nil;
 {  
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
   [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
+  [payload setObject:[self notNil:self._userName] forKey:YOZIO_P_USER_NAME];
   [payload setObject:[self notNil:self.deviceId] forKey:YOZIO_P_YOZIO_UDID];
   [payload setObject:YOZIO_DEVICE_TYPE_IOS forKey:YOZIO_P_DEVICE_TYPE];
   [payload setObject:[self notNil:[Yozio getMACAddress]] forKey:YOZIO_P_MAC_ADDRESS];
@@ -550,6 +558,7 @@ static const char* jailbreak_apps[] =
 {
   [_appKey release], _appKey = nil;
   [_secretKey release], _secretKey = nil;
+  [_userName release], _userName = nil;
   [deviceId release], deviceId = nil;
   [dateFormatter release], dateFormatter = nil;
   [dataQueue release], dataQueue = nil;

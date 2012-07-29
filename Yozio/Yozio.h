@@ -25,6 +25,13 @@
 + (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey;
 
 /**
+ * Configures Yozio with your user's username. This is used to provide a better display to your data. (Optional)
+ 
+ * @param userName  The application's username.
+ */
++ (void)setUserName:(NSString *)userName;
+
+/**
  * Retrieve the shortened url for a dynamic link. Returns the destinationUrl if it can't get a short url. (blocking)
  *
  * @param linkName  the name of the link. Must match one of the link names created online.
