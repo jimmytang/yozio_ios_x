@@ -29,7 +29,7 @@
  
  * @param userName  The application's username.
  */
-+ (void)login:(NSString *)userName;
++ (void)userLoggedIn:(NSString *)userName;
 
 /**
  * Retrieve the shortened url for a dynamic link. Returns the destinationUrl if it can't get a short url. (blocking)

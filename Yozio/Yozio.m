@@ -157,7 +157,7 @@ static Yozio *instance = nil;
   [instance doFlush];
 }
 
-+ (void)login:(NSString *)userName
++ (void)userLoggedIn:(NSString *)userName
 {
   [instance updateUserName:userName];
   [instance doCollect:YOZIO_LOGIN_ACTION
