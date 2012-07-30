@@ -157,11 +157,13 @@ static Yozio *instance = nil;
   [instance doFlush];
 }
 
-+ (void)setUserName:(NSString *)userName
++ (void)login:(NSString *)userName
 {
-  instance._userName = userName;
+  [instance updateUserName:userName];
+  [instance doCollect:YOZIO_LOGIN_ACTION
+             linkName:@""
+             maxQueue:YOZIO_ACTION_DATA_LIMIT];
 }
-
 
 + (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl
 {
@@ -401,6 +403,11 @@ static Yozio *instance = nil;
   NSString *uuidStr = [(NSString *)CFUUIDCreateString(kCFAllocatorDefault, uuidObject) autorelease];
   CFRelease(uuidObject);
   return uuidStr;
+}
+
+- (void)updateUserName:(NSString *)userName
+{
+  self._userName = userName;
 }
 
 - (void)updateCountryName
