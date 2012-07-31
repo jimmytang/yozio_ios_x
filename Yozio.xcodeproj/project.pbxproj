@@ -122,8 +122,6 @@
 		F7AB88A9159E496E00E054C6 /* YSeriouslyOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSeriouslyOperation.m; sourceTree = "<group>"; };
 		F7ADDEDF157C256700BF92EB /* YOpenUDID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YOpenUDID.h; sourceTree = "<group>"; };
 		F7ADDEE0157C256700BF92EB /* YOpenUDID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YOpenUDID.m; sourceTree = "<group>"; };
-		F7ADDEE1157C256700BF92EB /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
-		F7FB3B071591364600863328 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README.md; path = ../JSONKit/README.md; sourceTree = "<group>"; };
 		F7FB3B0D1591365700863328 /* YJSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YJSONKit.h; path = Yozio/lib/JSONKit/YJSONKit.h; sourceTree = SOURCE_ROOT; };
 		F7FB3B0E1591365700863328 /* YJSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YJSONKit.m; path = Yozio/lib/JSONKit/YJSONKit.m; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -170,7 +168,6 @@
 			children = (
 				F7FB3B0D1591365700863328 /* YJSONKit.h */,
 				F7FB3B0E1591365700863328 /* YJSONKit.m */,
-				F7FB3B071591364600863328 /* README.md */,
 			);
 			name = YJSONKit;
 			path = "johnezang-JSONKit-465adc1";
@@ -348,7 +345,6 @@
 			children = (
 				F7ADDEDF157C256700BF92EB /* YOpenUDID.h */,
 				F7ADDEE0157C256700BF92EB /* YOpenUDID.m */,
-				F7ADDEE1157C256700BF92EB /* README.md */,
 			);
 			name = YOpenUDID;
 			path = OpenUDID;
