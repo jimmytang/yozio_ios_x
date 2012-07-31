@@ -497,13 +497,15 @@ static const char* jailbreak_apps[] =
 	if ((buf = malloc(len)) == NULL) 
 	{
 		NSLog(@"Could not allocate memory. error!\n");
+    free(buf);
 		return NULL;
 	}
 	
 	if (sysctl(mib, 6, buf, &len, NULL, 0) < 0) 
 	{
 		NSLog(@"Error: sysctl, take 2");
-		return NULL;
+		free(buf);
+    return NULL;
 	}
 	
 	ifm = (struct if_msghdr *)buf;

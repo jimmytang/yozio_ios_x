@@ -41,7 +41,11 @@ self._key_ = (_value_); \
 }
 
 + (id)operationWithRequest:(NSURLRequest *)urlRequest handler:(SeriouslyHandler)handler progressHandler:(SeriouslyProgressHandler)progressHandler {
-    // Don't you dare release this until everything is finished or canceled
+  /*  TL;DR - This is not a memory leak.
+   
+   The YSeriouslyOperation is a subclass of the NSOperation class which basically acts as a storage for code and data to be executed (basically a stored procedure). These YSeriouslyOperations can get put into a NSOperationQueue that will execute the operations in the order that they are added and also retain the objects.
+   
+   On line 50 of YSeriouslyOperation#operationWithRequest, we see that it creates an instance of itself, but doesn't set the autorelease. This object then gets added to an NSOperationQueue in YSeriously#request line 40. I believe this is intentional because after it is executed and removed from the NSOperationQueue, it loses any references to it and if it is autoreleased, the Object gets dealloc-ed. Normally this is intended, but since this is an asynchronous HTTP request, it requires the object to stay until it gets the connectionDidFinishLoading (YSeriouslyOperation line 169) callback or the operation gets cancelled while in the NSOperationQueue (YSeriouslyOperation line 83), then it sets the autorelease. - Jimmy   */
     return [[self alloc] initWithRequest:urlRequest handler:handler progressHandler:progressHandler];
 }
 
