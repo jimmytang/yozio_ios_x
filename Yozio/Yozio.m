@@ -423,43 +423,43 @@ static Yozio *instance = nil;
 
 static const char* jailbreak_apps[] =
 {
-	"/bin/bash",
-	"/Applications/Cydia.app", 
-	"/Applications/limera1n.app", 
-	"/Applications/greenpois0n.app", 
-	"/Applications/blackra1n.app",
-	"/Applications/blacksn0w.app",
-	"/Applications/redsn0w.app",
-	NULL,
+  "/bin/bash",
+  "/Applications/Cydia.app", 
+  "/Applications/limera1n.app", 
+  "/Applications/greenpois0n.app", 
+  "/Applications/blackra1n.app",
+  "/Applications/blacksn0w.app",
+  "/Applications/redsn0w.app",
+  NULL,
 };
 
 - (BOOL)isJailBroken
 {
 #if TARGET_IPHONE_SIMULATOR
-	return NO;
+  return NO;
 #endif
-	
-	// Check for known jailbreak apps. If we encounter one, the device is jailbroken.
-	for (int i = 0; jailbreak_apps[i] != NULL; ++i)
-	{
-		if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithUTF8String:jailbreak_apps[i]]])
-		{
-			//NSLog(@"isjailbroken: %s", jailbreak_apps[i]);
-			return YES;
-		}		
-	}
-	
-	return NO;
+  
+  // Check for known jailbreak apps. If we encounter one, the device is jailbroken.
+  for (int i = 0; jailbreak_apps[i] != NULL; ++i)
+  {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithUTF8String:jailbreak_apps[i]]])
+    {
+      //NSLog(@"isjailbroken: %s", jailbreak_apps[i]);
+      return YES;
+    }    
+  }
+  
+  return NO;
 }
 
 - (NSString*)isJailBrokenStr
 {
-	if ([self isJailBroken])
-	{
-		return @"1";
-	}
-	
-	return @"0";
+  if ([self isJailBroken])
+  {
+    return @"1";
+  }
+  
+  return @"0";
 }
 
 + (NSString*)bundleVersion
@@ -469,54 +469,54 @@ static const char* jailbreak_apps[] =
 
 + (NSString*)getMACAddress
 {
-	int                 mib[6];
-	size_t              len;
-	char                *buf;
-	unsigned char       *ptr;
-	struct if_msghdr    *ifm;
-	struct sockaddr_dl  *sdl;
-	
-	mib[0] = CTL_NET;
-	mib[1] = AF_ROUTE;
-	mib[2] = 0;
-	mib[3] = AF_LINK;
-	mib[4] = NET_RT_IFLIST;
-	
-	if ((mib[5] = if_nametoindex("en0")) == 0) 
-	{
-		NSLog(@"Error: if_nametoindex error\n");
-		return NULL;
-	}
-	
-	if (sysctl(mib, 6, NULL, &len, NULL, 0) < 0)
-	{
-		NSLog(@"Error: sysctl, take 1\n");
-		return NULL;
-	}
-	
-	if ((buf = malloc(len)) == NULL) 
-	{
-		NSLog(@"Could not allocate memory. error!\n");
-    free(buf);
-		return NULL;
-	}
-	
-	if (sysctl(mib, 6, buf, &len, NULL, 0) < 0) 
-	{
-		NSLog(@"Error: sysctl, take 2");
-		free(buf);
+  int                 mib[6];
+  size_t              len;
+  char                *buf;
+  unsigned char       *ptr;
+  struct if_msghdr    *ifm;
+  struct sockaddr_dl  *sdl;
+  
+  mib[0] = CTL_NET;
+  mib[1] = AF_ROUTE;
+  mib[2] = 0;
+  mib[3] = AF_LINK;
+  mib[4] = NET_RT_IFLIST;
+  
+  if ((mib[5] = if_nametoindex("en0")) == 0) 
+  {
+    NSLog(@"Error: if_nametoindex error\n");
     return NULL;
-	}
-	
-	ifm = (struct if_msghdr *)buf;
-	sdl = (struct sockaddr_dl *)(ifm + 1);
-	ptr = (unsigned char *)LLADDR(sdl);
-	NSString *macAddress = [NSString stringWithFormat:@"%02X:%02X:%02X:%02X:%02X:%02X", 
+  }
+  
+  if (sysctl(mib, 6, NULL, &len, NULL, 0) < 0)
+  {
+    NSLog(@"Error: sysctl, take 1\n");
+    return NULL;
+  }
+  
+  if ((buf = malloc(len)) == NULL) 
+  {
+    NSLog(@"Could not allocate memory. error!\n");
+    free(buf);
+    return NULL;
+  }
+  
+  if (sysctl(mib, 6, buf, &len, NULL, 0) < 0) 
+  {
+    NSLog(@"Error: sysctl, take 2");
+    free(buf);
+    return NULL;
+  }
+  
+  ifm = (struct if_msghdr *)buf;
+  sdl = (struct sockaddr_dl *)(ifm + 1);
+  ptr = (unsigned char *)LLADDR(sdl);
+  NSString *macAddress = [NSString stringWithFormat:@"%02X:%02X:%02X:%02X:%02X:%02X", 
                           *ptr, *(ptr+1), *(ptr+2), *(ptr+3), *(ptr+4), *(ptr+5)];
-	macAddress = [macAddress lowercaseString];
-	free(buf);
-	
-	return macAddress;
+  macAddress = [macAddress lowercaseString];
+  free(buf);
+  
+  return macAddress;
 }
 
 - (NSString *)timeStampString
