@@ -268,13 +268,12 @@ static Yozio *instance = nil;
   }
   dataCount++;
   if ([self.dataQueue count] < maxQueue) {
-    NSMutableDictionary *d =
-    [NSMutableDictionary dictionaryWithObjectsAndKeys:
-     [self notNil:type], YOZIO_D_EVENT_TYPE,
-     [self notNil:linkName], YOZIO_D_LINK_NAME,
-     [self notNil:[self timeStampString]], YOZIO_D_TIMESTAMP,
-     [self notNil:[self eventID]], YOZIO_D_EVENT_IDENTIFIER,
-     nil];
+    NSMutableDictionary* d = [NSMutableDictionary dictionary];
+    [self addIfNotNil:d key:YOZIO_D_EVENT_TYPE obj:type];
+    [self addIfNotNil:d key:YOZIO_D_LINK_NAME obj:linkName];
+    [self addIfNotNil:d key:YOZIO_D_TIMESTAMP obj:[self timeStampString]];
+    [self addIfNotNil:d key:YOZIO_D_EVENT_IDENTIFIER obj:[self eventID]];
+    
     [self.dataQueue addObject:d];
     [Yozio log:@"doCollect: %@", d];
   }
@@ -349,23 +348,23 @@ static Yozio *instance = nil;
 }
 
 - (NSString *)buildPayload
-{  
+{
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
   [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
-  [payload setObject:[self notNil:self._userName] forKey:YOZIO_P_USER_NAME];
-  [payload setObject:[self notNil:self.deviceId] forKey:YOZIO_P_YOZIO_UDID];
-  [payload setObject:YOZIO_DEVICE_TYPE_IOS forKey:YOZIO_P_DEVICE_TYPE];
-  [payload setObject:[self notNil:[Yozio getMACAddress]] forKey:YOZIO_P_MAC_ADDRESS];
-  [payload setObject:[self notNil:[YOpenUDID value]] forKey:YOZIO_P_OPEN_UDID];
-  [payload setObject:[NSNumber numberWithInt:[YOpenUDID getOpenUDIDSlotCount]] forKey:YOZIO_P_OPEN_UDID_COUNT];
-  [payload setObject:[self notNil:self.osVersion] forKey:YOZIO_P_OS_VERSION];
-  [payload setObject:[self notNil:self.countryCode] forKey:YOZIO_P_COUNTRY_CODE];
-  [payload setObject:[self notNil:self.languageCode] forKey:YOZIO_P_LANGUAGE_CODE];
-  [payload setObject:[self notNil:[self isJailBrokenStr]] forKey:YOZIO_P_IS_JAILBROKEN];
-  [payload setObject:[self notNil:[NSString stringWithFormat:@"%f", 1.0f]] forKey:YOZIO_P_DISPLAY_MULTIPLIER];
-  [payload setObject:[self notNil:self.hardware] forKey:YOZIO_P_HARDWARE];
-  [payload setObject:[self notNil:[Yozio bundleVersion]] forKey:YOZIO_P_APP_VERSION];
-
+  [self addIfNotNil:payload key:YOZIO_P_USER_NAME obj:self._userName];
+  [self addIfNotNil:payload key:YOZIO_P_YOZIO_UDID obj:self.deviceId];
+  [self addIfNotNil:payload key:YOZIO_P_DEVICE_TYPE obj:YOZIO_DEVICE_TYPE_IOS];
+  [self addIfNotNil:payload key:YOZIO_P_MAC_ADDRESS obj:[Yozio getMACAddress]];
+  [self addIfNotNil:payload key:YOZIO_P_OPEN_UDID obj:[YOpenUDID value]];
+  [self addIfNotNil:payload key:YOZIO_P_OPEN_UDID_COUNT obj:[NSNumber numberWithInt:[YOpenUDID getOpenUDIDSlotCount]]];
+  [self addIfNotNil:payload key:YOZIO_P_OS_VERSION obj:self.osVersion];
+  [self addIfNotNil:payload key:YOZIO_P_COUNTRY_CODE obj:self.countryCode];
+  [self addIfNotNil:payload key:YOZIO_P_LANGUAGE_CODE obj:self.languageCode];
+  [self addIfNotNil:payload key:YOZIO_P_IS_JAILBROKEN obj:[self isJailBrokenStr]];
+  [self addIfNotNil:payload key:YOZIO_P_DISPLAY_MULTIPLIER obj:[NSString stringWithFormat:@"%f", 1.0f]];
+  [self addIfNotNil:payload key:YOZIO_P_HARDWARE obj:self.hardware];
+  [self addIfNotNil:payload key:YOZIO_P_APP_VERSION obj:[Yozio bundleVersion]];
+  
   [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];
   
@@ -375,21 +374,12 @@ static Yozio *instance = nil;
   return jsonPayload;
 }
 
-- (NSString *)notNil:(NSString *)str
+- (void)addIfNotNil:(NSMutableDictionary*)dict key:(NSString *)key obj:(NSObject *)obj
 {
-  if (str == nil) {
-    return @"Unknown";
+  if (obj == nil) {
+    return;
   } else {
-    return str;
-  }
-}
-
-- (NSDictionary *)dictNotNil:(NSDictionary *)dict
-{
-  if (dict == nil) {
-    return [NSDictionary dictionary];
-  } else {
-    return dict;
+    [dict setObject:obj forKey:key];
   }
 }
 
