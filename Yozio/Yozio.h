@@ -32,6 +32,27 @@
 + (void)userLoggedIn:(NSString *)userName;
 
 /**
+ * Configures the Yozio SDK. Must be called when the app is initialized.
+ * Connects to server to download configuration dictionary. Blocking
+ *
+ */
++ (void)initializeExperiments;
+
+/**
+ * Returns a configuration Object for key.
+ * @param key      the key look up the Object by
+ * @param defaultValue  default value in case the key isn’t found.
+ */
++ (NSString*)stringForKey:(NSString *)key defaultValue:(NSString *) defaultValue;
+
+/**
+ * Returns a configuration Int for key.
+ * @param key      the key look up the Int by
+ * @param defaultValue  default value in case the key isn’t found.
+ */
++ (NSInteger)intForKey:(NSString *)key defaultValue:(NSInteger)defaultValue;
+
+/**
  * Retrieve the shortened url for a dynamic link. Returns the destinationUrl if it can't get a short url. (blocking)
  *
  * @param linkName  the name of the link. Must match one of the link names created online.

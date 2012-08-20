@@ -17,12 +17,13 @@
 
 #define YOZIO_BEACON_SCHEMA_VERSION @"1"
 #define YOZIO_DEFAULT_BASE_URL @"http://yoz.io"
-#define YOZIO_GET_CONFIG_ROUTE @"/api/viral/v1/get_config"
+#define YOZIO_GET_CONFIGURATIONS_ROUTE @"/api/viral/v1/get_configurations"
 #define YOZIO_GET_URL_ROUTE @"/api/viral/v1/get_url"
 #define YOZIO_BATCH_EVENTS_ROUTE @"/api/sdk/v1/batch_events"
 
-#define YOZIO_GET_URL_P_APP_KEY @"app_key"
-#define YOZIO_GET_URL_P_YOZIO_UDID @"yozio_udid"
+#define YOZIO_GET_CONFIGURATION_P_APP_KEY @"app_key"
+#define YOZIO_GET_CONFIGURATION_P_YOZIO_UDID @"yozio_udid"
+#define YOZIO_GET_CONFIGURATION_P_PLATFORM @"platform"
 #define YOZIO_GET_URL_P_DEVICE_TYPE @"device_type"
 #define YOZIO_GET_URL_P_LINK_NAME @"link_name"
 #define YOZIO_GET_URL_P_DEST_URL @"dest_url"
@@ -57,6 +58,8 @@
 
 // Mobile configuration data keys.
 #define YOZIO_URLS_KEY @"urls"
+#define YOZIO_CONFIG_KEY @"config"
+#define YOZIO_CONFIG_EXPERIMENT_DETAILS_KEY @"event_experiment_details"
 
 #define YOZIO_DATA_QUEUE_FILE [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
 
@@ -76,7 +79,9 @@
 // event type starts being dropped.
 #define YOZIO_ACTION_DATA_LIMIT 200
 
+// Device constants
 #define YOZIO_DEVICE_TYPE_IOS @"2"
+#define YOZIO_PLATFORM_IOS @"2"
 
 @interface Yozio()
 {
@@ -96,7 +101,10 @@
   NSInteger dataCount;
   NSMutableArray *dataQueue;
   NSArray *dataToSend;
-  NSMutableDictionary *config;
+  NSMutableDictionary *urlConfig;
+  NSMutableDictionary *experimentConfig;
+  NSMutableDictionary *eventSuperProperties;
+  NSMutableDictionary *linkSuperProperties;
   NSDateFormatter *dateFormatter;
   BOOL stopBlocking;
 }
@@ -117,7 +125,10 @@
 @property(nonatomic, assign) NSInteger dataCount;
 @property(nonatomic, retain) NSMutableArray *dataQueue;
 @property(nonatomic, retain) NSArray *dataToSend;
-@property(nonatomic, retain) NSMutableDictionary *config;
+@property(nonatomic, retain) NSMutableDictionary *urlConfig;
+@property(nonatomic, retain) NSMutableDictionary *experimentConfig;
+@property(nonatomic, retain) NSMutableDictionary *eventSuperProperties;
+@property(nonatomic, retain) NSMutableDictionary *linkSuperProperties;
 @property(nonatomic, retain) NSDateFormatter *dateFormatter;
 @property(nonatomic, assign) BOOL stopBlocking;
 
