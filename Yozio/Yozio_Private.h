@@ -23,8 +23,7 @@
 
 #define YOZIO_GET_CONFIGURATION_P_APP_KEY @"app_key"
 #define YOZIO_GET_CONFIGURATION_P_YOZIO_UDID @"yozio_udid"
-#define YOZIO_GET_CONFIGURATION_P_PLATFORM @"platform"
-#define YOZIO_GET_URL_P_DEVICE_TYPE @"device_type"
+#define YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE @"device_type"
 #define YOZIO_GET_URL_P_LINK_NAME @"link_name"
 #define YOZIO_GET_URL_P_DEST_URL @"dest_url"
 #define YOZIO_BATCH_EVENTS_P_DATA @"data"
@@ -81,7 +80,6 @@
 
 // Device constants
 #define YOZIO_DEVICE_TYPE_IOS @"2"
-#define YOZIO_PLATFORM_IOS @"1"
 
 @interface Yozio()
 {
