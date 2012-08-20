@@ -17,7 +17,7 @@
 
 #define YOZIO_BEACON_SCHEMA_VERSION @"1"
 #define YOZIO_DEFAULT_BASE_URL @"http://yoz.io"
-#define YOZIO_GET_CONFIGURATIONS_ROUTE @"/api/viral/v1/get_configurations"
+#define YOZIO_GET_CONFIGURATIONS_ROUTE @"/api/yozio/v1/get_configurations"
 #define YOZIO_GET_URL_ROUTE @"/api/viral/v1/get_url"
 #define YOZIO_BATCH_EVENTS_ROUTE @"/api/sdk/v1/batch_events"
 

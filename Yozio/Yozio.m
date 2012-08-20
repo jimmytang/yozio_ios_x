@@ -184,7 +184,7 @@ static Yozio *instance = nil;
   NSString *urlParams =
   [NSString stringWithFormat:@"%@=%@&%@=%@&%@=%@",
    YOZIO_GET_CONFIGURATION_P_APP_KEY, instance._appKey, YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, instance.deviceId, YOZIO_GET_CONFIGURATION_P_PLATFORM, YOZIO_PLATFORM_IOS];
-
+  
   NSString *urlString =
   [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_CONFIGURATIONS_ROUTE, urlParams];
   
@@ -201,12 +201,17 @@ static Yozio *instance = nil;
     } else {
       if ([response statusCode] == 200) {
         [Yozio log:@"config before update: %@", instance.experimentConfig];
-
-        instance.experimentConfig = [body objectForKey:YOZIO_CONFIG_KEY];
-        NSObject *experimentDetails = [body objectForKey:YOZIO_CONFIG_EXPERIMENT_DETAILS_KEY];
-        [instance.eventSuperProperties setObject:experimentDetails forKey:YOZIO_CONFIG_EXPERIMENT_DETAILS_KEY];
-        [instance.linkSuperProperties setObject:experimentDetails forKey:YOZIO_CONFIG_EXPERIMENT_DETAILS_KEY];
         
+        instance.experimentConfig = [body objectForKey:YOZIO_CONFIG_KEY];
+        NSDictionary *experimentDetails = [body objectForKey:YOZIO_CONFIG_EXPERIMENT_DETAILS_KEY];
+        if([experimentDetails count] > 0) {
+          [Yozio log:@"event super properties before update: %@", instance.eventSuperProperties];
+          [Yozio log:@"link super properties before update: %@", instance.eventSuperProperties];
+          [instance.eventSuperProperties setObject:experimentDetails forKey:YOZIO_CONFIG_EXPERIMENT_DETAILS_KEY];
+          [instance.linkSuperProperties setObject:experimentDetails forKey:YOZIO_CONFIG_EXPERIMENT_DETAILS_KEY];
+          [Yozio log:@"event super properties after update: %@", instance.eventSuperProperties];
+          [Yozio log:@"link super properties after update: %@", instance.eventSuperProperties];
+        }
         [Yozio log:@"config after update: %@", instance.experimentConfig];
       }
     }
