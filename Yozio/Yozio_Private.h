@@ -81,7 +81,7 @@
 
 // Device constants
 #define YOZIO_DEVICE_TYPE_IOS @"2"
-#define YOZIO_PLATFORM_IOS @"2"
+#define YOZIO_PLATFORM_IOS @"1"
 
 @interface Yozio()
 {
