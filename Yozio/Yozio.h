@@ -43,7 +43,7 @@
  * @param key      the key look up the Object by
  * @param defaultValue  default value in case the key isn’t found.
  */
-+ (NSString*)stringForKey:(NSString *)key defaultValue:(NSString *) defaultValue;
++ (NSString*)stringForKey:(NSString *)key defaultValue:(NSString *)defaultValue;
 
 /**
  * Returns a configuration Int for key.

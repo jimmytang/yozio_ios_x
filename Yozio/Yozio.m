@@ -1,8 +1,8 @@
 /*
  * Copyright (C) 2012 Yozio Inc.
- * 
+ *
  * This file is part of the Yozio SDK.
- * 
+ *
  * By using the Yozio SDK in your software, you agree to the terms of the
  * Yozio SDK License Agreement which can be found at www.yozio.com/sdk_license.
  */
@@ -75,7 +75,7 @@ static Yozio *instance = nil;
   self.deviceId = [YOpenUDID value];
   self.hardware = [device model];
   self.osVersion = [device systemVersion];
-
+  
   // Initialize  mutable instrumentation variables.
   
   self.dataCount = 0;
@@ -135,8 +135,8 @@ static Yozio *instance = nil;
  * Public API.
  *******************************************/
 
-+ (void)configure:(NSString *)appKey 
-        secretKey:(NSString *)secretKey 
++ (void)configure:(NSString *)appKey
+        secretKey:(NSString *)secretKey
 {
   if (appKey == nil) {
     [NSException raise:NSInvalidArgumentException format:@"appKey cannot be nil."];
@@ -239,7 +239,17 @@ static Yozio *instance = nil;
     return defaultValue;
   }
   NSString *val = [instance.experimentConfig objectForKey:key];
-  return val != nil ? [val intValue] : defaultValue;
+  if(val == nil) {
+    return defaultValue;
+  } else {
+    NSInteger intVal = [val integerValue];
+    NSString *verifierVal = [NSString stringWithFormat:@"%d", intVal];
+    // verify the value is an integer
+    if(![verifierVal isEqual:val]) {
+      NSLog(@"intForKey '%@' is returning '%d' from '%@' which don't match", key, intVal, val);
+    }
+    return intVal;
+  }
 }
 
 + (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl
@@ -252,8 +262,8 @@ static Yozio *instance = nil;
     return val;
   }
   else {
-    NSString *urlParams = 
-    [NSString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@", 
+    NSString *urlParams =
+    [NSString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
      YOZIO_GET_CONFIGURATION_P_APP_KEY, instance._appKey, YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, instance.deviceId, YOZIO_GET_URL_P_DEVICE_TYPE, YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_URL_P_LINK_NAME, linkName, YOZIO_GET_URL_P_DEST_URL, destinationUrl];
     NSString *urlString =
     [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE, urlParams];
@@ -390,7 +400,7 @@ static Yozio *instance = nil;
     self.dataToSend = [NSArray arrayWithArray:self.dataQueue];
   }
   [Yozio log:@"Flushing..."];
-
+  
   NSString *dataStr = [self buildPayload];
   
   NSString *urlParams = [NSString stringWithFormat:@"%@=%@", YOZIO_BATCH_EVENTS_P_DATA, dataStr];
@@ -491,9 +501,9 @@ static Yozio *instance = nil;
 static const char* jailbreak_apps[] =
 {
   "/bin/bash",
-  "/Applications/Cydia.app", 
-  "/Applications/limera1n.app", 
-  "/Applications/greenpois0n.app", 
+  "/Applications/Cydia.app",
+  "/Applications/limera1n.app",
+  "/Applications/greenpois0n.app",
   "/Applications/blackra1n.app",
   "/Applications/blacksn0w.app",
   "/Applications/redsn0w.app",
@@ -513,7 +523,7 @@ static const char* jailbreak_apps[] =
     {
       //NSLog(@"isjailbroken: %s", jailbreak_apps[i]);
       return YES;
-    }    
+    }
   }
   
   return NO;
@@ -531,7 +541,7 @@ static const char* jailbreak_apps[] =
 
 + (NSString*)bundleVersion
 {
- return [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleVersionKey]; 
+  return [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleVersionKey];
 }
 
 + (NSString*)getMACAddress
@@ -549,7 +559,7 @@ static const char* jailbreak_apps[] =
   mib[3] = AF_LINK;
   mib[4] = NET_RT_IFLIST;
   
-  if ((mib[5] = if_nametoindex("en0")) == 0) 
+  if ((mib[5] = if_nametoindex("en0")) == 0)
   {
     NSLog(@"Error: if_nametoindex error\n");
     return NULL;
@@ -561,14 +571,14 @@ static const char* jailbreak_apps[] =
     return NULL;
   }
   
-  if ((buf = malloc(len)) == NULL) 
+  if ((buf = malloc(len)) == NULL)
   {
     NSLog(@"Could not allocate memory. error!\n");
     free(buf);
     return NULL;
   }
   
-  if (sysctl(mib, 6, buf, &len, NULL, 0) < 0) 
+  if (sysctl(mib, 6, buf, &len, NULL, 0) < 0)
   {
     NSLog(@"Error: sysctl, take 2");
     free(buf);
@@ -578,7 +588,7 @@ static const char* jailbreak_apps[] =
   ifm = (struct if_msghdr *)buf;
   sdl = (struct sockaddr_dl *)(ifm + 1);
   ptr = (unsigned char *)LLADDR(sdl);
-  NSString *macAddress = [NSString stringWithFormat:@"%02X:%02X:%02X:%02X:%02X:%02X", 
+  NSString *macAddress = [NSString stringWithFormat:@"%02X:%02X:%02X:%02X:%02X:%02X",
                           *ptr, *(ptr+1), *(ptr+2), *(ptr+3), *(ptr+4), *(ptr+5)];
   macAddress = [macAddress lowercaseString];
   free(buf);
