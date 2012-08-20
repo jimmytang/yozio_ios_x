@@ -190,6 +190,9 @@ static Yozio *instance = nil;
   
   [Yozio log:@"Final configuration request url: %@", urlString];
   
+  // Use this device identifier to force a variation in the UI to a specific device.
+  NSLog(@"Yozio Device Identifier: %@", instance.deviceId);
+  
   // Blocking
   instance.stopBlocking = false;
   [NSTimer scheduledTimerWithTimeInterval:5 target:instance selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
