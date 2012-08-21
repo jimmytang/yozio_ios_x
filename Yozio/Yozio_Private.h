@@ -48,6 +48,7 @@
 #define YOZIO_P_PAYLOAD @"payload"
 #define YOZIO_P_USER_NAME @"external_user_id"
 #define YOZIO_P_YOZIO_UDID @"yozio_udid"
+#define YOZIO_P_SUPER_PROPERTIES @"super_properties"
 
 // Payload data entry keys.
 #define YOZIO_D_EVENT_TYPE @"event_type"

@@ -451,6 +451,7 @@ static Yozio *instance = nil;
   [self addIfNotNil:payload key:YOZIO_P_DISPLAY_MULTIPLIER obj:[NSString stringWithFormat:@"%f", 1.0f]];
   [self addIfNotNil:payload key:YOZIO_P_HARDWARE obj:self.hardware];
   [self addIfNotNil:payload key:YOZIO_P_APP_VERSION obj:[Yozio bundleVersion]];
+  [self addIfNotNil:payload key:YOZIO_P_SUPER_PROPERTIES obj: eventSuperProperties];
   
   [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];
@@ -467,6 +468,15 @@ static Yozio *instance = nil;
     return;
   } else {
     [dict setObject:obj forKey:key];
+  }
+}
+
+- (void)addIfDictNotEmpty:(NSMutableDictionary*)dict key:(NSString *)key dictToAdd:(NSDictionary *)dictToAdd
+{
+  if ([dictToAdd count] == 0) {
+    return;
+  } else {
+    [dict setObject:dictToAdd forKey:dictToAdd];
   }
 }
 
