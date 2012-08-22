@@ -210,8 +210,8 @@ static Yozio *instance = nil;
         if([experimentDetails count] > 0) {
           [Yozio log:@"event super properties before update: %@", instance.eventSuperProperties];
           [Yozio log:@"link super properties before update: %@", instance.eventSuperProperties];
-          [instance.eventSuperProperties setObject:experimentDetails forKey:YOZIO_P_EXPERIMENT_DETAILS];
-          [instance.linkSuperProperties setObject:experimentDetails forKey:YOZIO_P_EXPERIMENT_DETAILS];
+          [instance.eventSuperProperties setObject:experimentDetails forKey:YOZIO_P_EXPERIMENT_VARIATION_IDS];
+          [instance.linkSuperProperties setObject:experimentDetails forKey:YOZIO_P_EXPERIMENT_VARIATION_IDS];
           [Yozio log:@"event super properties after update: %@", instance.eventSuperProperties];
           [Yozio log:@"link super properties after update: %@", instance.eventSuperProperties];
         }
@@ -451,7 +451,7 @@ static Yozio *instance = nil;
   [self addIfNotNil:payload key:YOZIO_P_DISPLAY_MULTIPLIER obj:[NSString stringWithFormat:@"%f", 1.0f]];
   [self addIfNotNil:payload key:YOZIO_P_HARDWARE obj:self.hardware];
   [self addIfNotNil:payload key:YOZIO_P_APP_VERSION obj:[Yozio bundleVersion]];
-  [self addIfNotNil:payload key:YOZIO_P_EXPERIMENT_DETAILS obj:[eventSuperProperties objectForKey:YOZIO_P_EXPERIMENT_DETAILS]];
+  [self addIfNotNil:payload key:YOZIO_P_EXPERIMENT_VARIATION_IDS obj:[eventSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_IDS]];
   
   [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];

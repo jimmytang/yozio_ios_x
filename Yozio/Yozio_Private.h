@@ -49,7 +49,7 @@
 #define YOZIO_P_PAYLOAD @"payload"
 #define YOZIO_P_USER_NAME @"external_user_id"
 #define YOZIO_P_YOZIO_UDID @"yozio_udid"
-#define YOZIO_P_EXPERIMENT_DETAILS @"event_variation_ids"
+#define YOZIO_P_EXPERIMENT_VARIATION_IDS @"event_variation_ids"
 
 // Payload data entry keys.
 #define YOZIO_D_EVENT_TYPE @"event_type"
