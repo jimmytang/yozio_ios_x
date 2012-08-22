@@ -26,6 +26,7 @@
 #define YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE @"device_type"
 #define YOZIO_GET_URL_P_LINK_NAME @"link_name"
 #define YOZIO_GET_URL_P_DEST_URL @"dest_url"
+#define YOZIO_GET_URL_P_SUPER_PROPERTIES @"super_properties"
 #define YOZIO_BATCH_EVENTS_P_DATA @"data"
 
 
@@ -48,7 +49,7 @@
 #define YOZIO_P_PAYLOAD @"payload"
 #define YOZIO_P_USER_NAME @"external_user_id"
 #define YOZIO_P_YOZIO_UDID @"yozio_udid"
-#define YOZIO_P_SUPER_PROPERTIES @"super_properties"
+#define YOZIO_P_EXPERIMENT_DETAILS @"event_experiment_details"
 
 // Payload data entry keys.
 #define YOZIO_D_EVENT_TYPE @"event_type"
@@ -60,6 +61,7 @@
 #define YOZIO_URLS_KEY @"urls"
 #define YOZIO_CONFIG_KEY @"config"
 #define YOZIO_CONFIG_EXPERIMENT_DETAILS_KEY @"event_experiment_details"
+
 
 #define YOZIO_DATA_QUEUE_FILE [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
 
