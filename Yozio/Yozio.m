@@ -206,7 +206,7 @@ static Yozio *instance = nil;
         [Yozio log:@"config before update: %@", instance.experimentConfig];
         
         instance.experimentConfig = [body objectForKey:YOZIO_CONFIG_KEY];
-        NSDictionary *experimentDetails = [body objectForKey:YOZIO_CONFIG_EXPERIMENT_DETAILS_KEY];
+        NSDictionary *experimentDetails = [body objectForKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_IDS_KEY];
         if([experimentDetails count] > 0) {
           [Yozio log:@"event super properties before update: %@", instance.eventSuperProperties];
           [Yozio log:@"link super properties before update: %@", instance.eventSuperProperties];
