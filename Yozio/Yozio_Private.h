@@ -59,7 +59,7 @@
 
 // Mobile configuration data keys.
 #define YOZIO_URLS_KEY @"urls"
-#define YOZIO_CONFIG_KEY @"config"
+#define YOZIO_CONFIG_KEY @"experiment_configs"
 #define YOZIO_CONFIG_EXPERIMENT_VARIATION_IDS_KEY @"event_variation_ids"
 
 
