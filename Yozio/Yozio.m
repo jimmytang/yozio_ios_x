@@ -264,7 +264,7 @@ static Yozio *instance = nil;
   else {
     NSString *urlParams =
     [NSString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
-     YOZIO_GET_CONFIGURATION_P_APP_KEY, instance._appKey, YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, instance.deviceId, YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_URL_P_LINK_NAME, linkName, YOZIO_GET_URL_P_DEST_URL, destinationUrl, YOZIO_GET_URL_P_SUPER_PROPERTIES, instance.linkSuperProperties];
+     YOZIO_GET_CONFIGURATION_P_APP_KEY, instance._appKey, YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, instance.deviceId, YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_URL_P_LINK_NAME, linkName, YOZIO_GET_URL_P_DEST_URL, destinationUrl, YOZIO_P_EXPERIMENT_VARIATION_IDS, [instance.eventSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_IDS]];
     NSString *urlString =
     [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE, urlParams];
     NSString* escapedUrlString =  [urlString stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];

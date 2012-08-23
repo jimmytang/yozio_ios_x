@@ -26,7 +26,6 @@
 #define YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE @"device_type"
 #define YOZIO_GET_URL_P_LINK_NAME @"link_name"
 #define YOZIO_GET_URL_P_DEST_URL @"dest_url"
-#define YOZIO_GET_URL_P_SUPER_PROPERTIES @"super_properties"
 #define YOZIO_BATCH_EVENTS_P_DATA @"data"
 
 
