@@ -148,8 +148,8 @@
 - (void)checkDataQueueSize;
 - (void)doFlush;
 - (NSString *)buildPayload;
-- (NSString *)notNil:(NSString *)str;
-- (NSDictionary *)dictNotNil:(NSDictionary *)dict;
+- (void)addIfNotNil:(NSMutableDictionary*)dict key:(NSString *)key obj:(NSObject *)obj;
+- (void)addIfDictNotEmpty:(NSMutableDictionary*)dict key:(NSString *)key dictToAdd:(NSDictionary *)dictToAdd;
 
 // Instrumentation data helper methods.
 - (NSString *)timeStampString;
