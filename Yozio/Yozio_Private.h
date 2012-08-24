@@ -48,7 +48,7 @@
 #define YOZIO_P_PAYLOAD @"payload"
 #define YOZIO_P_USER_NAME @"external_user_id"
 #define YOZIO_P_YOZIO_UDID @"yozio_udid"
-#define YOZIO_P_EXPERIMENT_VARIATION_IDS @"experiment_variation_ids"
+#define YOZIO_P_EXPERIMENT_VARIATION_SIDS @"experiment_variation_sids"
 
 // Payload data entry keys.
 #define YOZIO_D_EVENT_TYPE @"event_type"
@@ -59,7 +59,7 @@
 // Mobile configuration data keys.
 #define YOZIO_URLS_KEY @"urls"
 #define YOZIO_CONFIG_KEY @"experiment_configs"
-#define YOZIO_CONFIG_EXPERIMENT_VARIATION_IDS_KEY @"experiment_variation_ids"
+#define YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY @"experiment_variation_sids"
 
 
 #define YOZIO_DATA_QUEUE_FILE [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
