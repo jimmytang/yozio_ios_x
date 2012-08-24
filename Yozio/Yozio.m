@@ -216,6 +216,7 @@ static Yozio *instance = nil;
           [Yozio log:@"link super properties after update: %@", instance.linkSuperProperties];
         }
         [Yozio log:@"config after update: %@", instance.experimentConfig];
+        instance.stopBlocking = true;
       }
     }
     [Yozio log:@"configuration request complete"];
