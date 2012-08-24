@@ -220,8 +220,14 @@ static Yozio *instance = nil;
     }
     [Yozio log:@"configuration request complete"];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+    
     // TODO(jt): stop background task if running in background
   }];
+  
+  NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
+  while (!instance.stopBlocking && [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil]) {
+    loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
+  }
 }
 
 + (NSString*)stringForKey:(NSString *)key defaultValue:(NSString *) defaultValue;
@@ -254,52 +260,43 @@ static Yozio *instance = nil;
 
 + (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl
 {
+  NSString *urlParams =
+  [NSString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
+   YOZIO_GET_CONFIGURATION_P_APP_KEY, instance._appKey, YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, instance.deviceId, YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_URL_P_LINK_NAME, linkName, YOZIO_GET_URL_P_DEST_URL, destinationUrl, YOZIO_P_EXPERIMENT_VARIATION_SIDS, [[instance.linkSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS] JSONString]];
+  NSString *urlString =
+  [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE, urlParams];
+  NSString* escapedUrlString =  [urlString stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+  [Yozio log:@"Final getUrl Request: %@", escapedUrlString];
+  
+  // Blocking
+  instance.stopBlocking = false;
+  [NSTimer scheduledTimerWithTimeInterval:5 target:instance selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
+  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+  [YSeriously get:escapedUrlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+    if (error) {
+      instance.stopBlocking = true;
+      [Yozio log:@"getUrl error %@", error];
+    } else {
+      if ([response statusCode] == 200) {
+        NSString *shortenedUrl = [body objectForKey:@"url"];
+        [instance.urlConfig setObject:shortenedUrl forKey:destinationUrl];
+      }
+      instance.stopBlocking = true;
+    }
+    [Yozio log:@"getUrl request complete"];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+  }];
+  NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
+  while (!instance.stopBlocking && [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil]) {
+    loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
+  }
+  
+  // return the short url. Return destinationUrl if it can't the destinationUrl's short url.
   if (instance.urlConfig == nil) {
-    instance.urlConfig = [NSMutableDictionary dictionary];
+    return destinationUrl;
   }
   NSString *val = [instance.urlConfig objectForKey:destinationUrl];
-  if (val != nil) {
-    return val;
-  }
-  else {
-    NSString *urlParams =
-    [NSString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
-     YOZIO_GET_CONFIGURATION_P_APP_KEY, instance._appKey, YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, instance.deviceId, YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_URL_P_LINK_NAME, linkName, YOZIO_GET_URL_P_DEST_URL, destinationUrl, YOZIO_P_EXPERIMENT_VARIATION_SIDS, [[instance.linkSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS] JSONString]];
-    NSString *urlString =
-    [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE, urlParams];
-    NSString* escapedUrlString =  [urlString stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
-    [Yozio log:@"Final getUrl Request: %@", escapedUrlString];
-    
-    // Blocking
-    instance.stopBlocking = false;
-    [NSTimer scheduledTimerWithTimeInterval:5 target:instance selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-    [YSeriously get:escapedUrlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
-      if (error) {
-        instance.stopBlocking = true;
-        [Yozio log:@"getUrl error %@", error];
-      } else {
-        if ([response statusCode] == 200) {
-          NSString *shortenedUrl = [body objectForKey:@"url"];
-          [instance.urlConfig setObject:shortenedUrl forKey:destinationUrl];
-        }
-        instance.stopBlocking = true;
-      }
-      [Yozio log:@"getUrl request complete"];
-      [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-    }];
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
-    while (!instance.stopBlocking && [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil]) {
-      loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
-    }
-    
-    // return the short url. Return destinationUrl if it can't the destinationUrl's short url.
-    if (instance.urlConfig == nil) {
-      return destinationUrl;
-    }
-    NSString *val = [instance.urlConfig objectForKey:destinationUrl];
-    return val != nil ? val : destinationUrl;
-  }
+  return val != nil ? val : destinationUrl;
 }
 
 + (void)viewedLink:(NSString *)linkName
