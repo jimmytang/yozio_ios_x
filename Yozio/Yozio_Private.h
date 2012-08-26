@@ -140,6 +140,8 @@
 - (void)onApplicationWillTerminate:(NSNotification *)notification;
 
 // Data collection helper methods.
++ (void)addIfNotNil:(NSMutableDictionary*)dict key:(NSString *)key obj:(NSObject *)obj;
++ (void)appendParamIfNotNil:(NSMutableString*)paramString paramKey:(NSString*)paramKey paramValue:(NSString*)paramValue;
 - (BOOL)validateConfiguration;
 - (void)doCollect:(NSString *)name
          linkName:(NSString *)linkName
@@ -147,8 +149,6 @@
 - (void)checkDataQueueSize;
 - (void)doFlush;
 - (NSString *)buildPayload;
-- (void)addIfNotNil:(NSMutableDictionary*)dict key:(NSString *)key obj:(NSObject *)obj;
-- (void)addIfDictNotEmpty:(NSMutableDictionary*)dict key:(NSString *)key dictToAdd:(NSDictionary *)dictToAdd;
 
 // Instrumentation data helper methods.
 - (NSString *)timeStampString;

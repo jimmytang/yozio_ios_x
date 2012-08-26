@@ -272,9 +272,13 @@ static Yozio *instance = nil;
     return val;
   }
   else {
-    NSString *urlParams =
-    [NSString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
-     YOZIO_GET_CONFIGURATION_P_APP_KEY, instance._appKey, YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, instance.deviceId, YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_URL_P_LINK_NAME, linkName, YOZIO_GET_URL_P_DEST_URL, destinationUrl, YOZIO_P_EXPERIMENT_VARIATION_SIDS, [[instance.linkSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS] JSONString]];
+    NSMutableString *urlParams =
+    [NSString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
+     YOZIO_GET_CONFIGURATION_P_APP_KEY, instance._appKey, YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, instance.deviceId, YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_URL_P_LINK_NAME, linkName, YOZIO_GET_URL_P_DEST_URL, destinationUrl];
+    [self appendParamIfNotNil:urlParams
+                     paramKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS
+                   paramValue:[[instance.linkSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS] JSONString]];
+
     NSString *urlString =
     [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE, urlParams];
     NSString* escapedUrlString =  [urlString stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
@@ -366,10 +370,10 @@ static Yozio *instance = nil;
   dataCount++;
   if ([self.dataQueue count] < maxQueue) {
     NSMutableDictionary* d = [NSMutableDictionary dictionary];
-    [self addIfNotNil:d key:YOZIO_D_EVENT_TYPE obj:type];
-    [self addIfNotNil:d key:YOZIO_D_LINK_NAME obj:linkName];
-    [self addIfNotNil:d key:YOZIO_D_TIMESTAMP obj:[self timeStampString]];
-    [self addIfNotNil:d key:YOZIO_D_EVENT_IDENTIFIER obj:[self eventID]];
+    [Yozio addIfNotNil:d key:YOZIO_D_EVENT_TYPE obj:type];
+    [Yozio addIfNotNil:d key:YOZIO_D_LINK_NAME obj:linkName];
+    [Yozio addIfNotNil:d key:YOZIO_D_TIMESTAMP obj:[self timeStampString]];
+    [Yozio addIfNotNil:d key:YOZIO_D_EVENT_IDENTIFIER obj:[self eventID]];
     
     [self.dataQueue addObject:d];
     [Yozio log:@"doCollect: %@", d];
@@ -382,6 +386,23 @@ static Yozio *instance = nil;
   [instance doCollect:YOZIO_OPENED_APP_ACTION
              linkName:@""
              maxQueue:YOZIO_ACTION_DATA_LIMIT];
+}
+
++ (void)addIfNotNil:(NSMutableDictionary*)dict key:(NSString *)key obj:(NSObject *)obj
+{
+  if (obj == nil) {
+    return;
+  } else {
+    [dict setObject:obj forKey:key];
+  }
+}
+
++ (void)appendParamIfNotNil:(NSMutableString*)paramString paramKey:(NSString*)paramKey paramValue:(NSString*)paramValue
+{
+  if (paramValue) {
+    NSString *stringToAppend = [NSString stringWithFormat:@"%@=%@", paramKey, paramValue];
+    [paramString appendString:stringToAppend];
+  }
 }
 
 - (void)checkDataQueueSize
@@ -448,20 +469,20 @@ static Yozio *instance = nil;
 {
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
   [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
-  [self addIfNotNil:payload key:YOZIO_P_USER_NAME obj:self._userName];
-  [self addIfNotNil:payload key:YOZIO_P_YOZIO_UDID obj:self.deviceId];
-  [self addIfNotNil:payload key:YOZIO_P_DEVICE_TYPE obj:YOZIO_DEVICE_TYPE_IOS];
-  [self addIfNotNil:payload key:YOZIO_P_MAC_ADDRESS obj:[Yozio getMACAddress]];
-  [self addIfNotNil:payload key:YOZIO_P_OPEN_UDID obj:[YOpenUDID value]];
-  [self addIfNotNil:payload key:YOZIO_P_OPEN_UDID_COUNT obj:[NSNumber numberWithInt:[YOpenUDID getOpenUDIDSlotCount]]];
-  [self addIfNotNil:payload key:YOZIO_P_OS_VERSION obj:self.osVersion];
-  [self addIfNotNil:payload key:YOZIO_P_COUNTRY_CODE obj:self.countryCode];
-  [self addIfNotNil:payload key:YOZIO_P_LANGUAGE_CODE obj:self.languageCode];
-  [self addIfNotNil:payload key:YOZIO_P_IS_JAILBROKEN obj:[self isJailBrokenStr]];
-  [self addIfNotNil:payload key:YOZIO_P_DISPLAY_MULTIPLIER obj:[NSString stringWithFormat:@"%f", 1.0f]];
-  [self addIfNotNil:payload key:YOZIO_P_HARDWARE obj:self.hardware];
-  [self addIfNotNil:payload key:YOZIO_P_APP_VERSION obj:[Yozio bundleVersion]];
-  [self addIfNotNil:payload key:YOZIO_P_EXPERIMENT_VARIATION_SIDS obj:[eventSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]];
+  [Yozio addIfNotNil:payload key:YOZIO_P_USER_NAME obj:self._userName];
+  [Yozio addIfNotNil:payload key:YOZIO_P_YOZIO_UDID obj:self.deviceId];
+  [Yozio addIfNotNil:payload key:YOZIO_P_DEVICE_TYPE obj:YOZIO_DEVICE_TYPE_IOS];
+  [Yozio addIfNotNil:payload key:YOZIO_P_MAC_ADDRESS obj:[Yozio getMACAddress]];
+  [Yozio addIfNotNil:payload key:YOZIO_P_OPEN_UDID obj:[YOpenUDID value]];
+  [Yozio addIfNotNil:payload key:YOZIO_P_OPEN_UDID_COUNT obj:[NSNumber numberWithInt:[YOpenUDID getOpenUDIDSlotCount]]];
+  [Yozio addIfNotNil:payload key:YOZIO_P_OS_VERSION obj:self.osVersion];
+  [Yozio addIfNotNil:payload key:YOZIO_P_COUNTRY_CODE obj:self.countryCode];
+  [Yozio addIfNotNil:payload key:YOZIO_P_LANGUAGE_CODE obj:self.languageCode];
+  [Yozio addIfNotNil:payload key:YOZIO_P_IS_JAILBROKEN obj:[self isJailBrokenStr]];
+  [Yozio addIfNotNil:payload key:YOZIO_P_DISPLAY_MULTIPLIER obj:[NSString stringWithFormat:@"%f", 1.0f]];
+  [Yozio addIfNotNil:payload key:YOZIO_P_HARDWARE obj:self.hardware];
+  [Yozio addIfNotNil:payload key:YOZIO_P_APP_VERSION obj:[Yozio bundleVersion]];
+  [Yozio addIfNotNil:payload key:YOZIO_P_EXPERIMENT_VARIATION_SIDS obj:[eventSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]];
   
   [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];
@@ -470,24 +491,6 @@ static Yozio *instance = nil;
   NSString *jsonPayload = [payload JSONString];
   
   return jsonPayload;
-}
-
-- (void)addIfNotNil:(NSMutableDictionary*)dict key:(NSString *)key obj:(NSObject *)obj
-{
-  if (obj == nil) {
-    return;
-  } else {
-    [dict setObject:obj forKey:key];
-  }
-}
-
-- (void)addIfDictNotEmpty:(NSMutableDictionary*)dict key:(NSString *)key dictToAdd:(NSDictionary *)dictToAdd
-{
-  if ([dictToAdd count] == 0) {
-    return;
-  } else {
-    [dict setObject:dictToAdd forKey:dictToAdd];
-  }
 }
 
 /*******************************************
