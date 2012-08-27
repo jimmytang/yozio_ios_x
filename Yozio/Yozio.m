@@ -146,12 +146,7 @@ static Yozio *instance = nil;
   }
   instance._appKey = appKey;
   instance._secretKey = secretKey;
-  if (instance._appKey == nil) {
-    [Yozio log:@"updateConfig nil appKey"];
-    return;
-  }
-  if (instance.deviceId == nil) {
-    [Yozio log:@"updateConfig nil deviceId"];
+  if (![instance validateConfiguration]) {
     return;
   }
   
@@ -173,12 +168,7 @@ static Yozio *instance = nil;
 
 + (void)initializeExperiments
 {
-  if (instance._appKey == nil) {
-    [Yozio log:@"initializeExperiments nil appKey"];
-    return;
-  }
-  if (instance.deviceId == nil) {
-    [Yozio log:@"initializeExperiments nil deviceId"];
+  if (![instance validateConfiguration]) {
     return;
   }
   NSString *urlParams =
@@ -201,7 +191,6 @@ static Yozio *instance = nil;
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
   [YSeriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
     if (error) {
-      instance.stopBlocking = true;
       [Yozio log:@"initializeExperiments error %@", error];
     } else {
       if ([response statusCode] == 200) {
@@ -218,9 +207,9 @@ static Yozio *instance = nil;
           [Yozio log:@"link super properties after update: %@", instance.linkSuperProperties];
         }
         [Yozio log:@"config after update: %@", instance.experimentConfig];
-        instance.stopBlocking = true;
       }
     }
+    [instance stopBlockingApp];
     [Yozio log:@"configuration request complete"];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
     
@@ -255,7 +244,8 @@ static Yozio *instance = nil;
     NSString *verifierVal = [NSString stringWithFormat:@"%d", intVal];
     // verify the value is an integer
     if(![verifierVal isEqual:val]) {
-      NSLog(@"intForKey '%@' is returning '%d' from '%@' which don't match", key, intVal, val);
+      NSLog(@"intForKey '%@' is returning '%d' from '%@', which don't match", key, intVal, val);
+      return defaultValue;
     }
     return intVal;
   }
@@ -295,20 +285,19 @@ static Yozio *instance = nil;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     [YSeriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
       if (error) {
-        instance.stopBlocking = true;
         [Yozio log:@"getUrl error %@", error];
       } else {
         if ([response statusCode] == 200) {
           NSString *shortenedUrl = [body objectForKey:@"url"];
           [instance.urlConfig setObject:shortenedUrl forKey:urlKey];
         }
-        instance.stopBlocking = true;
       }
+      [instance stopBlockingApp];
       [Yozio log:@"getUrl request complete"];
       [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
     }];
     NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
-    while (!instance.stopBlocking && [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil]) {
+    while (!instance.stopBlocking && [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:loopUntil]) {
       loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
     }
     
@@ -356,11 +345,16 @@ static Yozio *instance = nil;
 - (BOOL)validateConfiguration
 {
   BOOL validAppKey = self._appKey != nil;
+  if (!validAppKey) {
+    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    NSLog(@"Yozio: appKey is nil. Please call [Yozio configure] with a valid appKey.");
+    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+  }
   BOOL validSecretKey = self._secretKey != nil;
-  if (!validAppKey || !validSecretKey) {
-    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    NSLog(@"Please call [Yozio configure] before instrumenting.");
-    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+  if (!validSecretKey) {
+    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    NSLog(@"Yozio: secretKey is nil. Please call [Yozio configure] with a valid secretKey.");
+    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
   }
   return validAppKey && validSecretKey;
 }
