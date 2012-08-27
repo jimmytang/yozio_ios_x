@@ -183,9 +183,9 @@ static Yozio *instance = nil;
   }
   NSString *urlParams =
   [NSString stringWithFormat:@"%@=%@&%@=%@&%@=%@",
-    YOZIO_GET_CONFIGURATION_P_APP_KEY, instance._appKey,
-    YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, instance.deviceId,
-    YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, YOZIO_DEVICE_TYPE_IOS];
+   YOZIO_GET_CONFIGURATION_P_APP_KEY, [Yozio encodeToPercentEscapeString:instance._appKey],
+   YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, [Yozio encodeToPercentEscapeString:instance.deviceId],
+   YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, [Yozio encodeToPercentEscapeString:YOZIO_DEVICE_TYPE_IOS]];
   
   NSString *urlString =
   [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_CONFIGURATIONS_ROUTE, urlParams];
@@ -276,25 +276,24 @@ static Yozio *instance = nil;
   else {
     NSMutableString *urlParams =
     [NSString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
-      YOZIO_GET_CONFIGURATION_P_APP_KEY, instance._appKey,
-      YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, instance.deviceId,
-      YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, YOZIO_DEVICE_TYPE_IOS,
-      YOZIO_GET_URL_P_LINK_NAME, linkName,
-      YOZIO_GET_URL_P_DEST_URL, destinationUrl];
+     YOZIO_GET_CONFIGURATION_P_APP_KEY, [Yozio encodeToPercentEscapeString:instance._appKey],
+     YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, [Yozio encodeToPercentEscapeString:instance.deviceId],
+     YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, [Yozio encodeToPercentEscapeString:YOZIO_DEVICE_TYPE_IOS],
+     YOZIO_GET_URL_P_LINK_NAME, [Yozio encodeToPercentEscapeString:linkName],
+     YOZIO_GET_URL_P_DEST_URL, [Yozio encodeToPercentEscapeString:destinationUrl]];
     [self appendParamIfNotNil:urlParams
                      paramKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS
                    paramValue:[[instance.linkSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS] JSONString]];
-
+    
     NSString *urlString =
     [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE, urlParams];
-    NSString* escapedUrlString =  [urlString stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
-    [Yozio log:@"Final getUrl Request: %@", escapedUrlString];
+    [Yozio log:@"Final getUrl Request: %@", urlString];
     
     // Blocking
     instance.stopBlocking = false;
     [NSTimer scheduledTimerWithTimeInterval:5 target:instance selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-    [YSeriously get:escapedUrlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+    [YSeriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
       if (error) {
         instance.stopBlocking = true;
         [Yozio log:@"getUrl error %@", error];
@@ -406,7 +405,7 @@ static Yozio *instance = nil;
 + (void)appendParamIfNotNil:(NSMutableString*)paramString paramKey:(NSString*)paramKey paramValue:(NSString*)paramValue
 {
   if (paramValue) {
-    NSString *stringToAppend = [NSString stringWithFormat:@"%@=%@", paramKey, paramValue];
+    NSString *stringToAppend = [NSString stringWithFormat:@"%@=%@", paramKey, [Yozio encodeToPercentEscapeString:paramValue]];
     [paramString appendString:stringToAppend];
   }
 }
@@ -438,13 +437,10 @@ static Yozio *instance = nil;
   }
   [Yozio log:@"Flushing..."];
   
-  NSString *dataStr = [self buildPayload];
-  
-  NSString *urlParams = [NSString stringWithFormat:@"%@=%@", YOZIO_BATCH_EVENTS_P_DATA, dataStr];
-  NSString *escapedUrlParams =
-  [[urlParams stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"];
+  NSString *payloadStr = [self buildPayload];
+  NSString *urlParams = [NSString stringWithFormat:@"%@=%@", YOZIO_BATCH_EVENTS_P_DATA, [Yozio encodeToPercentEscapeString:payloadStr]];
   NSString *urlString =
-  [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_BATCH_EVENTS_ROUTE, escapedUrlParams];
+  [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_BATCH_EVENTS_ROUTE, urlParams];
   
   [Yozio log:@"Final get request url: %@", urlString];
   
@@ -454,7 +450,7 @@ static Yozio *instance = nil;
       [Yozio log:@"Flush error %@", error];
       self.dataToSend = nil;
     } else {
-      if ([response statusCode] == 200 && [[body objectForKey:@"status"] isEqualToString:@"ok"]) {
+      if ([response statusCode] == 200 || [response statusCode] == 400) {
         [Yozio log:@"dataQueue before remove: %@", self.dataQueue];
         [self.dataQueue removeObjectsInArray:self.dataToSend];
         [Yozio log:@"dataQueue after remove: %@", self.dataQueue];
@@ -480,7 +476,9 @@ static Yozio *instance = nil;
   [Yozio addIfNotNil:payload key:YOZIO_P_DEVICE_TYPE obj:YOZIO_DEVICE_TYPE_IOS];
   [Yozio addIfNotNil:payload key:YOZIO_P_MAC_ADDRESS obj:[Yozio getMACAddress]];
   [Yozio addIfNotNil:payload key:YOZIO_P_OPEN_UDID obj:[YOpenUDID value]];
-  [Yozio addIfNotNil:payload key:YOZIO_P_OPEN_UDID_COUNT obj:[NSNumber numberWithInt:[YOpenUDID getOpenUDIDSlotCount]]];
+  [Yozio addIfNotNil:payload
+                 key:YOZIO_P_OPEN_UDID_COUNT
+                 obj:[NSString stringWithFormat:@"%d", [YOpenUDID getOpenUDIDSlotCount]]];
   [Yozio addIfNotNil:payload key:YOZIO_P_OS_VERSION obj:self.osVersion];
   [Yozio addIfNotNil:payload key:YOZIO_P_COUNTRY_CODE obj:self.countryCode];
   [Yozio addIfNotNil:payload key:YOZIO_P_LANGUAGE_CODE obj:self.languageCode];
@@ -488,7 +486,9 @@ static Yozio *instance = nil;
   [Yozio addIfNotNil:payload key:YOZIO_P_DISPLAY_MULTIPLIER obj:[NSString stringWithFormat:@"%f", 1.0f]];
   [Yozio addIfNotNil:payload key:YOZIO_P_HARDWARE obj:self.hardware];
   [Yozio addIfNotNil:payload key:YOZIO_P_APP_VERSION obj:[Yozio bundleVersion]];
-  [Yozio addIfNotNil:payload key:YOZIO_P_EXPERIMENT_VARIATION_SIDS obj:[eventSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]];
+  [Yozio addIfNotNil:payload
+                 key:YOZIO_P_EXPERIMENT_VARIATION_SIDS
+                 obj:[eventSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]];
   
   [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];
@@ -502,6 +502,15 @@ static Yozio *instance = nil;
 /*******************************************
  * Instrumentation data helper methods.
  *******************************************/
+
++ (NSString*)encodeToPercentEscapeString:(NSString*)string
+{
+  return (NSString *) CFURLCreateStringByAddingPercentEscapes(NULL,
+                                                              (CFStringRef) string,
+                                                              NULL,
+                                                              (CFStringRef) @"!*'();:@&=+$,/?%#[]",
+                                                              kCFStringEncodingUTF8);
+}
 
 - (NSString*)eventID
 {
