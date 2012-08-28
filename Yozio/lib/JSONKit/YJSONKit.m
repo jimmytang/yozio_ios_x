@@ -632,9 +632,9 @@ static Class                               _jk_NSNumberClass                    
 static NSNumberAllocImp                    _jk_NSNumberAllocImp                    = NULL;
 static NSNumberInitWithUnsignedLongLongImp _jk_NSNumberInitWithUnsignedLongLongImp = NULL;
 
-extern void jk_collectionClassLoadTimeInitialization(void) __attribute__ ((constructor));
+extern void yjk_collectionClassLoadTimeInitialization(void) __attribute__ ((constructor));
 
-void jk_collectionClassLoadTimeInitialization(void) {
+void yjk_collectionClassLoadTimeInitialization(void) {
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; // Though technically not required, the run time environment at load time initialization may be less than ideal.
   
   _JKArrayClass             = objc_getClass("JKArray");
