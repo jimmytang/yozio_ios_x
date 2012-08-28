@@ -34,7 +34,7 @@
 
 /**
  * Initializes the Yozio SDK for experiments. Must be called when the app is initialized.
- * Makes a blocking HTTP request to download the experiment configurations.
+ * Makes a blocking HTTP request to download the experiment configurations. Not thread-safe.
  */
 + (void)initializeExperiments;
 
@@ -57,7 +57,7 @@
 + (NSInteger)intForKey:(NSString *)key defaultValue:(NSInteger)defaultValue;
 
 /**
- * Retrieve the Yozio short url for a given linkName.
+ * Retrieve the Yozio short url for a given linkName. Blocking. Not thread-safe.
  *
  * @param linkName  The name of the viral tracking link.
  *                  Must match one of the link names created online.
