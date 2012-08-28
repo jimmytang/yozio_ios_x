@@ -1,8 +1,8 @@
 /*
  * Copyright (C) 2012 Yozio Inc.
- * 
+ *
  * This file is part of the Yozio SDK.
- * 
+ *
  * By using the Yozio SDK in your software, you agree to the terms of the
  * Yozio SDK License Agreement which can be found at www.yozio.com/sdk_license.
  */
@@ -42,7 +42,10 @@
 @synthesize dataToSend;
 @synthesize dataCount;
 @synthesize dateFormatter;
-@synthesize config;
+@synthesize urlConfig;
+@synthesize experimentConfig;
+@synthesize eventSuperProperties;
+@synthesize linkSuperProperties;
 @synthesize stopBlocking;
 
 /*******************************************
@@ -72,13 +75,16 @@ static Yozio *instance = nil;
   self.deviceId = [YOpenUDID value];
   self.hardware = [device model];
   self.osVersion = [device systemVersion];
-
+  
   // Initialize  mutable instrumentation variables.
   
   self.dataCount = 0;
   self.dataQueue = [NSMutableArray array];
   self.dataToSend = nil;
-  self.config = nil;
+  self.urlConfig = [NSMutableDictionary dictionary];
+  self.experimentConfig = [NSMutableDictionary dictionary];
+  self.eventSuperProperties = [NSMutableDictionary dictionary];
+  self.linkSuperProperties = [NSMutableDictionary dictionary];
   
   // Initialize dateFormatter.
   NSTimeZone *gmt = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
@@ -129,8 +135,8 @@ static Yozio *instance = nil;
  * Public API.
  *******************************************/
 
-+ (void)configure:(NSString *)appKey 
-        secretKey:(NSString *)secretKey 
++ (void)configure:(NSString *)appKey
+        secretKey:(NSString *)secretKey
 {
   if (appKey == nil) {
     [NSException raise:NSInvalidArgumentException format:@"appKey cannot be nil."];
@@ -140,12 +146,7 @@ static Yozio *instance = nil;
   }
   instance._appKey = appKey;
   instance._secretKey = secretKey;
-  if (instance._appKey == nil) {
-    [Yozio log:@"updateConfig nil appKey"];
-    return;
-  }
-  if (instance.deviceId == nil) {
-    [Yozio log:@"updateConfig nil deviceId"];
+  if (![instance validateConfiguration]) {
     return;
   }
   
@@ -165,52 +166,148 @@ static Yozio *instance = nil;
              maxQueue:YOZIO_ACTION_DATA_LIMIT];
 }
 
++ (void)initializeExperiments
+{
+  if (![instance validateConfiguration]) {
+    return;
+  }
+  NSMutableString *urlParams =
+  [NSMutableString stringWithFormat:@"%@=%@&%@=%@&%@=%@",
+   YOZIO_GET_CONFIGURATION_P_APP_KEY, [Yozio encodeToPercentEscapeString:instance._appKey],
+   YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, [Yozio encodeToPercentEscapeString:instance.deviceId],
+   YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, [Yozio encodeToPercentEscapeString:YOZIO_DEVICE_TYPE_IOS]];
+  
+  NSString *urlString =
+  [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_CONFIGURATIONS_ROUTE, urlParams];
+  
+  [Yozio log:@"Final configuration request url: %@", urlString];
+  
+  // Use this device identifier to force a variation in the UI to a specific device.
+  NSLog(@"Yozio Device Identifier: %@", instance.deviceId);
+  
+  // Blocking
+  instance.stopBlocking = false;
+  [NSTimer scheduledTimerWithTimeInterval:5 target:instance selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
+  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+  [YSeriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+    if (error) {
+      [Yozio log:@"initializeExperiments error %@", error];
+    } else {
+      if ([response statusCode] == 200) {
+        [Yozio log:@"config before update: %@", instance.experimentConfig];
+        
+        instance.experimentConfig = [body objectForKey:YOZIO_CONFIG_KEY];
+        NSDictionary *experimentDetails = [body objectForKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY];
+        if([experimentDetails count] > 0) {
+          [Yozio log:@"event super properties before update: %@", instance.eventSuperProperties];
+          [Yozio log:@"link super properties before update: %@", instance.linkSuperProperties];
+          [instance.eventSuperProperties setObject:experimentDetails forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS];
+          [instance.linkSuperProperties setObject:experimentDetails forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS];
+          [Yozio log:@"event super properties after update: %@", instance.eventSuperProperties];
+          [Yozio log:@"link super properties after update: %@", instance.linkSuperProperties];
+        }
+        [Yozio log:@"config after update: %@", instance.experimentConfig];
+      }
+    }
+    [instance stopBlockingApp];
+    [Yozio log:@"configuration request complete"];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+    
+    // TODO(jt): stop background task if running in background
+  }];
+  
+  NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
+  while (!instance.stopBlocking && [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil]) {
+    loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
+  }
+}
+
++ (NSString*)stringForKey:(NSString *)key defaultValue:(NSString *) defaultValue;
+{
+  if (instance.experimentConfig == nil) {
+    return defaultValue;
+  }
+  NSString *val = [instance.experimentConfig objectForKey:key];
+  return val != nil ? val : defaultValue;
+}
+
++ (NSInteger)intForKey:(NSString *)key defaultValue:(NSInteger)defaultValue;
+{
+  if (instance.experimentConfig == nil) {
+    return defaultValue;
+  }
+  NSString *val = [instance.experimentConfig objectForKey:key];
+  if(val == nil) {
+    return defaultValue;
+  } else {
+    NSInteger intVal = [val integerValue];
+    NSString *verifierVal = [NSString stringWithFormat:@"%d", intVal];
+    // verify the value is an integer
+    if(![verifierVal isEqual:val]) {
+      NSLog(@"intForKey '%@' is returning '%d' from '%@', which don't match", key, intVal, val);
+      return defaultValue;
+    }
+    return intVal;
+  }
+}
+
 + (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl
 {
-  if (instance.config == nil) {
-    instance.config = [NSMutableDictionary dictionary];
+  if (instance.urlConfig == nil) {
+    instance.urlConfig = [NSMutableDictionary dictionary];
   }
-  NSString *val = [instance.config objectForKey:destinationUrl];
+  NSString *urlKey = [NSString stringWithFormat:@"%@-%@",
+                      destinationUrl,
+                      [instance.linkSuperProperties JSONString]];
+  NSString *val = [instance.urlConfig objectForKey:urlKey];
   if (val != nil) {
     return val;
   }
   else {
-    NSString *urlParams = 
-    [NSString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@", 
-     YOZIO_GET_URL_P_APP_KEY, instance._appKey, YOZIO_GET_URL_P_YOZIO_UDID, instance.deviceId, YOZIO_GET_URL_P_DEVICE_TYPE, YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_URL_P_LINK_NAME, linkName, YOZIO_GET_URL_P_DEST_URL, destinationUrl];
+    NSMutableString *urlParams =
+    [NSMutableString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
+     YOZIO_GET_CONFIGURATION_P_APP_KEY, [Yozio encodeToPercentEscapeString:instance._appKey],
+     YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, [Yozio encodeToPercentEscapeString:instance.deviceId],
+     YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, [Yozio encodeToPercentEscapeString:YOZIO_DEVICE_TYPE_IOS],
+     YOZIO_GET_URL_P_LINK_NAME, [Yozio encodeToPercentEscapeString:linkName],
+     YOZIO_GET_URL_P_DEST_URL, [Yozio encodeToPercentEscapeString:destinationUrl]];
+    if ([instance.linkSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]) {
+      [self appendParamIfNotNil:urlParams
+                       paramKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS
+                     paramValue:[[instance.linkSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS] JSONString]];      
+    }
+    
     NSString *urlString =
     [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE, urlParams];
-    NSString* escapedUrlString =  [urlString stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
-    [Yozio log:@"Final getUrl Request: %@", escapedUrlString];
+    [Yozio log:@"Final getUrl Request: %@", urlString];
     
     // Blocking
     instance.stopBlocking = false;
     [NSTimer scheduledTimerWithTimeInterval:5 target:instance selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-    [YSeriously get:escapedUrlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+    [YSeriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
       if (error) {
-        instance.stopBlocking = true;
         [Yozio log:@"getUrl error %@", error];
       } else {
         if ([response statusCode] == 200) {
           NSString *shortenedUrl = [body objectForKey:@"url"];
-          [instance.config setObject:shortenedUrl forKey:destinationUrl];
+          [instance.urlConfig setObject:shortenedUrl forKey:urlKey];
         }
-        instance.stopBlocking = true;
       }
+      [instance stopBlockingApp];
       [Yozio log:@"getUrl request complete"];
       [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
     }];
     NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
-    while (!instance.stopBlocking && [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil]) {
+    while (!instance.stopBlocking && [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:loopUntil]) {
       loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
     }
     
-    // return the short url. Return destinationUrl if it can't the destinationUrl's short url.
-    if (instance.config == nil) {
+    // return the short url. Return destinationUrl if it can't find the destinationUrl's short url.
+    if (instance.urlConfig == nil) {
       return destinationUrl;
     }
-    NSString *val = [instance.config objectForKey:destinationUrl];
+    NSString *val = [instance.urlConfig objectForKey:urlKey];
     return val != nil ? val : destinationUrl;
   }
 }
@@ -250,11 +347,16 @@ static Yozio *instance = nil;
 - (BOOL)validateConfiguration
 {
   BOOL validAppKey = self._appKey != nil;
+  if (!validAppKey) {
+    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    NSLog(@"Yozio: appKey is nil. Please call [Yozio configure] with a valid appKey.");
+    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+  }
   BOOL validSecretKey = self._secretKey != nil;
-  if (!validAppKey || !validSecretKey) {
-    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    NSLog(@"Please call [Yozio configure] before instrumenting.");
-    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+  if (!validSecretKey) {
+    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    NSLog(@"Yozio: secretKey is nil. Please call [Yozio configure] with a valid secretKey.");
+    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
   }
   return validAppKey && validSecretKey;
 }
@@ -269,10 +371,10 @@ static Yozio *instance = nil;
   dataCount++;
   if ([self.dataQueue count] < maxQueue) {
     NSMutableDictionary* d = [NSMutableDictionary dictionary];
-    [self addIfNotNil:d key:YOZIO_D_EVENT_TYPE obj:type];
-    [self addIfNotNil:d key:YOZIO_D_LINK_NAME obj:linkName];
-    [self addIfNotNil:d key:YOZIO_D_TIMESTAMP obj:[self timeStampString]];
-    [self addIfNotNil:d key:YOZIO_D_EVENT_IDENTIFIER obj:[self eventID]];
+    [Yozio addIfNotNil:d key:YOZIO_D_EVENT_TYPE obj:type];
+    [Yozio addIfNotNil:d key:YOZIO_D_LINK_NAME obj:linkName];
+    [Yozio addIfNotNil:d key:YOZIO_D_TIMESTAMP obj:[self timeStampString]];
+    [Yozio addIfNotNil:d key:YOZIO_D_EVENT_IDENTIFIER obj:[self eventID]];
     
     [self.dataQueue addObject:d];
     [Yozio log:@"doCollect: %@", d];
@@ -285,6 +387,23 @@ static Yozio *instance = nil;
   [instance doCollect:YOZIO_OPENED_APP_ACTION
              linkName:@""
              maxQueue:YOZIO_ACTION_DATA_LIMIT];
+}
+
++ (void)addIfNotNil:(NSMutableDictionary*)dict key:(NSString *)key obj:(NSObject *)obj
+{
+  if (obj == nil) {
+    return;
+  } else {
+    [dict setObject:obj forKey:key];
+  }
+}
+
++ (void)appendParamIfNotNil:(NSMutableString*)paramString paramKey:(NSString*)paramKey paramValue:(NSString*)paramValue
+{
+  if (paramValue) {
+    NSString *stringToAppend = [NSString stringWithFormat:@"%@=%@", paramKey, [Yozio encodeToPercentEscapeString:paramValue]];
+    [paramString appendString:stringToAppend];
+  }
 }
 
 - (void)checkDataQueueSize
@@ -313,14 +432,11 @@ static Yozio *instance = nil;
     self.dataToSend = [NSArray arrayWithArray:self.dataQueue];
   }
   [Yozio log:@"Flushing..."];
-
-  NSString *dataStr = [self buildPayload];
   
-  NSString *urlParams = [NSString stringWithFormat:@"%@=%@", YOZIO_BATCH_EVENTS_P_DATA, dataStr];
-  NSString *escapedUrlParams =
-  [[urlParams stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"];
+  NSString *payloadStr = [self buildPayload];
+  NSString *urlParams = [NSString stringWithFormat:@"%@=%@", YOZIO_BATCH_EVENTS_P_DATA, [Yozio encodeToPercentEscapeString:payloadStr]];
   NSString *urlString =
-  [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_BATCH_EVENTS_ROUTE, escapedUrlParams];
+  [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_BATCH_EVENTS_ROUTE, urlParams];
   
   [Yozio log:@"Final get request url: %@", urlString];
   
@@ -330,7 +446,7 @@ static Yozio *instance = nil;
       [Yozio log:@"Flush error %@", error];
       self.dataToSend = nil;
     } else {
-      if ([response statusCode] == 200 && [[body objectForKey:@"status"] isEqualToString:@"ok"]) {
+      if ([response statusCode] == 200 || [response statusCode] == 400) {
         [Yozio log:@"dataQueue before remove: %@", self.dataQueue];
         [self.dataQueue removeObjectsInArray:self.dataToSend];
         [Yozio log:@"dataQueue after remove: %@", self.dataQueue];
@@ -351,19 +467,24 @@ static Yozio *instance = nil;
 {
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
   [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
-  [self addIfNotNil:payload key:YOZIO_P_USER_NAME obj:self._userName];
-  [self addIfNotNil:payload key:YOZIO_P_YOZIO_UDID obj:self.deviceId];
-  [self addIfNotNil:payload key:YOZIO_P_DEVICE_TYPE obj:YOZIO_DEVICE_TYPE_IOS];
-  [self addIfNotNil:payload key:YOZIO_P_MAC_ADDRESS obj:[Yozio getMACAddress]];
-  [self addIfNotNil:payload key:YOZIO_P_OPEN_UDID obj:[YOpenUDID value]];
-  [self addIfNotNil:payload key:YOZIO_P_OPEN_UDID_COUNT obj:[NSNumber numberWithInt:[YOpenUDID getOpenUDIDSlotCount]]];
-  [self addIfNotNil:payload key:YOZIO_P_OS_VERSION obj:self.osVersion];
-  [self addIfNotNil:payload key:YOZIO_P_COUNTRY_CODE obj:self.countryCode];
-  [self addIfNotNil:payload key:YOZIO_P_LANGUAGE_CODE obj:self.languageCode];
-  [self addIfNotNil:payload key:YOZIO_P_IS_JAILBROKEN obj:[self isJailBrokenStr]];
-  [self addIfNotNil:payload key:YOZIO_P_DISPLAY_MULTIPLIER obj:[NSString stringWithFormat:@"%f", 1.0f]];
-  [self addIfNotNil:payload key:YOZIO_P_HARDWARE obj:self.hardware];
-  [self addIfNotNil:payload key:YOZIO_P_APP_VERSION obj:[Yozio bundleVersion]];
+  [Yozio addIfNotNil:payload key:YOZIO_P_USER_NAME obj:self._userName];
+  [Yozio addIfNotNil:payload key:YOZIO_P_YOZIO_UDID obj:self.deviceId];
+  [Yozio addIfNotNil:payload key:YOZIO_P_DEVICE_TYPE obj:YOZIO_DEVICE_TYPE_IOS];
+  [Yozio addIfNotNil:payload key:YOZIO_P_MAC_ADDRESS obj:[Yozio getMACAddress]];
+  [Yozio addIfNotNil:payload key:YOZIO_P_OPEN_UDID obj:[YOpenUDID value]];
+  [Yozio addIfNotNil:payload
+                 key:YOZIO_P_OPEN_UDID_COUNT
+                 obj:[NSString stringWithFormat:@"%d", [YOpenUDID getOpenUDIDSlotCount]]];
+  [Yozio addIfNotNil:payload key:YOZIO_P_OS_VERSION obj:self.osVersion];
+  [Yozio addIfNotNil:payload key:YOZIO_P_COUNTRY_CODE obj:self.countryCode];
+  [Yozio addIfNotNil:payload key:YOZIO_P_LANGUAGE_CODE obj:self.languageCode];
+  [Yozio addIfNotNil:payload key:YOZIO_P_IS_JAILBROKEN obj:[self isJailBrokenStr]];
+  [Yozio addIfNotNil:payload key:YOZIO_P_DISPLAY_MULTIPLIER obj:[NSString stringWithFormat:@"%f", 1.0f]];
+  [Yozio addIfNotNil:payload key:YOZIO_P_HARDWARE obj:self.hardware];
+  [Yozio addIfNotNil:payload key:YOZIO_P_APP_VERSION obj:[Yozio bundleVersion]];
+  [Yozio addIfNotNil:payload
+                 key:YOZIO_P_EXPERIMENT_VARIATION_SIDS
+                 obj:[eventSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]];
   
   [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];
@@ -374,18 +495,18 @@ static Yozio *instance = nil;
   return jsonPayload;
 }
 
-- (void)addIfNotNil:(NSMutableDictionary*)dict key:(NSString *)key obj:(NSObject *)obj
-{
-  if (obj == nil) {
-    return;
-  } else {
-    [dict setObject:obj forKey:key];
-  }
-}
-
 /*******************************************
  * Instrumentation data helper methods.
  *******************************************/
+
++ (NSString*)encodeToPercentEscapeString:(NSString*)string
+{
+  return (NSString *) CFURLCreateStringByAddingPercentEscapes(NULL,
+                                                              (CFStringRef) string,
+                                                              NULL,
+                                                              (CFStringRef) @"!*'();:@&=+$,/?%#[]",
+                                                              kCFStringEncodingUTF8);
+}
 
 - (NSString*)eventID
 {
@@ -414,9 +535,9 @@ static Yozio *instance = nil;
 static const char* jailbreak_apps[] =
 {
   "/bin/bash",
-  "/Applications/Cydia.app", 
-  "/Applications/limera1n.app", 
-  "/Applications/greenpois0n.app", 
+  "/Applications/Cydia.app",
+  "/Applications/limera1n.app",
+  "/Applications/greenpois0n.app",
   "/Applications/blackra1n.app",
   "/Applications/blacksn0w.app",
   "/Applications/redsn0w.app",
@@ -436,7 +557,7 @@ static const char* jailbreak_apps[] =
     {
       //NSLog(@"isjailbroken: %s", jailbreak_apps[i]);
       return YES;
-    }    
+    }
   }
   
   return NO;
@@ -454,7 +575,7 @@ static const char* jailbreak_apps[] =
 
 + (NSString*)bundleVersion
 {
- return [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleVersionKey]; 
+  return [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleVersionKey];
 }
 
 + (NSString*)getMACAddress
@@ -472,7 +593,7 @@ static const char* jailbreak_apps[] =
   mib[3] = AF_LINK;
   mib[4] = NET_RT_IFLIST;
   
-  if ((mib[5] = if_nametoindex("en0")) == 0) 
+  if ((mib[5] = if_nametoindex("en0")) == 0)
   {
     NSLog(@"Error: if_nametoindex error\n");
     return NULL;
@@ -484,14 +605,14 @@ static const char* jailbreak_apps[] =
     return NULL;
   }
   
-  if ((buf = malloc(len)) == NULL) 
+  if ((buf = malloc(len)) == NULL)
   {
     NSLog(@"Could not allocate memory. error!\n");
     free(buf);
     return NULL;
   }
   
-  if (sysctl(mib, 6, buf, &len, NULL, 0) < 0) 
+  if (sysctl(mib, 6, buf, &len, NULL, 0) < 0)
   {
     NSLog(@"Error: sysctl, take 2");
     free(buf);
@@ -501,7 +622,7 @@ static const char* jailbreak_apps[] =
   ifm = (struct if_msghdr *)buf;
   sdl = (struct sockaddr_dl *)(ifm + 1);
   ptr = (unsigned char *)LLADDR(sdl);
-  NSString *macAddress = [NSString stringWithFormat:@"%02X:%02X:%02X:%02X:%02X:%02X", 
+  NSString *macAddress = [NSString stringWithFormat:@"%02X:%02X:%02X:%02X:%02X:%02X",
                           *ptr, *(ptr+1), *(ptr+2), *(ptr+3), *(ptr+4), *(ptr+5)];
   macAddress = [macAddress lowercaseString];
   free(buf);
