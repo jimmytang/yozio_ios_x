@@ -33,7 +33,7 @@
 
 
 // Set to true to show log messages.
-#define YOZIO_LOG true
+#define YOZIO_LOG false
 
 // Payload keys.
 #define YOZIO_P_APP_KEY @"app_key"
