@@ -26,6 +26,9 @@
 #define YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE @"device_type"
 #define YOZIO_GET_URL_P_LINK_NAME @"link_name"
 #define YOZIO_GET_URL_P_DEST_URL @"dest_url"
+#define YOZIO_GET_URL_P_IOS_DEST_URL @"ios_dest_url"
+#define YOZIO_GET_URL_P_ANDROID_DEST_URL @"android_dest_url"
+#define YOZIO_GET_URL_P_NON_MOBILE_DEST_URL @"non_mobile_dest_url"
 #define YOZIO_BATCH_EVENTS_P_DATA @"data"
 
 

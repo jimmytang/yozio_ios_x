@@ -67,6 +67,21 @@
 + (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl;
 
 /**
+ * Retrieve the Yozio short url for a given linkName. Blocking. Not thread-safe.
+ *
+ * @param linkName  The name of the viral tracking link.
+ *                  Must match one of the link names created online.
+ * @param iosDestinationUrl  The url that the shortened url will redirect to if an iOS device.
+ * @param androidDestinationUrl  The url that the shortened url will redirect to if an Android device.
+ * @param nonMobileDestinationUrl  The url that the shortened url will redirect to if a non mobile device.
+ * @return The Yozio short URL for the linkName, or nonMobileDestinationUrl if there is an error.
+ */
++     (NSString *)getUrl:(NSString *)linkName
+       iosDestinationUrl:(NSString *)iosDestinationUrl
+   androidDestinationUrl:(NSString *)androidDestinationUrl
+ nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl;
+
+/**
  * Notify Yozio that a user has viewed a link.
  *
  * @param linkName  The name of the viral tracking link.
