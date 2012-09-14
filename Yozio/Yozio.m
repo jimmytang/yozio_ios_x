@@ -262,8 +262,8 @@ static Yozio *instance = nil;
   YOZIO_GET_URL_P_DEST_URL, [Yozio encodeToPercentEscapeString:destinationUrl]];
   if ([instance.linkSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]) {
     [self appendParamIfNotNil:urlParams
-                     paramKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS
-                   paramValue:[[instance.linkSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS] JSONString]];
+                     paramKey:YOZIO_GET_URL_P_SUPER_PROPERTIES
+                   paramValue:[instance.linkSuperProperties JSONString]];
   }
   
   NSString *urlString =
@@ -289,8 +289,8 @@ static Yozio *instance = nil;
   YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, [Yozio encodeToPercentEscapeString:nonMobileDestinationUrl]];
   if ([instance.linkSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]) {
     [self appendParamIfNotNil:urlParams
-                     paramKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS
-                   paramValue:[[instance.linkSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS] JSONString]];
+                     paramKey:YOZIO_GET_URL_P_SUPER_PROPERTIES
+                   paramValue:[instance.linkSuperProperties JSONString]];
   }
   
   NSString *urlString =
