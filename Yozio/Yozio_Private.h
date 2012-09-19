@@ -15,7 +15,7 @@
 
 #import "Yozio.h"
 
-#define YOZIO_BEACON_SCHEMA_VERSION @"1"
+#define YOZIO_SDK_VERSION @"IOS-v2.4"
 #define YOZIO_DEFAULT_BASE_URL @"http://yoz.io"
 #define YOZIO_GET_CONFIGURATIONS_ROUTE @"/api/yozio/v1/get_configurations"
 #define YOZIO_GET_URL_ROUTE @"/api/viral/v1/get_url"
@@ -42,6 +42,7 @@
 #define YOZIO_P_COUNTRY_CODE @"country_code"
 #define YOZIO_P_DEVICE_TYPE @"device_type"
 #define YOZIO_P_DISPLAY_MULTIPLIER @"display_multiplier"
+#define YOZIO_P_EXPERIMENT_VARIATION_SIDS @"experiment_variation_sids"
 #define YOZIO_P_MAC_ADDRESS @"mac_address"
 #define YOZIO_P_LANGUAGE_CODE @"language_code"
 #define YOZIO_P_IS_JAILBROKEN @"is_jailbroken"
@@ -50,9 +51,9 @@
 #define YOZIO_P_OPEN_UDID_COUNT @"open_udid_count"
 #define YOZIO_P_OS_VERSION @"os_version"
 #define YOZIO_P_PAYLOAD @"payload"
+#define YOZIO_P_SDK_VERSION @"sdk_version"
 #define YOZIO_P_USER_NAME @"external_user_id"
 #define YOZIO_P_YOZIO_UDID @"yozio_udid"
-#define YOZIO_P_EXPERIMENT_VARIATION_SIDS @"experiment_variation_sids"
 
 // Payload data entry keys.
 #define YOZIO_D_EVENT_TYPE @"event_type"

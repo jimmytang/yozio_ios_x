@@ -172,10 +172,11 @@ static Yozio *instance = nil;
     return;
   }
   NSMutableString *urlParams =
-  [NSMutableString stringWithFormat:@"%@=%@&%@=%@&%@=%@",
+  [NSMutableString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@",
    YOZIO_GET_CONFIGURATION_P_APP_KEY, [Yozio encodeToPercentEscapeString:instance._appKey],
    YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, [Yozio encodeToPercentEscapeString:instance.deviceId],
-   YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, [Yozio encodeToPercentEscapeString:YOZIO_DEVICE_TYPE_IOS]];
+   YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, [Yozio encodeToPercentEscapeString:YOZIO_DEVICE_TYPE_IOS],
+   YOZIO_P_SDK_VERSION, [Yozio encodeToPercentEscapeString:YOZIO_SDK_VERSION]];
 
   NSString *urlString =
   [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_CONFIGURATIONS_ROUTE, urlParams];
@@ -254,12 +255,13 @@ static Yozio *instance = nil;
 + (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl
 {
   NSMutableString *urlParams =
-  [NSMutableString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
+  [NSMutableString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
   YOZIO_GET_CONFIGURATION_P_APP_KEY, [Yozio encodeToPercentEscapeString:instance._appKey],
   YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, [Yozio encodeToPercentEscapeString:instance.deviceId],
   YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, [Yozio encodeToPercentEscapeString:YOZIO_DEVICE_TYPE_IOS],
   YOZIO_GET_URL_P_LINK_NAME, [Yozio encodeToPercentEscapeString:linkName],
-  YOZIO_GET_URL_P_DEST_URL, [Yozio encodeToPercentEscapeString:destinationUrl]];
+  YOZIO_GET_URL_P_DEST_URL, [Yozio encodeToPercentEscapeString:destinationUrl],
+  YOZIO_P_SDK_VERSION, [Yozio encodeToPercentEscapeString:YOZIO_SDK_VERSION]];
   if ([instance.linkSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]) {
     [self appendParamIfNotNil:urlParams
                      paramKey:YOZIO_GET_URL_P_SUPER_PROPERTIES
@@ -279,14 +281,15 @@ static Yozio *instance = nil;
  nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
 {
   NSMutableString *urlParams =
-  [NSMutableString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
+  [NSMutableString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
   YOZIO_GET_CONFIGURATION_P_APP_KEY, [Yozio encodeToPercentEscapeString:instance._appKey],
   YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, [Yozio encodeToPercentEscapeString:instance.deviceId],
   YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, [Yozio encodeToPercentEscapeString:YOZIO_DEVICE_TYPE_IOS],
   YOZIO_GET_URL_P_LINK_NAME, [Yozio encodeToPercentEscapeString:linkName],
   YOZIO_GET_URL_P_IOS_DEST_URL, [Yozio encodeToPercentEscapeString:iosDestinationUrl],
   YOZIO_GET_URL_P_ANDROID_DEST_URL, [Yozio encodeToPercentEscapeString:androidDestinationUrl],
-  YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, [Yozio encodeToPercentEscapeString:nonMobileDestinationUrl]];
+  YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, [Yozio encodeToPercentEscapeString:nonMobileDestinationUrl],
+  YOZIO_P_SDK_VERSION, [Yozio encodeToPercentEscapeString:YOZIO_SDK_VERSION]];
   if ([instance.linkSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]) {
     [self appendParamIfNotNil:urlParams
                      paramKey:YOZIO_GET_URL_P_SUPER_PROPERTIES
@@ -513,6 +516,7 @@ static Yozio *instance = nil;
   [Yozio addIfNotNil:payload key:YOZIO_P_DISPLAY_MULTIPLIER obj:[NSString stringWithFormat:@"%f", 1.0f]];
   [Yozio addIfNotNil:payload key:YOZIO_P_HARDWARE obj:self.hardware];
   [Yozio addIfNotNil:payload key:YOZIO_P_APP_VERSION obj:[Yozio bundleVersion]];
+  [Yozio addIfNotNil:payload key:YOZIO_P_SDK_VERSION obj:YOZIO_SDK_VERSION];
   [Yozio addIfNotNil:payload
                  key:YOZIO_P_EXPERIMENT_VARIATION_SIDS
                  obj:[eventSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]];
