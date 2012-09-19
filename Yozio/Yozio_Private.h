@@ -43,6 +43,7 @@
 #define YOZIO_P_DEVICE_TYPE @"device_type"
 #define YOZIO_P_DISPLAY_MULTIPLIER @"display_multiplier"
 #define YOZIO_P_EXPERIMENT_VARIATION_SIDS @"experiment_variation_sids"
+#define YOZIO_P_EXTERNAL_PROPERTIES @"external_properties"
 #define YOZIO_P_MAC_ADDRESS @"mac_address"
 #define YOZIO_P_LANGUAGE_CODE @"language_code"
 #define YOZIO_P_IS_JAILBROKEN @"is_jailbroken"
@@ -150,7 +151,8 @@
 - (BOOL)validateConfiguration;
 - (void)doCollect:(NSString *)name
          linkName:(NSString *)linkName
-         maxQueue:(NSInteger)maxQueue;
+         maxQueue:(NSInteger)maxQueue
+       properties:(NSDictionary *)properties;
 - (void)checkDataQueueSize;
 - (void)doFlush;
 - (NSString *)buildPayload;

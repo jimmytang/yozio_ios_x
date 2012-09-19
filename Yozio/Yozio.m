@@ -160,11 +160,18 @@ static Yozio *instance = nil;
 
 + (void)userLoggedIn:(NSString *)userName
 {
+  [self userLoggedIn:(NSString *)userName properties:nil];
+}
+
++ (void)userLoggedIn:(NSString *)userName properties:(NSDictionary *)properties
+{
   [instance updateUserName:userName];
   [instance doCollect:YOZIO_LOGIN_ACTION
              linkName:@""
-             maxQueue:YOZIO_ACTION_DATA_LIMIT];
+             maxQueue:YOZIO_ACTION_DATA_LIMIT
+           properties:nil];
 }
+
 
 + (void)initializeExperiments
 {
@@ -305,16 +312,28 @@ static Yozio *instance = nil;
 
 + (void)viewedLink:(NSString *)linkName
 {
+  [self viewedLink:linkName properties:nil];
+}
+
++ (void)viewedLink:(NSString *)linkName properties:(NSDictionary *)properties
+{
   [instance doCollect:YOZIO_VIEWED_LINK_ACTION
              linkName:linkName
-             maxQueue:YOZIO_ACTION_DATA_LIMIT];
+             maxQueue:YOZIO_ACTION_DATA_LIMIT
+           properties:properties];
 }
 
 + (void)sharedLink:(NSString *)linkName
 {
+  [self sharedLink:linkName properties:nil];
+}
+
++ (void)sharedLink:(NSString *)linkName properties:(NSDictionary *)properties
+{
   [instance doCollect:YOZIO_SHARED_LINK_ACTION
              linkName:linkName
-             maxQueue:YOZIO_ACTION_DATA_LIMIT];
+             maxQueue:YOZIO_ACTION_DATA_LIMIT
+           properties:properties];
 }
 
 /*******************************************
@@ -355,6 +374,7 @@ static Yozio *instance = nil;
 - (void)doCollect:(NSString *)type
          linkName:(NSString *)linkName
          maxQueue:(NSInteger)maxQueue
+       properties:(NSDictionary *)properties
 {
   if (![self validateConfiguration]) {
     return;
@@ -366,6 +386,7 @@ static Yozio *instance = nil;
     [Yozio addIfNotNil:d key:YOZIO_D_LINK_NAME obj:linkName];
     [Yozio addIfNotNil:d key:YOZIO_D_TIMESTAMP obj:[self timeStampString]];
     [Yozio addIfNotNil:d key:YOZIO_D_EVENT_IDENTIFIER obj:[self eventID]];
+    [Yozio addIfNotNil:d key:YOZIO_P_EXTERNAL_PROPERTIES obj:properties];
 
     [self.dataQueue addObject:d];
     [Yozio log:@"doCollect: %@", d];
@@ -377,7 +398,8 @@ static Yozio *instance = nil;
 {
   [instance doCollect:YOZIO_OPENED_APP_ACTION
              linkName:@""
-             maxQueue:YOZIO_ACTION_DATA_LIMIT];
+             maxQueue:YOZIO_ACTION_DATA_LIMIT
+           properties:nil];
 }
 
 + (void)addIfNotNil:(NSMutableDictionary*)dict key:(NSString *)key obj:(NSObject *)obj

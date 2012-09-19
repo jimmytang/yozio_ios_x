@@ -33,6 +33,15 @@
 + (void)userLoggedIn:(NSString *)userName;
 
 /**
+ * Notify Yozio that your user logged in.
+ * This allows you to tie your data with Yozio's by user name.
+ *
+ * @param userName  The name of the user that just logged in.
+ * @param properties  Additional meta properties to tag your event.
+ */
++ (void)userLoggedIn:(NSString *)userName properties:(NSDictionary *)properties;
+
+/**
  * Initializes the Yozio SDK for experiments. Must be called when the app is initialized.
  * Makes a blocking HTTP request to download the experiment configurations. Not thread-safe.
  */
@@ -90,12 +99,30 @@
 + (void)viewedLink:(NSString *)linkName;
 
 /**
+ * Notify Yozio that a user has viewed a link.
+ *
+ * @param linkName  The name of the viral tracking link.
+ *                  Must match one of the link names created online.
+ * @param properties  Additional meta properties to tag your event.
+ */
++ (void)viewedLink:(NSString *)linkName properties:(NSDictionary *)properties;
+
+/**
  * Notify Yozio that a user has shared a link.
  *
  * @param linkName  The name of the viral tracking link.
  *                  Must match one of the link names created online.
  */
 + (void)sharedLink:(NSString *)linkName;
+
+/**
+ * Notify Yozio that a user has shared a link.
+ *
+ * @param linkName  The name of the viral tracking link.
+ *                  Must match one of the link names created online.
+ * @param properties  Additional meta properties to tag your event.
+ */
++ (void)sharedLink:(NSString *)linkName properties:(NSDictionary *)properties;
 
 @end
 
