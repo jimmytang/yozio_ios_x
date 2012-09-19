@@ -386,7 +386,7 @@ static Yozio *instance = nil;
     [Yozio addIfNotNil:d key:YOZIO_D_LINK_NAME obj:linkName];
     [Yozio addIfNotNil:d key:YOZIO_D_TIMESTAMP obj:[self timeStampString]];
     [Yozio addIfNotNil:d key:YOZIO_D_EVENT_IDENTIFIER obj:[self eventID]];
-    [Yozio addIfNotNil:d key:YOZIO_P_EXTERNAL_PROPERTIES obj:properties];
+    [Yozio addIfNotNil:d key:YOZIO_P_EXTERNAL_PROPERTIES obj:[properties JSONString]];
 
     [self.dataQueue addObject:d];
     [Yozio log:@"doCollect: %@", d];
