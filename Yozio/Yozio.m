@@ -175,6 +175,11 @@ static Yozio *instance = nil;
 
 + (void)initializeExperiments
 {
+  [self initializeExperiments:false];
+}
+
++ (void)initializeExperiments:(BOOL)async
+{
   if (![instance validateConfiguration]) {
     return;
   }
@@ -184,15 +189,15 @@ static Yozio *instance = nil;
    YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, [Yozio encodeToPercentEscapeString:instance.deviceId],
    YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, [Yozio encodeToPercentEscapeString:YOZIO_DEVICE_TYPE_IOS],
    YOZIO_P_SDK_VERSION, [Yozio encodeToPercentEscapeString:YOZIO_SDK_VERSION]];
-
+  
   NSString *urlString =
   [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_CONFIGURATIONS_ROUTE, urlParams];
-
+  
   [Yozio log:@"Final configuration request url: %@", urlString];
-
+  
   // Use this device identifier to force a variation in the UI to a specific device.
   NSLog(@"Yozio Device Identifier: %@", instance.deviceId);
-
+  
   // Blocking
   instance.stopBlocking = false;
   [NSTimer scheduledTimerWithTimeInterval:5 target:instance selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
@@ -203,7 +208,7 @@ static Yozio *instance = nil;
     } else {
       if ([response statusCode] == 200) {
         [Yozio log:@"config before update: %@", instance.experimentConfig];
-
+        
         instance.experimentConfig = [body objectForKey:YOZIO_CONFIG_KEY];
         NSDictionary *experimentDetails = [body objectForKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY];
         if([experimentDetails count] > 0) {
@@ -220,13 +225,15 @@ static Yozio *instance = nil;
     [instance stopBlockingApp];
     [Yozio log:@"configuration request complete"];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-
+    
     // TODO(jt): stop background task if running in background
   }];
-
-  NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
-  while (!instance.stopBlocking && [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil]) {
-    loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
+  
+  if(!async) {
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
+    while (!instance.stopBlocking && [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil]) {
+      loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
+    }    
   }
 }
 
@@ -261,6 +268,11 @@ static Yozio *instance = nil;
 
 + (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl
 {
+  return [self getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl async:false];
+}
+
++ (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl async:(BOOL)async
+{
   NSMutableString *urlParams =
   [NSMutableString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
   YOZIO_GET_CONFIGURATION_P_APP_KEY, [Yozio encodeToPercentEscapeString:instance._appKey],
@@ -278,14 +290,27 @@ static Yozio *instance = nil;
   NSString *urlString =
   [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE, urlParams];
   [Yozio log:@"Final getUrl Request: %@", urlString];
-
-  return [self getUrlRequest:urlString destUrl:destinationUrl];
+  
+  return [self getUrlRequest:urlString destUrl:destinationUrl async:async];
 }
 
 +     (NSString *)getUrl:(NSString *)linkName
        iosDestinationUrl:(NSString *)iosDestinationUrl
    androidDestinationUrl:(NSString *)androidDestinationUrl
  nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
+{
+  return [self getUrl:linkName
+    iosDestinationUrl:iosDestinationUrl
+androidDestinationUrl:androidDestinationUrl
+nonMobileDestinationUrl:nonMobileDestinationUrl
+                async:false];
+}
+
++     (NSString *)getUrl:(NSString *)linkName
+       iosDestinationUrl:(NSString *)iosDestinationUrl
+   androidDestinationUrl:(NSString *)androidDestinationUrl
+ nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
+                   async:(BOOL)async
 {
   NSMutableString *urlParams =
   [NSMutableString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
@@ -307,7 +332,7 @@ static Yozio *instance = nil;
   [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE, urlParams];
   [Yozio log:@"Final getUrl Request: %@", urlString];
   
-  return [self getUrlRequest:urlString destUrl:nonMobileDestinationUrl];
+  return [self getUrlRequest:urlString destUrl:nonMobileDestinationUrl async:async];
 }
 
 + (void)viewedLink:(NSString *)linkName
@@ -421,7 +446,7 @@ static Yozio *instance = nil;
   }
 }
 
-+ (NSString *)getUrlRequest:(NSString *)urlString destUrl:(NSString *)destUrl
++ (NSString *)getUrlRequest:(NSString *)urlString destUrl:(NSString *)destUrl async:(BOOL)async
 {
   if (instance.urlConfig == nil) {
     instance.urlConfig = [NSMutableDictionary dictionary];
@@ -448,11 +473,12 @@ static Yozio *instance = nil;
       [Yozio log:@"getUrl request complete"];
       [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
     }];
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
-    while (!instance.stopBlocking && [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:loopUntil]) {
-      loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
+    if (!async) {
+      NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
+      while (!instance.stopBlocking && [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:loopUntil]) {
+        loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
+      }
     }
-    
     // return the short url. Return nonMobileDestinationUrl if it can't find the short url.
     if (instance.urlConfig == nil) {
       return destUrl;

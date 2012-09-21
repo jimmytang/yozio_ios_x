@@ -48,6 +48,13 @@
 + (void)initializeExperiments;
 
 /**
+ * Initializes the Yozio SDK for experiments. Must be called when the app is initialized.
+ * Makes a HTTP request to download the experiment configurations. Not thread-safe.
+ * @param async  Boolean flag to make this an asynchronous call.
+ */
++ (void)initializeExperiments:(BOOL)async;
+
+/**
  * Retrieve the String value for a given configuration key.
  *
  * @param key  The key of the value to retrieve. Must match a configuration key created online.
@@ -76,6 +83,17 @@
 + (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl;
 
 /**
+ * Retrieve the Yozio short url for a given linkName. Not thread-safe.
+ *
+ * @param linkName  The name of the viral tracking link.
+ *                  Must match one of the link names created online.
+ * @param destinationUrl  The url that the shortened url will redirect to.
+ * @param async  Boolean flag to make this an asynchronous call.
+ * @return The Yozio short URL for the linkName, or destinationUrl if there is an error.
+ */
++ (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl async:(BOOL)async;
+
+/**
  * Retrieve the Yozio short url for a given linkName. Blocking. Not thread-safe.
  *
  * @param linkName  The name of the viral tracking link.
@@ -89,6 +107,23 @@
        iosDestinationUrl:(NSString *)iosDestinationUrl
    androidDestinationUrl:(NSString *)androidDestinationUrl
  nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl;
+
+/**
+ * Retrieve the Yozio short url for a given linkName. Not thread-safe.
+ *
+ * @param linkName  The name of the viral tracking link.
+ *                  Must match one of the link names created online.
+ * @param iosDestinationUrl  The url that the shortened url will redirect to if an iOS device.
+ * @param androidDestinationUrl  The url that the shortened url will redirect to if an Android device.
+ * @param nonMobileDestinationUrl  The url that the shortened url will redirect to if a non mobile device.
+ * @param async  Boolean flag to make this an asynchronous call.
+ * @return The Yozio short URL for the linkName, or nonMobileDestinationUrl if there is an error.
+ */
++     (NSString *)getUrl:(NSString *)linkName
+       iosDestinationUrl:(NSString *)iosDestinationUrl
+   androidDestinationUrl:(NSString *)androidDestinationUrl
+ nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
+                   async:(BOOL)async;
 
 /**
  * Notify Yozio that a user has viewed a link.

@@ -146,8 +146,12 @@
 - (void)onApplicationWillTerminate:(NSNotification *)notification;
 
 // Data collection helper methods.
-+ (void)addIfNotNil:(NSMutableDictionary*)dict key:(NSString *)key obj:(NSObject *)obj;
-+ (void)appendParamIfNotNil:(NSMutableString*)paramString paramKey:(NSString*)paramKey paramValue:(NSString*)paramValue;
++ (void)addIfNotNil:(NSMutableDictionary*)dict
+                key:(NSString *)key
+                obj:(NSObject *)obj;
++ (void)appendParamIfNotNil:(NSMutableString*)paramString
+                   paramKey:(NSString*)paramKey
+                 paramValue:(NSString*)paramValue;
 - (BOOL)validateConfiguration;
 - (void)doCollect:(NSString *)name
          linkName:(NSString *)linkName
@@ -155,6 +159,9 @@
        properties:(NSDictionary *)properties;
 - (void)checkDataQueueSize;
 - (void)doFlush;
++ (NSString *)getUrlRequest:(NSString *)urlString
+              destUrl:(NSString *)destUrl
+                async:(BOOL)async;
 - (NSString *)buildPayload;
 
 // Instrumentation data helper methods.
