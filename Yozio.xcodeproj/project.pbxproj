@@ -15,7 +15,7 @@
 		0E7848B7146A7468004269C5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E7848A5146A7468004269C5 /* Foundation.framework */; };
 		0E7848BA146A7468004269C5 /* libYozio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E7848A2146A7468004269C5 /* libYozio.a */; };
 		0E7848C0146A7468004269C5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0E7848BE146A7468004269C5 /* InfoPlist.strings */; };
-		0E7848C3146A7468004269C5 /* YozioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7848C2146A7468004269C5 /* YozioTests.m */; };
+		0E7848C3146A7468004269C5 /* YozioConfigureTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7848C2146A7468004269C5 /* YozioConfigureTests.m */; };
 		F71CA3C41581DF5200735950 /* NSString+MD5.h in Headers */ = {isa = PBXBuildFile; fileRef = F71CA3C21581DF5200735950 /* NSString+MD5.h */; };
 		F71CA3C51581DF5200735950 /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = F71CA3C31581DF5200735950 /* NSString+MD5.m */; };
 		F7595BD515169D2F0042ADB5 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7595BD415169D2F0042ADB5 /* Security.framework */; };
@@ -26,7 +26,6 @@
 		F7595BFD1516A19B0042ADB5 /* OCMock.h in Headers */ = {isa = PBXBuildFile; fileRef = F7595BF51516A19B0042ADB5 /* OCMock.h */; };
 		F7595BFE1516A19B0042ADB5 /* OCMockObject.h in Headers */ = {isa = PBXBuildFile; fileRef = F7595BF61516A19B0042ADB5 /* OCMockObject.h */; };
 		F7595BFF1516A19B0042ADB5 /* OCMockRecorder.h in Headers */ = {isa = PBXBuildFile; fileRef = F7595BF71516A19B0042ADB5 /* OCMockRecorder.h */; };
-		F7595C021516B0CF0042ADB5 /* libobjc.A.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F7595C011516B0CF0042ADB5 /* libobjc.A.dylib */; };
 		F7AB88AA159E496E00E054C6 /* yajl_common.h in Headers */ = {isa = PBXBuildFile; fileRef = F7AB8890159E496E00E054C6 /* yajl_common.h */; };
 		F7AB88AB159E496E00E054C6 /* yajl_gen.h in Headers */ = {isa = PBXBuildFile; fileRef = F7AB8891159E496E00E054C6 /* yajl_gen.h */; };
 		F7AB88AC159E496E00E054C6 /* yajl_parse.h in Headers */ = {isa = PBXBuildFile; fileRef = F7AB8892159E496E00E054C6 /* yajl_parse.h */; };
@@ -55,6 +54,8 @@
 		F7AB88C3159E496E00E054C6 /* YSeriouslyOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = F7AB88A9159E496E00E054C6 /* YSeriouslyOperation.m */; };
 		F7ADDEE2157C256700BF92EB /* YOpenUDID.h in Headers */ = {isa = PBXBuildFile; fileRef = F7ADDEDF157C256700BF92EB /* YOpenUDID.h */; };
 		F7ADDEE3157C256700BF92EB /* YOpenUDID.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ADDEE0157C256700BF92EB /* YOpenUDID.m */; };
+		F7DEC57616103219005C43C6 /* OCMock.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DEC57516103219005C43C6 /* OCMock.framework */; };
+		F7DEC5771610321F005C43C6 /* OCMock.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DEC57516103219005C43C6 /* OCMock.framework */; };
 		F7FB3B0F1591365700863328 /* YJSONKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F7FB3B0D1591365700863328 /* YJSONKit.h */; };
 		F7FB3B101591365700863328 /* YJSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB3B0E1591365700863328 /* YJSONKit.m */; };
 /* End PBXBuildFile section */
@@ -80,8 +81,8 @@
 		0E7848B3146A7468004269C5 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		0E7848BD146A7468004269C5 /* YozioTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "YozioTests-Info.plist"; sourceTree = "<group>"; };
 		0E7848BF146A7468004269C5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		0E7848C1146A7468004269C5 /* YozioTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YozioTests.h; sourceTree = "<group>"; };
-		0E7848C2146A7468004269C5 /* YozioTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YozioTests.m; sourceTree = "<group>"; };
+		0E7848C1146A7468004269C5 /* YozioConfigureTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YozioConfigureTests.h; sourceTree = "<group>"; };
+		0E7848C2146A7468004269C5 /* YozioConfigureTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YozioConfigureTests.m; sourceTree = "<group>"; };
 		F71CA3C21581DF5200735950 /* NSString+MD5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+MD5.h"; sourceTree = "<group>"; };
 		F71CA3C31581DF5200735950 /* NSString+MD5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MD5.m"; sourceTree = "<group>"; };
 		F7595BD415169D2F0042ADB5 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -122,6 +123,7 @@
 		F7AB88A9159E496E00E054C6 /* YSeriouslyOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSeriouslyOperation.m; sourceTree = "<group>"; };
 		F7ADDEDF157C256700BF92EB /* YOpenUDID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YOpenUDID.h; sourceTree = "<group>"; };
 		F7ADDEE0157C256700BF92EB /* YOpenUDID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YOpenUDID.m; sourceTree = "<group>"; };
+		F7DEC57516103219005C43C6 /* OCMock.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OCMock.framework; path = lib/OCMock.framework; sourceTree = "<group>"; };
 		F7FB3B0D1591365700863328 /* YJSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YJSONKit.h; path = Yozio/lib/JSONKit/YJSONKit.h; sourceTree = SOURCE_ROOT; };
 		F7FB3B0E1591365700863328 /* YJSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YJSONKit.m; path = Yozio/lib/JSONKit/YJSONKit.m; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -132,6 +134,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E7848A6146A7468004269C5 /* Foundation.framework in Frameworks */,
+				F7DEC57616103219005C43C6 /* OCMock.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,11 +142,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7595C021516B0CF0042ADB5 /* libobjc.A.dylib in Frameworks */,
 				F7595BD815169D420042ADB5 /* UIKit.framework in Frameworks */,
 				F7595BD515169D2F0042ADB5 /* Security.framework in Frameworks */,
 				0E7848B4146A7468004269C5 /* SenTestingKit.framework in Frameworks */,
 				0E7848B7146A7468004269C5 /* Foundation.framework in Frameworks */,
+				F7DEC5771610321F005C43C6 /* OCMock.framework in Frameworks */,
 				0E7848BA146A7468004269C5 /* libYozio.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -199,6 +202,7 @@
 		0E7848A4146A7468004269C5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F7DEC57516103219005C43C6 /* OCMock.framework */,
 				0E7848A5146A7468004269C5 /* Foundation.framework */,
 				0E7848B3146A7468004269C5 /* SenTestingKit.framework */,
 			);
@@ -229,8 +233,8 @@
 			children = (
 				F7595BF01516A19B0042ADB5 /* include */,
 				F7595BF81516A19B0042ADB5 /* lib */,
-				0E7848C1146A7468004269C5 /* YozioTests.h */,
-				0E7848C2146A7468004269C5 /* YozioTests.m */,
+				0E7848C1146A7468004269C5 /* YozioConfigureTests.h */,
+				0E7848C2146A7468004269C5 /* YozioConfigureTests.m */,
 				0E7848BC146A7468004269C5 /* Supporting Files */,
 			);
 			path = YozioTests;
@@ -520,7 +524,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0E7848C3146A7468004269C5 /* YozioTests.m in Sources */,
+				0E7848C3146A7468004269C5 /* YozioConfigureTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -605,6 +609,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/lib\"",
 				);
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -638,6 +643,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/lib\"",
 				);
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -669,6 +675,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+					"\"$(SRCROOT)/lib\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Yozio/Yozio-Prefix.pch";
@@ -694,6 +701,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+					"\"$(SRCROOT)/lib\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Yozio/Yozio-Prefix.pch";
