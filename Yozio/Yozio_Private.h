@@ -138,7 +138,8 @@
 @property(nonatomic, retain) NSDateFormatter *dateFormatter;
 @property(nonatomic, assign) BOOL stopBlocking;
 
-+ (Yozio *)getInstance; 
++ (Yozio *)getInstance;
++ (Yozio *)setInstance:(Yozio *)newInstance;
 + (void)log:(NSString *)format, ...;
 + (void)openedApp;
 
@@ -160,6 +161,7 @@
 // Instrumentation data helper methods.
 - (NSString *)timeStampString;
 - (NSString *)eventID;
++ (NSString *)encodeToPercentEscapeString:(NSString *)string;
 // File system helper methods.
 - (void)saveUnsentData;
 - (void)loadUnsentData;

@@ -6,7 +6,7 @@
 #import "Yozio.h"
 #import "Yozio_Private.h"
 #import "YozioConfigureTests.h"
-#import "OCMock.h"
+#import <OCMock/OCMock.h>
 #import <objc/runtime.h>
 
 @implementation YozioConfigureTests
@@ -14,8 +14,8 @@
 
 static char mockDateKey;
 static NSString *mockUUID = @"mock UUID";
-Method originalMethod = nil;
-Method swizzleMethod = nil;
+static Method originalMethod = nil;
+static Method swizzleMethod = nil;
 id mock;
 
 
@@ -40,11 +40,7 @@ id mock;
 {
   NSFileManager *filemgr = [NSFileManager defaultManager];
   
-  if ([filemgr removeItemAtPath:YOZIO_DATA_QUEUE_FILE error: NULL]  == YES)
-    NSLog (@"Remove successful");
-  else
-    NSLog (@"Remove failed");
-
+  [filemgr removeItemAtPath:YOZIO_DATA_QUEUE_FILE error: NULL];
 }
 
 // tests

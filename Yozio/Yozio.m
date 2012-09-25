@@ -13,6 +13,7 @@
 #import "YJSONKit.h"
 #import "YSeriously.h"
 #import "YOpenUDID.h"
+#import "YozioRequestManager.h"
 #import <CommonCrypto/CommonHMAC.h>
 #include <sys/socket.h> // Per msqr
 #include <sys/sysctl.h>
@@ -118,6 +119,12 @@ static Yozio *instance = nil;
   return instance;
 }
 
++ (Yozio *)setInstance:(Yozio *)newInstance
+{
+  instance = newInstance;
+  return instance;
+}
+
 + (void)log:(NSString *)format, ...
 {
   if (YOZIO_LOG) {
@@ -195,9 +202,11 @@ static Yozio *instance = nil;
 
   // Blocking
   instance.stopBlocking = false;
-  [NSTimer scheduledTimerWithTimeInterval:5 target:instance selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
+  [NSTimer scheduledTimerWithTimeInterval:2 target:instance selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-  [YSeriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+  [[YozioRequestManager sharedInstance] urlRequest:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+    NSLog(@"callback");
+    NSLog(@"body %@", body);
     if (error) {
       [Yozio log:@"initializeExperiments error %@", error];
     } else {
@@ -218,6 +227,7 @@ static Yozio *instance = nil;
       }
     }
     [instance stopBlockingApp];
+    NSLog(@"stopBlocking");
     [Yozio log:@"configuration request complete"];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 
@@ -435,7 +445,7 @@ static Yozio *instance = nil;
     instance.stopBlocking = false;
     [NSTimer scheduledTimerWithTimeInterval:5 target:instance selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-    [YSeriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+    [[YozioRequestManager sharedInstance] urlRequest:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
       if (error) {
         [Yozio log:@"getUrl error %@", error];
       } else {
@@ -474,6 +484,10 @@ static Yozio *instance = nil;
 
 - (void)doFlush
 {
+  
+  NSLog(@"doFlush");
+  
+  
   if ([self.dataQueue count] == 0) {
     [Yozio log:@"No data to flush."];
     return;
@@ -482,9 +496,12 @@ static Yozio *instance = nil;
     [Yozio log:@"Already flushing"];
     return;
   }
+  NSLog(@"YOZIO_FLUSH_DATA_SIZE: %d", YOZIO_FLUSH_DATA_SIZE);
   if ([self.dataQueue count] > YOZIO_FLUSH_DATA_SIZE) {
+    NSLog(@"1");
     self.dataToSend = [self.dataQueue subarrayWithRange:NSMakeRange(0, YOZIO_FLUSH_DATA_SIZE)];
   } else {
+    NSLog(@"2");
     self.dataToSend = [NSArray arrayWithArray:self.dataQueue];
   }
   [Yozio log:@"Flushing..."];
@@ -495,9 +512,9 @@ static Yozio *instance = nil;
   [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_BATCH_EVENTS_ROUTE, urlParams];
 
   [Yozio log:@"Final get request url: %@", urlString];
-
+  NSLog(@"flushing................");
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-  [YSeriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+  [[YozioRequestManager sharedInstance] urlRequest:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
     if (error) {
       [Yozio log:@"Flush error %@", error];
       self.dataToSend = nil;
@@ -518,6 +535,7 @@ static Yozio *instance = nil;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
   }];
 }
+
 
 - (NSString *)buildPayload
 {
