@@ -51,7 +51,6 @@
 		F7CABA391611890700F51840 /* YozioRequestManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F7CABA371611890700F51840 /* YozioRequestManager.h */; };
 		F7CABA3A1611890700F51840 /* YozioRequestManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CABA381611890700F51840 /* YozioRequestManager.m */; };
 		F7CABA3D16122D8900F51840 /* YozioRequestManagerMock.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CABA3C16122D8900F51840 /* YozioRequestManagerMock.m */; };
-		F7DEC57A1610BBF6005C43C6 /* YozioDoFlushTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DEC5791610BBF6005C43C6 /* YozioDoFlushTests.m */; };
 		F7DEC5931610D8A7005C43C6 /* OCMock.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DEC5921610D8A7005C43C6 /* OCMock.framework */; };
 		F7DEC5971610D96F005C43C6 /* OCMock.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F7DEC5921610D8A7005C43C6 /* OCMock.framework */; };
 		F7DEC5B51610F30D005C43C6 /* YozioSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DEC5B41610F30D005C43C6 /* YozioSpec.m */; };
@@ -161,8 +160,6 @@
 		F7CABA381611890700F51840 /* YozioRequestManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YozioRequestManager.m; sourceTree = "<group>"; };
 		F7CABA3B16122D8900F51840 /* YozioRequestManagerMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YozioRequestManagerMock.h; path = YozioTests/YozioRequestManagerMock.h; sourceTree = SOURCE_ROOT; };
 		F7CABA3C16122D8900F51840 /* YozioRequestManagerMock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YozioRequestManagerMock.m; path = YozioTests/YozioRequestManagerMock.m; sourceTree = SOURCE_ROOT; };
-		F7DEC5781610BBF6005C43C6 /* YozioDoFlushTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YozioDoFlushTests.h; sourceTree = "<group>"; };
-		F7DEC5791610BBF6005C43C6 /* YozioDoFlushTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YozioDoFlushTests.m; sourceTree = "<group>"; };
 		F7DEC5921610D8A7005C43C6 /* OCMock.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OCMock.framework; sourceTree = "<group>"; };
 		F7DEC59F1610F23F005C43C6 /* Kiwi.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Kiwi.xcodeproj; path = Frameworks/Kiwi/Kiwi.xcodeproj; sourceTree = "<group>"; };
 		F7DEC5B41610F30D005C43C6 /* YozioSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YozioSpec.m; sourceTree = "<group>"; };
@@ -278,8 +275,6 @@
 			children = (
 				0E7848C1146A7468004269C5 /* YozioConfigureTests.h */,
 				0E7848C2146A7468004269C5 /* YozioConfigureTests.m */,
-				F7DEC5781610BBF6005C43C6 /* YozioDoFlushTests.h */,
-				F7DEC5791610BBF6005C43C6 /* YozioDoFlushTests.m */,
 				F7CABA3B16122D8900F51840 /* YozioRequestManagerMock.h */,
 				F7CABA3C16122D8900F51840 /* YozioRequestManagerMock.m */,
 				0E7848BC146A7468004269C5 /* Supporting Files */,
@@ -589,7 +584,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E7848C3146A7468004269C5 /* YozioConfigureTests.m in Sources */,
-				F7DEC57A1610BBF6005C43C6 /* YozioDoFlushTests.m in Sources */,
 				F7DEC5B51610F30D005C43C6 /* YozioSpec.m in Sources */,
 				F7CABA3D16122D8900F51840 /* YozioRequestManagerMock.m in Sources */,
 			);
