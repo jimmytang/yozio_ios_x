@@ -102,7 +102,6 @@ describe(@"doFlush", ^{
                                         @"Unknown", @"hardware",
                                         @"open udid value", @"open_udid",
                                         @"5.1", @"os_version",
-                                        @"IOS-v2.4", @"sdk_version",
                                         @"device id", @"yozio_udid",
                                         @"1", @"open_udid_count",
                                         @"1.000000", @"display_multiplier",
@@ -271,7 +270,6 @@ describe(@"buildPayload", ^{
      @"Unknown", @"hardware",
      @"open udid value", @"open_udid",
      @"5.1", @"os_version",
-     @"IOS-v2.4", @"sdk_version",
      @"device id", @"yozio_udid",
      @"1", @"open_udid_count",
      @"1.000000", @"display_multiplier",
@@ -836,7 +834,7 @@ describe(@"getUrl", ^{
       [Yozio setInstance:yozioMock];
       
       [Yozio getUrl:@"twitter" destinationUrl:@"destination url"];
-      [[urlStringSpy.argument should] equal:@"http://yoz.io/api/viral/v1/get_url?app_key=app%20key&yozio_udid=device%20id&device_type=2&link_name=twitter&dest_url=destination%20url&sdk_version=IOS-v2.4&super_properties=%7B%22experiment_variation_sids%22%3A%7B%22key%22%3A%22value%22%7D%7D"];
+      [[urlStringSpy.argument should] equal:@"http://yoz.io/api/viral/v1/get_url?app_key=app%20key&yozio_udid=device%20id&device_type=2&link_name=twitter&dest_url=destination%20url&super_properties=%7B%22experiment_variation_sids%22%3A%7B%22key%22%3A%22value%22%7D%7D"];
       [[destUrlSpy.argument should] equal:@"destination url"];
       
       [Yozio setInstance:instance];
@@ -855,7 +853,7 @@ describe(@"getUrl", ^{
       [Yozio setInstance:yozioMock];
       
       [Yozio getUrl:@"twitter" iosDestinationUrl:@"ios destination" androidDestinationUrl:@"android destination" nonMobileDestinationUrl:@"non mobile destination"];
-      [[urlStringSpy.argument should] equal:@"http://yoz.io/api/viral/v1/get_url?app_key=app%20key&yozio_udid=device%20id&device_type=2&link_name=twitter&ios_dest_url=ios%20destination&android_dest_url=android%20destination&non_mobile_dest_url=non%20mobile%20destination&sdk_version=IOS-v2.4&super_properties=%7B%22experiment_variation_sids%22%3A%7B%22key%22%3A%22value%22%7D%7D"];
+      [[urlStringSpy.argument should] equal:@"http://yoz.io/api/viral/v1/get_url?app_key=app%20key&yozio_udid=device%20id&device_type=2&link_name=twitter&ios_dest_url=ios%20destination&android_dest_url=android%20destination&non_mobile_dest_url=non%20mobile%20destination&super_properties=%7B%22experiment_variation_sids%22%3A%7B%22key%22%3A%22value%22%7D%7D"];
       [[destUrlSpy.argument should] equal:@"non mobile destination"];
       
       [Yozio setInstance:instance];

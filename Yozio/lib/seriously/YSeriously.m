@@ -8,6 +8,7 @@
 
 #import "YSeriously.h"
 #import "YSeriouslyOperation.h"
+#import "Yozio_Private.h"
 
 const NSString *kSeriouslyMethod = @"kSeriouslyMethod";
 const NSString *kSeriouslyTimeout = @"kSeriouslyTimeout";
@@ -30,7 +31,7 @@ NSString *yozioUserAgent = @"Yozio iOS SDK";
     [request setHTTPMethod:[[options objectForKey:kSeriouslyMethod] uppercaseString]];
     [request setTimeoutInterval:[[options objectForKey:kSeriouslyTimeout] doubleValue]];
     [request setAllHTTPHeaderFields:[options objectForKey:kSeriouslyHeaders]];
-    [request setValue:yozioUserAgent forHTTPHeaderField:@"User-Agent"];
+    [request setValue:YOZIO_SDK_VERSION forHTTPHeaderField:@"yozio-sdk-version"];
 
     if ([[request HTTPMethod] isEqual:@"POST"] || [[request HTTPMethod] isEqual:@"PUT"]) {
         [request setHTTPBody:[options objectForKey:kSeriouslyBody]];
