@@ -305,10 +305,12 @@ static Yozio *instance = nil;
      YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, [Yozio encodeToPercentEscapeString:YOZIO_DEVICE_TYPE_IOS],
      YOZIO_GET_URL_P_LINK_NAME, [Yozio encodeToPercentEscapeString:linkName],
      YOZIO_GET_URL_P_DEST_URL, [Yozio encodeToPercentEscapeString:destinationUrl]];
-    [self appendParamIfNotNil:urlParams
-                     paramKey:YOZIO_GET_URL_P_YOZIO_PROPERTIES
-                   paramValue:[instance.linkYozioProperties JSONString]];
-    if (properties) {
+    if (instance.linkYozioProperties && [instance.linkYozioProperties count] > 0) {
+      [self appendParamIfNotNil:urlParams
+                       paramKey:YOZIO_GET_URL_P_YOZIO_PROPERTIES
+                     paramValue:[instance.linkYozioProperties JSONString]];
+    }
+    if (properties && [properties count] > 0) {
       [self appendParamIfNotNil:urlParams
                        paramKey:YOZIO_P_EXTERNAL_PROPERTIES
                      paramValue:[properties JSONString]];
@@ -353,15 +355,16 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
      YOZIO_GET_URL_P_IOS_DEST_URL, [Yozio encodeToPercentEscapeString:iosDestinationUrl],
      YOZIO_GET_URL_P_ANDROID_DEST_URL, [Yozio encodeToPercentEscapeString:androidDestinationUrl],
      YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, [Yozio encodeToPercentEscapeString:nonMobileDestinationUrl]];
-    [self appendParamIfNotNil:urlParams
-                     paramKey:YOZIO_GET_URL_P_YOZIO_PROPERTIES
-                   paramValue:[instance.linkYozioProperties JSONString]];
-    if (properties) {
+    if (instance.linkYozioProperties && [instance.linkYozioProperties count] > 0)
+      [self appendParamIfNotNil:urlParams
+                       paramKey:YOZIO_GET_URL_P_YOZIO_PROPERTIES
+                     paramValue:[instance.linkYozioProperties JSONString]];
+    if (properties && [properties count] > 0) {
       [self appendParamIfNotNil:urlParams
                        paramKey:YOZIO_P_EXTERNAL_PROPERTIES
                      paramValue:[properties JSONString]];
     }
-
+    
     NSString *urlString =
     [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE, urlParams];
     [Yozio log:@"Final getUrl Request: %@", urlString];
