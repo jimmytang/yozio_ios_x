@@ -765,21 +765,61 @@ describe(@"doCollect", ^{
       [Yozio setInstance:instance];
     });
   });
-
+  
+  context(@"doCollect", ^{
+    beforeEach(^{
+      Yozio *instance = [Yozio getInstance];
+      instance._appKey = @"app key";
+      instance._secretKey = @"secret key";
+    });
+    
+    it(@"should increment the dataCount", ^{
+      Yozio *instance = [Yozio getInstance];
+      instance.dataCount = 0;
+      NSString *type = YOZIO_SHARED_LINK_ACTION;
+      NSString *linkName = @"link name";
+      NSDictionary *properties = [NSDictionary dictionaryWithObject:@"value" forKey:@"property"];
+      [instance stub:@selector(timeStampString) andReturn:@"time stamp string"];
+      [instance stub:@selector(eventID) andReturn:@"event id"];
+      [instance doCollect:type linkName:linkName maxQueue:YOZIO_ACTION_DATA_LIMIT properties:properties];
+      [[theValue(instance.dataCount) should] equal:theValue(1)];
+    });
+    
+    it(@"should add a new event to the dataQueue with correct parameters", ^{
+      Yozio *instance = [Yozio getInstance];
+      NSString *type = YOZIO_SHARED_LINK_ACTION;
+      NSString *linkName = @"link name";
+      NSDictionary *properties = [NSDictionary dictionaryWithObject:@"value" forKey:@"property"];
+      [instance stub:@selector(timeStampString) andReturn:@"time stamp string"];
+      [instance stub:@selector(eventID) andReturn:@"event id"];
+      NSArray *expectedDataQueue = [NSArray arrayWithObjects:
+                                    [NSDictionary dictionaryWithObjectsAndKeys:
+                                     type, YOZIO_D_EVENT_TYPE,
+                                     linkName, YOZIO_D_LINK_NAME,
+                                     @"time stamp string", YOZIO_D_TIMESTAMP,
+                                     @"event id", YOZIO_D_EVENT_IDENTIFIER,
+                                     [properties JSONString], YOZIO_P_EXTERNAL_PROPERTIES,
+                                     nil],
+                                    nil];
+      instance.dataQueue = [NSMutableArray array];
+      [instance doCollect:type linkName:linkName maxQueue:YOZIO_ACTION_DATA_LIMIT properties:properties];
+      [[instance.dataQueue should] equal:expectedDataQueue];
+    });
+  });
 });
 
 describe(@"getUrl", ^{
   context(@"", ^{
     it(@"should return destinationUrl if linkName is null", ^{
       Yozio *instance = [Yozio getInstance];
-      instance.urlConfig = [NSDictionary dictionaryWithObject:@"short url" forKey:@"twitter"];
+      instance.getUrlCache = [NSDictionary dictionaryWithObject:@"short url" forKey:@"twitter"];
       [[[Yozio getUrl:nil destinationUrl:@"destination url"] should] equal:@"destination url"];
       [[[Yozio getUrl:nil destinationUrl:@"destination url"] should] equal:@"destination url"];
     });
     
     it(@"should return null if destinationUrl is null", ^{
       Yozio *instance = [Yozio getInstance];
-      instance.urlConfig = [NSDictionary dictionaryWithObject:@"short url" forKey:@"twitter"];
+      instance.getUrlCache = [NSDictionary dictionaryWithObject:@"short url" forKey:@"twitter"];
       [[Yozio getUrl:@"twitter" destinationUrl:nil] shouldBeNil];
     });
     
@@ -826,18 +866,18 @@ describe(@"getUrl", ^{
 
 describe(@"getUrlRequest", ^{
   context(@"", ^{
-    it(@"should return destinationUrl if urlConfig is null", ^{
+    it(@"should return destinationUrl if getUrlCache is null", ^{
       Yozio *instance = [Yozio getInstance];
-      instance.urlConfig = nil;
+      instance.getUrlCache = nil;
       [[[instance getUrlRequest:@"url string" destUrl:@"dest url"] should] equal:@"dest url"];
     });
     
-    it(@"should return short link without making a request if the urlString exists in urlConfig", ^{
+    it(@"should return short link without making a request if the urlString exists in getUrlCache", ^{
       YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
       [[yrmInstance should] receive:@selector(urlRequest:handler:) withCount:0];
       
       Yozio *instance = [Yozio getInstance];
-      instance.urlConfig = [NSMutableDictionary dictionaryWithObject:@"short link" forKey:@"url string"];
+      instance.getUrlCache = [NSMutableDictionary dictionaryWithObject:@"short link" forKey:@"url string"];
       [[[instance getUrlRequest:@"url string" destUrl:@"dest url"] should] equal:@"short link"];
     });
     
@@ -855,13 +895,13 @@ describe(@"getUrlRequest", ^{
       yrmMock.error = error;
       
       Yozio *instance = [Yozio getInstance];
-      instance.urlConfig = nil;
+      instance.getUrlCache = nil;
       [[[instance getUrlRequest:@"url string" destUrl:@"dest url"] should] equal:@"dest url"];
       
       [YozioRequestManager setInstance:yrmInstance];
     });
     
-    it(@"should update urlConfig & return a short link on a 200", ^{
+    it(@"should update getUrlCache & return a short link on a 200", ^{
       YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
       YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
       [YozioRequestManager setInstance:yrmMock];
@@ -875,13 +915,13 @@ describe(@"getUrlRequest", ^{
       yrmMock.response = response;
       
       Yozio *instance = [Yozio getInstance];
-      instance.urlConfig = nil;
+      instance.getUrlCache = nil;
       [[[instance getUrlRequest:@"url string" destUrl:@"dest url"] should] equal:@"short link"];
       
       [YozioRequestManager setInstance:yrmInstance];
     });
     
-    it(@"should not update urlConfig on any other response", ^{
+    it(@"should not update getUrlCache on any other response", ^{
       YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
       YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
       [YozioRequestManager setInstance:yrmMock];
@@ -895,14 +935,14 @@ describe(@"getUrlRequest", ^{
       yrmMock.response = response;
       
       Yozio *instance = [Yozio getInstance];
-      instance.urlConfig = [NSMutableDictionary dictionary];
+      instance.getUrlCache = [NSMutableDictionary dictionary];
       [instance getUrlRequest:@"url string" destUrl:@"dest url"];
-      [[theValue([instance.urlConfig count]) should] equal:theValue(0)];
+      [[theValue([instance.getUrlCache count]) should] equal:theValue(0)];
       
       [YozioRequestManager setInstance:yrmInstance];
     });
     
-    it(@"should not update urlConfig if the body isn't json", ^{
+    it(@"should not update getUrlCache if the body isn't json", ^{
       YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
       YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
       [YozioRequestManager setInstance:yrmMock];
@@ -916,14 +956,14 @@ describe(@"getUrlRequest", ^{
       yrmMock.response = response;
       
       Yozio *instance = [Yozio getInstance];
-      instance.urlConfig = [NSMutableDictionary dictionary];
+      instance.getUrlCache = [NSMutableDictionary dictionary];
       [instance getUrlRequest:@"url string" destUrl:@"dest url"];
-      [[theValue([instance.urlConfig count]) should] equal:theValue(0)];
+      [[theValue([instance.getUrlCache count]) should] equal:theValue(0)];
       
       [YozioRequestManager setInstance:yrmInstance];
     });
     
-    it(@"should not update urlConfig if the value is nil", ^{
+    it(@"should not update getUrlCache if the value is nil", ^{
       YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
       YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
       [YozioRequestManager setInstance:yrmMock];
@@ -937,9 +977,9 @@ describe(@"getUrlRequest", ^{
       yrmMock.response = response;
       
       Yozio *instance = [Yozio getInstance];
-      instance.urlConfig = [NSMutableDictionary dictionary];
+      instance.getUrlCache = [NSMutableDictionary dictionary];
       [instance getUrlRequest:@"url string" destUrl:@"dest url"];
-      [[theValue([instance.urlConfig count]) should] equal:theValue(0)];
+      [[theValue([instance.getUrlCache count]) should] equal:theValue(0)];
       
       [YozioRequestManager setInstance:yrmInstance];
     });

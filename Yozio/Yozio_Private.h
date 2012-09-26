@@ -107,7 +107,7 @@
   NSInteger dataCount;
   NSMutableArray *dataQueue;
   NSArray *dataToSend;
-  NSMutableDictionary *urlConfig;
+  NSMutableDictionary *getUrlCache;
   NSMutableDictionary *experimentConfig;
   NSMutableDictionary *eventSuperProperties;
   NSMutableDictionary *linkSuperProperties;
@@ -131,7 +131,7 @@
 @property(nonatomic, assign) NSInteger dataCount;
 @property(nonatomic, retain) NSMutableArray *dataQueue;
 @property(nonatomic, retain) NSArray *dataToSend;
-@property(nonatomic, retain) NSMutableDictionary *urlConfig;
+@property(nonatomic, retain) NSMutableDictionary *getUrlCache;
 @property(nonatomic, retain) NSMutableDictionary *experimentConfig;
 @property(nonatomic, retain) NSMutableDictionary *eventSuperProperties;
 @property(nonatomic, retain) NSMutableDictionary *linkSuperProperties;
