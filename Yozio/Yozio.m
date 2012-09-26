@@ -13,6 +13,7 @@
 #import "YJSONKit.h"
 #import "YSeriously.h"
 #import "YOpenUDID.h"
+#import "YozioRequestManager.h"
 #import <CommonCrypto/CommonHMAC.h>
 #include <sys/socket.h> // Per msqr
 #include <sys/sysctl.h>
@@ -42,7 +43,7 @@
 @synthesize dataToSend;
 @synthesize dataCount;
 @synthesize dateFormatter;
-@synthesize urlConfig;
+@synthesize getUrlCache;
 @synthesize experimentConfig;
 @synthesize eventSuperProperties;
 @synthesize linkSuperProperties;
@@ -81,7 +82,7 @@ static Yozio *instance = nil;
   self.dataCount = 0;
   self.dataQueue = [NSMutableArray array];
   self.dataToSend = nil;
-  self.urlConfig = [NSMutableDictionary dictionary];
+  self.getUrlCache = [NSMutableDictionary dictionary];
   self.experimentConfig = [NSMutableDictionary dictionary];
   self.eventSuperProperties = [NSMutableDictionary dictionary];
   self.linkSuperProperties = [NSMutableDictionary dictionary];
@@ -115,6 +116,12 @@ static Yozio *instance = nil;
 // Used for testing.
 + (Yozio *)getInstance
 {
+  return instance;
+}
+
++ (Yozio *)setInstance:(Yozio *)newInstance
+{
+  instance = newInstance;
   return instance;
 }
 
@@ -169,7 +176,7 @@ static Yozio *instance = nil;
   [instance doCollect:YOZIO_LOGIN_ACTION
              linkName:@""
              maxQueue:YOZIO_ACTION_DATA_LIMIT
-           properties:nil];
+           properties:properties];
 }
 
 
@@ -195,25 +202,34 @@ static Yozio *instance = nil;
 
   // Blocking
   instance.stopBlocking = false;
-  [NSTimer scheduledTimerWithTimeInterval:5 target:instance selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
+  [NSTimer scheduledTimerWithTimeInterval:2 target:instance selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-  [YSeriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+  [[YozioRequestManager sharedInstance] urlRequest:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
     if (error) {
       [Yozio log:@"initializeExperiments error %@", error];
     } else {
       if ([response statusCode] == 200) {
         [Yozio log:@"config before update: %@", instance.experimentConfig];
-
-        instance.experimentConfig = [body objectForKey:YOZIO_CONFIG_KEY];
-        NSDictionary *experimentDetails = [body objectForKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY];
-        if([experimentDetails count] > 0) {
-          [Yozio log:@"event super properties before update: %@", instance.eventSuperProperties];
-          [Yozio log:@"link super properties before update: %@", instance.linkSuperProperties];
-          [instance.eventSuperProperties setObject:experimentDetails forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS];
-          [instance.linkSuperProperties setObject:experimentDetails forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS];
-          [Yozio log:@"event super properties after update: %@", instance.eventSuperProperties];
-          [Yozio log:@"link super properties after update: %@", instance.linkSuperProperties];
+        
+        if ([body objectForKey:YOZIO_CONFIG_KEY] &&
+            [[body objectForKey:YOZIO_CONFIG_KEY] isKindOfClass:[NSDictionary class]]) {
+          instance.experimentConfig = [body objectForKey:YOZIO_CONFIG_KEY];
         }
+        
+        if ([body objectForKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY] &&
+            [[body objectForKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY] isKindOfClass:[NSDictionary class]]) {
+          NSDictionary *experimentDetails = [body objectForKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY];
+          if([experimentDetails count] > 0) {
+            [Yozio log:@"event super properties before update: %@", instance.eventSuperProperties];
+            [Yozio log:@"link super properties before update: %@", instance.linkSuperProperties];
+            [instance.eventSuperProperties setObject:experimentDetails forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS];
+            [instance.linkSuperProperties setObject:experimentDetails forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS];
+            [Yozio log:@"event super properties after update: %@", instance.eventSuperProperties];
+            [Yozio log:@"link super properties after update: %@", instance.linkSuperProperties];
+          }
+          
+        }
+          
         [Yozio log:@"config after update: %@", instance.experimentConfig];
       }
     }
@@ -232,54 +248,73 @@ static Yozio *instance = nil;
 
 + (NSString*)stringForKey:(NSString *)key defaultValue:(NSString *) defaultValue;
 {
-  if (instance.experimentConfig == nil) {
+  @try {
+    if (instance.experimentConfig == nil) {
+      return defaultValue;
+    }
+    NSString *val = [instance.experimentConfig objectForKey:key];
+    if([val isKindOfClass:[NSString class]]) {
+      return val;
+    } else {
+      return defaultValue;
+    }
+  }
+  @catch (NSException * e) {
     return defaultValue;
   }
-  NSString *val = [instance.experimentConfig objectForKey:key];
-  return val != nil ? val : defaultValue;
 }
 
 + (NSInteger)intForKey:(NSString *)key defaultValue:(NSInteger)defaultValue;
 {
-  if (instance.experimentConfig == nil) {
-    return defaultValue;
-  }
-  NSString *val = [instance.experimentConfig objectForKey:key];
-  if(val == nil) {
-    return defaultValue;
-  } else {
-    NSInteger intVal = [val integerValue];
-    NSString *verifierVal = [NSString stringWithFormat:@"%d", intVal];
-    // verify the value is an integer
-    if(![verifierVal isEqual:val]) {
-      NSLog(@"intForKey '%@' is returning '%d' from '%@', which don't match", key, intVal, val);
+  @try {
+    if (instance.experimentConfig == nil) {
       return defaultValue;
     }
-    return intVal;
+    NSString *val = [instance.experimentConfig objectForKey:key];
+    if(val == nil || ![val isKindOfClass:[NSString class]]) {
+      return defaultValue;
+    } else {
+      NSInteger intVal = [val integerValue];
+      NSString *verifierVal = [NSString stringWithFormat:@"%d", intVal];
+      // verify the value is an integer
+      if(![verifierVal isEqual:val]) {
+        NSLog(@"intForKey '%@' is returning '%d' from '%@', which don't match", key, intVal, val);
+        return defaultValue;
+      }
+      return intVal;
+    }
+  }
+  @catch (NSException * e) {
+    return defaultValue;
   }
 }
 
 + (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl
 {
-  NSMutableString *urlParams =
-  [NSMutableString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
-  YOZIO_GET_CONFIGURATION_P_APP_KEY, [Yozio encodeToPercentEscapeString:instance._appKey],
-  YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, [Yozio encodeToPercentEscapeString:instance.deviceId],
-  YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, [Yozio encodeToPercentEscapeString:YOZIO_DEVICE_TYPE_IOS],
-  YOZIO_GET_URL_P_LINK_NAME, [Yozio encodeToPercentEscapeString:linkName],
-  YOZIO_GET_URL_P_DEST_URL, [Yozio encodeToPercentEscapeString:destinationUrl],
-  YOZIO_P_SDK_VERSION, [Yozio encodeToPercentEscapeString:YOZIO_SDK_VERSION]];
-  if ([instance.linkSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]) {
-    [self appendParamIfNotNil:urlParams
-                     paramKey:YOZIO_GET_URL_P_SUPER_PROPERTIES
-                   paramValue:[instance.linkSuperProperties JSONString]];
-  }
-  
-  NSString *urlString =
-  [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE, urlParams];
-  [Yozio log:@"Final getUrl Request: %@", urlString];
+  @try {
+    NSMutableString *urlParams =
+    [NSMutableString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
+    YOZIO_GET_CONFIGURATION_P_APP_KEY, [Yozio encodeToPercentEscapeString:instance._appKey],
+    YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, [Yozio encodeToPercentEscapeString:instance.deviceId],
+    YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, [Yozio encodeToPercentEscapeString:YOZIO_DEVICE_TYPE_IOS],
+    YOZIO_GET_URL_P_LINK_NAME, [Yozio encodeToPercentEscapeString:linkName],
+    YOZIO_GET_URL_P_DEST_URL, [Yozio encodeToPercentEscapeString:destinationUrl],
+    YOZIO_P_SDK_VERSION, [Yozio encodeToPercentEscapeString:YOZIO_SDK_VERSION]];
+    if ([instance.linkSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]) {
+      [self appendParamIfNotNil:urlParams
+                       paramKey:YOZIO_GET_URL_P_SUPER_PROPERTIES
+                     paramValue:[instance.linkSuperProperties JSONString]];
+    }
+    
+    NSString *urlString =
+    [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE, urlParams];
+    [Yozio log:@"Final getUrl Request: %@", urlString];
 
-  return [self getUrlRequest:urlString destUrl:destinationUrl];
+    return [instance getUrlRequest:urlString destUrl:destinationUrl];
+  }
+  @catch (NSException * e) {
+    return destinationUrl;
+  }
 }
 
 +     (NSString *)getUrl:(NSString *)linkName
@@ -287,27 +322,32 @@ static Yozio *instance = nil;
    androidDestinationUrl:(NSString *)androidDestinationUrl
  nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
 {
-  NSMutableString *urlParams =
-  [NSMutableString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
-  YOZIO_GET_CONFIGURATION_P_APP_KEY, [Yozio encodeToPercentEscapeString:instance._appKey],
-  YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, [Yozio encodeToPercentEscapeString:instance.deviceId],
-  YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, [Yozio encodeToPercentEscapeString:YOZIO_DEVICE_TYPE_IOS],
-  YOZIO_GET_URL_P_LINK_NAME, [Yozio encodeToPercentEscapeString:linkName],
-  YOZIO_GET_URL_P_IOS_DEST_URL, [Yozio encodeToPercentEscapeString:iosDestinationUrl],
-  YOZIO_GET_URL_P_ANDROID_DEST_URL, [Yozio encodeToPercentEscapeString:androidDestinationUrl],
-  YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, [Yozio encodeToPercentEscapeString:nonMobileDestinationUrl],
-  YOZIO_P_SDK_VERSION, [Yozio encodeToPercentEscapeString:YOZIO_SDK_VERSION]];
-  if ([instance.linkSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]) {
-    [self appendParamIfNotNil:urlParams
-                     paramKey:YOZIO_GET_URL_P_SUPER_PROPERTIES
-                   paramValue:[instance.linkSuperProperties JSONString]];
+  @try {
+    NSMutableString *urlParams =
+    [NSMutableString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
+     YOZIO_GET_CONFIGURATION_P_APP_KEY, [Yozio encodeToPercentEscapeString:instance._appKey],
+     YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, [Yozio encodeToPercentEscapeString:instance.deviceId],
+     YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, [Yozio encodeToPercentEscapeString:YOZIO_DEVICE_TYPE_IOS],
+     YOZIO_GET_URL_P_LINK_NAME, [Yozio encodeToPercentEscapeString:linkName],
+     YOZIO_GET_URL_P_IOS_DEST_URL, [Yozio encodeToPercentEscapeString:iosDestinationUrl],
+     YOZIO_GET_URL_P_ANDROID_DEST_URL, [Yozio encodeToPercentEscapeString:androidDestinationUrl],
+     YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, [Yozio encodeToPercentEscapeString:nonMobileDestinationUrl],
+     YOZIO_P_SDK_VERSION, [Yozio encodeToPercentEscapeString:YOZIO_SDK_VERSION]];
+    if ([instance.linkSuperProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]) {
+      [self appendParamIfNotNil:urlParams
+                       paramKey:YOZIO_GET_URL_P_SUPER_PROPERTIES
+                     paramValue:[instance.linkSuperProperties JSONString]];
+    }
+    
+    NSString *urlString =
+    [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE, urlParams];
+    [Yozio log:@"Final getUrl Request: %@", urlString];
+    
+    return [instance getUrlRequest:urlString destUrl:nonMobileDestinationUrl];
   }
-  
-  NSString *urlString =
-  [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE, urlParams];
-  [Yozio log:@"Final getUrl Request: %@", urlString];
-  
-  return [self getUrlRequest:urlString destUrl:nonMobileDestinationUrl];
+  @catch (NSException * e) {
+    return nonMobileDestinationUrl;
+  }
 }
 
 + (void)viewedLink:(NSString *)linkName
@@ -421,43 +461,48 @@ static Yozio *instance = nil;
   }
 }
 
-+ (NSString *)getUrlRequest:(NSString *)urlString destUrl:(NSString *)destUrl
+- (NSString *)getUrlRequest:(NSString *)urlString destUrl:(NSString *)destUrl
 {
-  if (instance.urlConfig == nil) {
-    instance.urlConfig = [NSMutableDictionary dictionary];
+  NSLog(@"getUrlRequest");
+  if (self.getUrlCache == nil) {
+    self.getUrlCache = [NSMutableDictionary dictionary];
   }
-  NSString *val = [instance.urlConfig objectForKey:urlString];
+  NSString *val = [self.getUrlCache objectForKey:urlString];
   if (val != nil) {
     return val;
   }
   else {
     // Blocking
-    instance.stopBlocking = false;
-    [NSTimer scheduledTimerWithTimeInterval:5 target:instance selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
+    self.stopBlocking = false;
+    [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-    [YSeriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+    [[YozioRequestManager sharedInstance] urlRequest:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
       if (error) {
         [Yozio log:@"getUrl error %@", error];
       } else {
         if ([response statusCode] == 200) {
-          NSString *shortenedUrl = [body objectForKey:@"url"];
-          [instance.urlConfig setObject:shortenedUrl forKey:urlString];
+          if ([body isKindOfClass:[NSDictionary class]]) {
+            NSString *shortenedUrl = [body objectForKey:@"url"];
+            if (shortenedUrl) {
+              [self.getUrlCache setObject:shortenedUrl forKey:urlString];
+            }
+          }
         }
       }
-      [instance stopBlockingApp];
+      [self stopBlockingApp];
       [Yozio log:@"getUrl request complete"];
       [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
     }];
     NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
-    while (!instance.stopBlocking && [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:loopUntil]) {
+    while (!self.stopBlocking && [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:loopUntil]) {
       loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
     }
     
     // return the short url. Return nonMobileDestinationUrl if it can't find the short url.
-    if (instance.urlConfig == nil) {
+    if (self.getUrlCache == nil) {
       return destUrl;
     }
-    NSString *val = [instance.urlConfig objectForKey:urlString];
+    NSString *val = [self.getUrlCache objectForKey:urlString];
     return val != nil ? val : destUrl;
   }
 }
@@ -487,7 +532,6 @@ static Yozio *instance = nil;
   } else {
     self.dataToSend = [NSArray arrayWithArray:self.dataQueue];
   }
-  [Yozio log:@"Flushing..."];
 
   NSString *payloadStr = [self buildPayload];
   NSString *urlParams = [NSString stringWithFormat:@"%@=%@", YOZIO_BATCH_EVENTS_P_DATA, [Yozio encodeToPercentEscapeString:payloadStr]];
@@ -495,9 +539,8 @@ static Yozio *instance = nil;
   [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_BATCH_EVENTS_ROUTE, urlParams];
 
   [Yozio log:@"Final get request url: %@", urlString];
-
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-  [YSeriously get:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+  [[YozioRequestManager sharedInstance] urlRequest:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
     if (error) {
       [Yozio log:@"Flush error %@", error];
       self.dataToSend = nil;
@@ -518,6 +561,7 @@ static Yozio *instance = nil;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
   }];
 }
+
 
 - (NSString *)buildPayload
 {
