@@ -16,6 +16,8 @@
 		0E7848BA146A7468004269C5 /* libYozio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E7848A2146A7468004269C5 /* libYozio.a */; };
 		0E7848C0146A7468004269C5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0E7848BE146A7468004269C5 /* InfoPlist.strings */; };
 		0E7848C3146A7468004269C5 /* YozioConfigureTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7848C2146A7468004269C5 /* YozioConfigureTests.m */; };
+		F716698F1613C19100FCF50C /* NSTimer+Blocks.h in Headers */ = {isa = PBXBuildFile; fileRef = F716698D1613C19100FCF50C /* NSTimer+Blocks.h */; };
+		F71669901613C19100FCF50C /* NSTimer+Blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = F716698E1613C19100FCF50C /* NSTimer+Blocks.m */; };
 		F71CA3C41581DF5200735950 /* NSString+MD5.h in Headers */ = {isa = PBXBuildFile; fileRef = F71CA3C21581DF5200735950 /* NSString+MD5.h */; };
 		F71CA3C51581DF5200735950 /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = F71CA3C31581DF5200735950 /* NSString+MD5.m */; };
 		F7595BD515169D2F0042ADB5 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7595BD415169D2F0042ADB5 /* Security.framework */; };
@@ -123,6 +125,8 @@
 		0E7848BF146A7468004269C5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		0E7848C1146A7468004269C5 /* YozioConfigureTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YozioConfigureTests.h; sourceTree = "<group>"; };
 		0E7848C2146A7468004269C5 /* YozioConfigureTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YozioConfigureTests.m; sourceTree = "<group>"; };
+		F716698D1613C19100FCF50C /* NSTimer+Blocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSTimer+Blocks.h"; sourceTree = "<group>"; };
+		F716698E1613C19100FCF50C /* NSTimer+Blocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSTimer+Blocks.m"; sourceTree = "<group>"; };
 		F71CA3C21581DF5200735950 /* NSString+MD5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+MD5.h"; sourceTree = "<group>"; };
 		F71CA3C31581DF5200735950 /* NSString+MD5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MD5.m"; sourceTree = "<group>"; };
 		F7595BD415169D2F0042ADB5 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -196,6 +200,7 @@
 		0E5009A0146A74C200F0CD4D /* lib */ = {
 			isa = PBXGroup;
 			children = (
+				F716698C1613C19100FCF50C /* NSTimer+Blocks */,
 				F7AB888C159E496E00E054C6 /* seriously */,
 				F71CA3C01581DF4300735950 /* NSString+MD5 */,
 				F7ADDEDE157C256700BF92EB /* YOpenUDID */,
@@ -290,6 +295,15 @@
 				0E7848BE146A7468004269C5 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F716698C1613C19100FCF50C /* NSTimer+Blocks */ = {
+			isa = PBXGroup;
+			children = (
+				F716698D1613C19100FCF50C /* NSTimer+Blocks.h */,
+				F716698E1613C19100FCF50C /* NSTimer+Blocks.m */,
+			);
+			path = "NSTimer+Blocks";
 			sourceTree = "<group>";
 		};
 		F71CA3C01581DF4300735950 /* NSString+MD5 */ = {
@@ -408,6 +422,7 @@
 				F7AB88C1159E496E00E054C6 /* YSeriouslyConstants.h in Headers */,
 				F7AB88C2159E496E00E054C6 /* YSeriouslyOperation.h in Headers */,
 				F7CABA391611890700F51840 /* YozioRequestManager.h in Headers */,
+				F716698F1613C19100FCF50C /* NSTimer+Blocks.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -576,6 +591,7 @@
 				F7AB88C0159E496E00E054C6 /* YSeriously.m in Sources */,
 				F7AB88C3159E496E00E054C6 /* YSeriouslyOperation.m in Sources */,
 				F7CABA3A1611890700F51840 /* YozioRequestManager.m in Sources */,
+				F71669901613C19100FCF50C /* NSTimer+Blocks.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

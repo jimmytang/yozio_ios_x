@@ -200,10 +200,7 @@ static Yozio *instance = nil;
   NSLog(@"Yozio Device Identifier: %@", instance.deviceId);
 
   // Blocking
-  instance.stopBlocking = false;
-  [NSTimer scheduledTimerWithTimeInterval:5 target:instance selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
-  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-  [[YozioRequestManager sharedInstance] urlRequest:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+  [[YozioRequestManager sharedInstance] urlRequest:urlString timeOut:5 handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
     if (error) {
       [Yozio log:@"initializeExperiments error %@", error];
     } else {
@@ -221,28 +218,19 @@ static Yozio *instance = nil;
           if([experimentDetails count] > 0) {
             [Yozio log:@"event super properties before update: %@", instance.eventYozioProperties];
             [Yozio log:@"link super properties before update: %@", instance.linkYozioProperties];
-            [instance.eventYozioProperties setObject:experimentDetails forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS];
-            [instance.linkYozioProperties setObject:experimentDetails forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS];
+            @synchronized(self) {
+              [instance.eventYozioProperties setObject:experimentDetails forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS];
+              [instance.linkYozioProperties setObject:experimentDetails forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS];
+            }
             [Yozio log:@"event super properties after update: %@", instance.eventYozioProperties];
             [Yozio log:@"link super properties after update: %@", instance.linkYozioProperties];
           }
-          
         }
-          
         [Yozio log:@"config after update: %@", instance.experimentConfig];
       }
     }
-    [instance stopBlockingApp];
-    [Yozio log:@"configuration request complete"];
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-
     // TODO(jt): stop background task if running in background
   }];
-
-  NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
-  while (!instance.stopBlocking && [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil]) {
-    loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
-  }
 }
 
 + (NSString*)stringForKey:(NSString *)key defaultValue:(NSString *) defaultValue;
@@ -473,7 +461,9 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
   if (obj == nil) {
     return;
   } else {
-    [dict setObject:obj forKey:key];
+    @synchronized(self) {
+      [dict setObject:obj forKey:key];
+    }
   }
 }
 
@@ -500,29 +490,20 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
   else {
     // Blocking
     self.stopBlocking = false;
-    [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(stopBlockingApp) userInfo:nil repeats:NO];
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-    [[YozioRequestManager sharedInstance] urlRequest:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+    [[YozioRequestManager sharedInstance] urlRequest:urlString timeOut:5 handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
       if (error) {
         [Yozio log:@"getUrl error %@", error];
       } else {
-        if ([response statusCode] == 200) {
-          if ([body isKindOfClass:[NSDictionary class]]) {
-            NSString *shortenedUrl = [body objectForKey:@"url"];
-            if (shortenedUrl) {
+        if ([response statusCode] == 200 && [body isKindOfClass:[NSDictionary class]]) {
+          NSString *shortenedUrl = [body objectForKey:@"url"];
+          if (shortenedUrl) {
+            @synchronized(self) {
               [self.getUrlCache setObject:shortenedUrl forKey:urlString];
             }
           }
         }
       }
-      [self stopBlockingApp];
-      [Yozio log:@"getUrl request complete"];
-      [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
     }];
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:1];
-    while (!self.stopBlocking && [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:loopUntil]) {
-      loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.5];
-    }
     
     // return the short url. Return nonMobileDestinationUrl if it can't find the short url.
     if (self.getUrlCache == nil) {
@@ -566,7 +547,7 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
 
   [Yozio log:@"Final get request url: %@", urlString];
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-  [[YozioRequestManager sharedInstance] urlRequest:urlString handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+  [[YozioRequestManager sharedInstance] urlRequest:urlString timeOut:0 handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
     if (error) {
       [Yozio log:@"Flush error %@", error];
       self.dataToSend = nil;
@@ -592,7 +573,9 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
 - (NSString *)buildPayload
 {
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
-  [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
+  @synchronized(self) {
+    [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
+  }
   [Yozio addIfNotNil:payload key:YOZIO_P_USER_NAME obj:self._userName];
   [Yozio addIfNotNil:payload key:YOZIO_P_YOZIO_UDID obj:self.deviceId];
   [Yozio addIfNotNil:payload key:YOZIO_P_DEVICE_TYPE obj:YOZIO_DEVICE_TYPE_IOS];
@@ -612,7 +595,9 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
                  key:YOZIO_P_EXPERIMENT_VARIATION_SIDS
                  obj:[eventYozioProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]];
 
-  [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
+  @synchronized(self) {
+    [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
+  }
   [Yozio log:@"payload: %@", payload];
 
   //  JSONify

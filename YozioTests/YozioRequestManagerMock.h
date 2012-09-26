@@ -23,5 +23,5 @@
 @property(nonatomic, retain) id body;
 @property(nonatomic, retain) NSHTTPURLResponse *response;
 @property(nonatomic, retain) NSError *error;
-@property(nonatomic, assign) int timeOut;
+@property(nonatomic, assign) int actualTimeOut;
 @end

@@ -16,13 +16,13 @@
 @synthesize body;
 @synthesize response;
 @synthesize error;
-@synthesize timeOut;
+@synthesize actualTimeOut;
 
-- (void)urlRequest:(NSString *)urlString handler:(SeriouslyHandler)handler {
+- (void)urlRequest:(NSString *)urlString timeOut:(NSInteger)timeOut handler:(SeriouslyHandler)handler {
   self.block = handler;
   
-  if (timeOut) {
-    [NSTimer scheduledTimerWithTimeInterval:timeOut
+  if (actualTimeOut) {
+    [NSTimer scheduledTimerWithTimeInterval:actualTimeOut
                                      target:self
                                    selector:@selector(executeBlock)
                                    userInfo:nil
