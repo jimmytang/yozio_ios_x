@@ -16,7 +16,7 @@ const NSString *kSeriouslyBody = @"kSeriouslyBody";
 const NSString *kSeriouslyProgressHandler = @"kSeriouslyProgressHandler";
 NSString *yozioUserAgent = @"Yozio iOS SDK";
 
-@implementation YSeriously
+@implementation YSeriously : NSObject
 
 + (YSeriouslyOperation *)request:(NSMutableURLRequest *)request options:(NSDictionary *)userOptions handler:(SeriouslyHandler)handler {
     NSMutableDictionary *options = [self options];

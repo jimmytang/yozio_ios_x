@@ -107,7 +107,7 @@
   NSInteger dataCount;
   NSMutableArray *dataQueue;
   NSArray *dataToSend;
-  NSMutableDictionary *urlConfig;
+  NSMutableDictionary *getUrlCache;
   NSMutableDictionary *experimentConfig;
   NSMutableDictionary *eventSuperProperties;
   NSMutableDictionary *linkSuperProperties;
@@ -131,14 +131,15 @@
 @property(nonatomic, assign) NSInteger dataCount;
 @property(nonatomic, retain) NSMutableArray *dataQueue;
 @property(nonatomic, retain) NSArray *dataToSend;
-@property(nonatomic, retain) NSMutableDictionary *urlConfig;
+@property(nonatomic, retain) NSMutableDictionary *getUrlCache;
 @property(nonatomic, retain) NSMutableDictionary *experimentConfig;
 @property(nonatomic, retain) NSMutableDictionary *eventSuperProperties;
 @property(nonatomic, retain) NSMutableDictionary *linkSuperProperties;
 @property(nonatomic, retain) NSDateFormatter *dateFormatter;
 @property(nonatomic, assign) BOOL stopBlocking;
 
-+ (Yozio *)getInstance; 
++ (Yozio *)getInstance;
++ (Yozio *)setInstance:(Yozio *)newInstance;
 + (void)log:(NSString *)format, ...;
 + (void)openedApp;
 
@@ -164,9 +165,11 @@
                 async:(BOOL)async;
 - (NSString *)buildPayload;
 
+- (NSString *)getUrlRequest:(NSString *)urlString destUrl:(NSString *)destUrl;
 // Instrumentation data helper methods.
 - (NSString *)timeStampString;
-
+- (NSString *)eventID;
++ (NSString *)encodeToPercentEscapeString:(NSString *)string;
 // File system helper methods.
 - (void)saveUnsentData;
 - (void)loadUnsentData;
