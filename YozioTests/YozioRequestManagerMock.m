@@ -12,21 +12,28 @@
 #import "YSeriously.h"
 
 @implementation YozioRequestManagerMock
+@synthesize block;
 @synthesize body;
 @synthesize response;
 @synthesize error;
 @synthesize timeOut;
 
-- (void)urlRequest:(NSString *)urlString handler:(SeriouslyHandler)block {
+- (void)urlRequest:(NSString *)urlString handler:(SeriouslyHandler)handler {
+  self.block = handler;
+  
   if (timeOut) {
     [NSTimer scheduledTimerWithTimeInterval:timeOut
-                                     target:instance
-                                   selector:@selector(block(body, response, error))
+                                     target:self
+                                   selector:@selector(executeBlock)
                                    userInfo:nil
                                     repeats:NO];
+
   } else {
-    block(body, response, error);
+    [self executeBlock];
   }
 }
 
+- (void)executeBlock {
+  self.block(body, response, error);
+}
 @end

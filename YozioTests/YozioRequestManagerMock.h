@@ -12,12 +12,14 @@
 @interface YozioRequestManagerMock : YozioRequestManager
 
 {
+  SeriouslyHandler block;
   id body;
   NSHTTPURLResponse *response;
   NSError *error;
   int timeOut;
 }
 
+@property(nonatomic, retain) SeriouslyHandler block;
 @property(nonatomic, retain) id body;
 @property(nonatomic, retain) NSHTTPURLResponse *response;
 @property(nonatomic, retain) NSError *error;

@@ -37,7 +37,6 @@ id mock;
   
   mock = [OCMockObject partialMockForObject:[Yozio getInstance]];
   [[[mock stub] andReturn:mockUUID] eventID];
-  NSLog(@"%d", [YSeriously isKindOfClass:[NSObject class]]);
 
 }
 

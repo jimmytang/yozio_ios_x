@@ -158,6 +158,7 @@
 - (void)doFlush;
 - (NSString *)buildPayload;
 
+- (NSString *)getUrlRequest:(NSString *)urlString destUrl:(NSString *)destUrl;
 // Instrumentation data helper methods.
 - (NSString *)timeStampString;
 - (NSString *)eventID;
