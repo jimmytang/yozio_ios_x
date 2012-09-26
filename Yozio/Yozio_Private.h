@@ -25,7 +25,7 @@
 #define YOZIO_GET_CONFIGURATION_P_YOZIO_UDID @"yozio_udid"
 #define YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE @"device_type"
 #define YOZIO_GET_URL_P_LINK_NAME @"link_name"
-#define YOZIO_GET_URL_P_SUPER_PROPERTIES @"super_properties"
+#define YOZIO_GET_URL_P_YOZIO_PROPERTIES @"yozio_properties"
 #define YOZIO_GET_URL_P_DEST_URL @"dest_url"
 #define YOZIO_GET_URL_P_IOS_DEST_URL @"ios_dest_url"
 #define YOZIO_GET_URL_P_ANDROID_DEST_URL @"android_dest_url"
@@ -54,6 +54,7 @@
 #define YOZIO_P_PAYLOAD @"payload"
 #define YOZIO_P_SDK_VERSION @"sdk_version"
 #define YOZIO_P_USER_NAME @"external_user_id"
+#define YOZIO_P_YOZIO_PROPERTIES @"yozio_properties"
 #define YOZIO_P_YOZIO_UDID @"yozio_udid"
 
 // Payload data entry keys.
@@ -109,8 +110,8 @@
   NSArray *dataToSend;
   NSMutableDictionary *getUrlCache;
   NSMutableDictionary *experimentConfig;
-  NSMutableDictionary *eventSuperProperties;
-  NSMutableDictionary *linkSuperProperties;
+  NSMutableDictionary *eventYozioProperties;
+  NSMutableDictionary *linkYozioProperties;
   NSDateFormatter *dateFormatter;
   BOOL stopBlocking;
 }
@@ -133,8 +134,8 @@
 @property(nonatomic, retain) NSArray *dataToSend;
 @property(nonatomic, retain) NSMutableDictionary *getUrlCache;
 @property(nonatomic, retain) NSMutableDictionary *experimentConfig;
-@property(nonatomic, retain) NSMutableDictionary *eventSuperProperties;
-@property(nonatomic, retain) NSMutableDictionary *linkSuperProperties;
+@property(nonatomic, retain) NSMutableDictionary *eventYozioProperties;
+@property(nonatomic, retain) NSMutableDictionary *linkYozioProperties;
 @property(nonatomic, retain) NSDateFormatter *dateFormatter;
 @property(nonatomic, assign) BOOL stopBlocking;
 

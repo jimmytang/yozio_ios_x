@@ -29,16 +29,9 @@
  * This allows you to tie your data with Yozio's by user name.
  *
  * @param userName  The name of the user that just logged in.
- */
-+ (void)userLoggedIn:(NSString *)userName;
-
-/**
- * Notify Yozio that your user logged in.
- * This allows you to tie your data with Yozio's by user name.
- *
- * @param userName  The name of the user that just logged in.
  * @param properties  Additional meta properties to tag your event.
  */
++ (void)userLoggedIn:(NSString *)userName;
 + (void)userLoggedIn:(NSString *)userName properties:(NSDictionary *)properties;
 
 /**
@@ -71,9 +64,13 @@
  * @param linkName  The name of the viral tracking link.
  *                  Must match one of the link names created online.
  * @param destinationUrl  The url that the shortened url will redirect to.
+ * @param properties  Additional meta properties to tag your link.
  * @return The Yozio short URL for the linkName, or destinationUrl if there is an error.
  */
 + (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl;
++ (NSString *)getUrl:(NSString *)linkName
+      destinationUrl:(NSString *)destinationUrl
+          properties:(NSDictionary *)properties;
 
 /**
  * Retrieve the Yozio short url for a given linkName. Blocking. Not thread-safe.
@@ -83,20 +80,18 @@
  * @param iosDestinationUrl  The url that the shortened url will redirect to if an iOS device.
  * @param androidDestinationUrl  The url that the shortened url will redirect to if an Android device.
  * @param nonMobileDestinationUrl  The url that the shortened url will redirect to if a non mobile device.
+ * @param properties  Additional meta properties to tag your link.
  * @return The Yozio short URL for the linkName, or nonMobileDestinationUrl if there is an error.
  */
 +     (NSString *)getUrl:(NSString *)linkName
        iosDestinationUrl:(NSString *)iosDestinationUrl
    androidDestinationUrl:(NSString *)androidDestinationUrl
  nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl;
-
-/**
- * Notify Yozio that a user has viewed a link.
- *
- * @param linkName  The name of the viral tracking link.
- *                  Must match one of the link names created online.
- */
-+ (void)viewedLink:(NSString *)linkName;
++     (NSString *)getUrl:(NSString *)linkName
+       iosDestinationUrl:(NSString *)iosDestinationUrl
+   androidDestinationUrl:(NSString *)androidDestinationUrl
+ nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
+              properties:(NSString *)properties;
 
 /**
  * Notify Yozio that a user has viewed a link.
@@ -105,6 +100,7 @@
  *                  Must match one of the link names created online.
  * @param properties  Additional meta properties to tag your event.
  */
++ (void)viewedLink:(NSString *)linkName;
 + (void)viewedLink:(NSString *)linkName properties:(NSDictionary *)properties;
 
 /**
@@ -112,16 +108,9 @@
  *
  * @param linkName  The name of the viral tracking link.
  *                  Must match one of the link names created online.
- */
-+ (void)sharedLink:(NSString *)linkName;
-
-/**
- * Notify Yozio that a user has shared a link.
- *
- * @param linkName  The name of the viral tracking link.
- *                  Must match one of the link names created online.
  * @param properties  Additional meta properties to tag your event.
  */
++ (void)sharedLink:(NSString *)linkName;
 + (void)sharedLink:(NSString *)linkName properties:(NSDictionary *)properties;
 
 @end
