@@ -160,9 +160,6 @@
        properties:(NSDictionary *)properties;
 - (void)checkDataQueueSize;
 - (void)doFlush;
-+ (NSString *)getUrlRequest:(NSString *)urlString
-              destUrl:(NSString *)destUrl
-                async:(BOOL)async;
 - (NSString *)buildPayload;
 
 - (NSString *)getUrlRequest:(NSString *)urlString destUrl:(NSString *)destUrl;
