@@ -163,8 +163,11 @@
 - (void)doFlush;
 - (NSString *)buildPayload;
 
++ (void)initializeExperimentsHelper:(NSInteger)timeOut callback:(void(^)(void))callback;
+
 - (NSString *)getUrlRequest:(NSString *)urlString
                     destUrl:(NSString *)destUrl
+                    timeOut:(NSInteger)timeOut
                    callback:(void(^)(void))callback;
 // Instrumentation data helper methods.
 - (NSString *)timeStampString;

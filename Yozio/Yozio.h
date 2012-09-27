@@ -41,7 +41,7 @@
  */
 + (void)initializeExperiments;
 
-+ (void)initializeExperiments:(void(^)(void))callback;
++ (void)initializeExperimentsAsync:(void(^)(void))callback;
 
 /**
  * Retrieve the String value for a given configuration key.
@@ -72,18 +72,18 @@
  */
 + (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl;
 
-+ (NSString *)getUrl:(NSString *)linkName
-      destinationUrl:(NSString *)destinationUrl
-            callback:(void(^)(void))callback;
++ (NSString *)getUrlAsync:(NSString *)linkName
+           destinationUrl:(NSString *)destinationUrl
+                 callback:(void(^)(void))callback;
 
 + (NSString *)getUrl:(NSString *)linkName
       destinationUrl:(NSString *)destinationUrl
           properties:(NSDictionary *)properties;
 
-+ (NSString *)getUrl:(NSString *)linkName
-      destinationUrl:(NSString *)destinationUrl
-          properties:(NSDictionary *)properties
-            callback:(void(^)(void))callback;
++ (NSString *)getUrlAsync:(NSString *)linkName
+           destinationUrl:(NSString *)destinationUrl
+               properties:(NSDictionary *)properties
+                 callback:(void(^)(void))callback;
 
 /**
  * Retrieve the Yozio short url for a given linkName. Blocking. Not thread-safe.
@@ -101,11 +101,11 @@
    androidDestinationUrl:(NSString *)androidDestinationUrl
  nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl;
 
-+     (NSString *)getUrl:(NSString *)linkName
-       iosDestinationUrl:(NSString *)iosDestinationUrl
-   androidDestinationUrl:(NSString *)androidDestinationUrl
- nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
-                callback:(void(^)(void))callback;
++     (NSString *)getUrlAsync:(NSString *)linkName
+            iosDestinationUrl:(NSString *)iosDestinationUrl
+        androidDestinationUrl:(NSString *)androidDestinationUrl
+      nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
+                     callback:(void(^)(void))callback;
 
 +     (NSString *)getUrl:(NSString *)linkName
        iosDestinationUrl:(NSString *)iosDestinationUrl
@@ -113,12 +113,12 @@
  nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
               properties:(NSString *)properties;
 
-+     (NSString *)getUrl:(NSString *)linkName
-       iosDestinationUrl:(NSString *)iosDestinationUrl
-   androidDestinationUrl:(NSString *)androidDestinationUrl
- nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
-              properties:(NSDictionary *)properties
-                callback:(void(^)(void))callback;
++     (NSString *)getUrlAsync:(NSString *)linkName
+            iosDestinationUrl:(NSString *)iosDestinationUrl
+        androidDestinationUrl:(NSString *)androidDestinationUrl
+      nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
+                   properties:(NSDictionary *)properties
+                     callback:(void(^)(void))callback;
 
 /**
  * Notify Yozio that a user has viewed a link.
