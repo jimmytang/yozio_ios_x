@@ -9,7 +9,6 @@
 
 #import "UIKit/UIKit.h"
 #import "CommonCrypto/CommonCryptor.h"
-#import "NSString+MD5.h"
 #import "YJSONKit.h"
 #import "YSeriously.h"
 #import "YOpenUDID.h"
@@ -573,9 +572,7 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
 - (NSString *)buildPayload
 {
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
-  @synchronized(self) {
-    [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
-  }
+  [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
   [Yozio addIfNotNil:payload key:YOZIO_P_USER_NAME obj:self._userName];
   [Yozio addIfNotNil:payload key:YOZIO_P_YOZIO_UDID obj:self.deviceId];
   [Yozio addIfNotNil:payload key:YOZIO_P_DEVICE_TYPE obj:YOZIO_DEVICE_TYPE_IOS];
@@ -595,9 +592,7 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
                  key:YOZIO_P_EXPERIMENT_VARIATION_SIDS
                  obj:[eventYozioProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]];
 
-  @synchronized(self) {
-    [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
-  }
+  [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];
 
   //  JSONify
