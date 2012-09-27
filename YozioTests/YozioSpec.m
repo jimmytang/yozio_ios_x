@@ -943,9 +943,9 @@ describe(@"getUrlRequest", ^{
       
       Yozio *instance = [Yozio getInstance];
       instance.getUrlCache = [NSMutableDictionary dictionary];
-      __block BOOL testBool = false;
-      [instance getUrlRequest:@"url string" destUrl:@"dest url" timeOut:0 callback:^{testBool=true;}];
-      [[theValue(testBool) should] equal:theValue(true)];
+      __block NSString *testShortLink = @"";
+      [instance getUrlRequest:@"url string" destUrl:@"dest url" timeOut:0 callback:^(NSString * shortLink){ testShortLink = shortLink; }];
+      [[testShortLink should] equal:@"short link"];
       [YozioRequestManager setInstance:yrmInstance];
     });
     

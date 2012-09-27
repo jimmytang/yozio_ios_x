@@ -74,7 +74,7 @@
 
 + (NSString *)getUrlAsync:(NSString *)linkName
            destinationUrl:(NSString *)destinationUrl
-                 callback:(void(^)(void))callback;
+                 callback:(void(^)(NSString *))callback;
 
 + (NSString *)getUrl:(NSString *)linkName
       destinationUrl:(NSString *)destinationUrl
@@ -83,7 +83,7 @@
 + (NSString *)getUrlAsync:(NSString *)linkName
            destinationUrl:(NSString *)destinationUrl
                properties:(NSDictionary *)properties
-                 callback:(void(^)(void))callback;
+                 callback:(void(^)(NSString *))callback;
 
 /**
  * Retrieve the Yozio short url for a given linkName. Blocking. Not thread-safe.
@@ -105,7 +105,7 @@
             iosDestinationUrl:(NSString *)iosDestinationUrl
         androidDestinationUrl:(NSString *)androidDestinationUrl
       nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
-                     callback:(void(^)(void))callback;
+                     callback:(void(^)(NSString *))callback;
 
 +     (NSString *)getUrl:(NSString *)linkName
        iosDestinationUrl:(NSString *)iosDestinationUrl
@@ -118,7 +118,7 @@
         androidDestinationUrl:(NSString *)androidDestinationUrl
       nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
                    properties:(NSDictionary *)properties
-                     callback:(void(^)(void))callback;
+                     callback:(void(^)(NSString *))callback;
 
 /**
  * Notify Yozio that a user has viewed a link.

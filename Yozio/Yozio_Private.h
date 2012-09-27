@@ -168,7 +168,7 @@
 - (NSString *)getUrlRequest:(NSString *)urlString
                     destUrl:(NSString *)destUrl
                     timeOut:(NSInteger)timeOut
-                   callback:(void(^)(void))callback;
+                   callback:(void(^)(NSString *))callback;
 // Instrumentation data helper methods.
 - (NSString *)timeStampString;
 - (NSString *)eventID;
