@@ -12,9 +12,16 @@
 #import "YSeriously.h"
 
 @interface YozioRequestManager : NSObject
-
+{
+  // User set instrumentation variables.
+  NSInteger responseDelay;
+}
 + (YozioRequestManager *)sharedInstance;
 + (YozioRequestManager *)setInstance:(YozioRequestManager *)newInstance;
 - (void)urlRequest:(NSString *)urlString timeOut:(NSInteger)timeOut handler:(SeriouslyHandler)block;
+
+// User set instrumentation variables.
+@property(nonatomic, assign) NSInteger responseDelay;
+
 
 @end

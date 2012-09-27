@@ -773,7 +773,7 @@ describe(@"getUrl", ^{
       Yozio *instance = [Yozio getInstance];
       instance.getUrlCache = [NSDictionary dictionaryWithObject:@"short url" forKey:@"twitter"];
       [[[Yozio getUrl:nil destinationUrl:@"destination url"] should] equal:@"destination url"];
-      [[[Yozio getUrl:nil destinationUrl:@"destination url"] should] equal:@"destination url"];
+      [[[Yozio getUrl:NULL destinationUrl:@"destination url"] should] equal:@"destination url"];
     });
     
     it(@"should return null if destinationUrl is null", ^{
@@ -922,7 +922,7 @@ describe(@"getUrlRequest", ^{
       yrmMock.response = response;
       
       Yozio *instance = [Yozio getInstance];
-      instance.getUrlCache = nil;
+      instance.getUrlCache = [NSMutableDictionary dictionary];
       [[[instance getUrlRequest:@"url string" destUrl:@"dest url" timeOut:5 callback:nil] should] equal:@"short link"];
       
       [YozioRequestManager setInstance:yrmInstance];
@@ -942,7 +942,7 @@ describe(@"getUrlRequest", ^{
       yrmMock.response = response;
       
       Yozio *instance = [Yozio getInstance];
-      instance.getUrlCache = nil;
+      instance.getUrlCache = [NSMutableDictionary dictionary];
       __block BOOL testBool = false;
       [instance getUrlRequest:@"url string" destUrl:@"dest url" timeOut:0 callback:^{testBool=true;}];
       [[theValue(testBool) should] equal:theValue(true)];

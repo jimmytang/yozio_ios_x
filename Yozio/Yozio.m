@@ -494,6 +494,12 @@ static Yozio *instance = nil;
                   callback:(void(^)(void))callback
 {
   @try {
+    if (!destinationUrl) {
+      return nil;
+    }
+    if (!linkName) {
+      return destinationUrl;
+    }
     NSMutableString *urlParams =
     [NSMutableString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
      YOZIO_GET_CONFIGURATION_P_APP_KEY, [Yozio encodeToPercentEscapeString:instance._appKey],
@@ -532,6 +538,12 @@ static Yozio *instance = nil;
                   callback:(void (^)(void))callback
 {
   @try {
+    if (!nonMobileDestinationUrl) {
+      return nil;
+    }
+    if (!linkName) {
+      return nonMobileDestinationUrl;
+    }
     NSMutableString *urlParams =
     [NSMutableString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
      YOZIO_GET_CONFIGURATION_P_APP_KEY, [Yozio encodeToPercentEscapeString:instance._appKey],
@@ -565,7 +577,8 @@ static Yozio *instance = nil;
 - (NSString *)getUrlRequest:(NSString *)urlString destUrl:(NSString *)destUrl timeOut:(NSInteger)timeOut callback:(void(^)(void))callback
 {
   if (self.getUrlCache == nil) {
-    self.getUrlCache = [NSMutableDictionary dictionary];
+    [Yozio log:@"ERROR: getUrlCache is empty %@"];    
+    return destUrl;
   }
   NSString *val = [self.getUrlCache objectForKey:urlString];
   if (val != nil) {

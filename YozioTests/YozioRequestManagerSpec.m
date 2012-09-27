@@ -18,14 +18,27 @@
 SPEC_BEGIN(YozioRequestManagerSpec)
 
 describe(@"urlRequest", ^{
-  it(@"should return immediately after response if response is sent back before timeOut", ^{
+  it(@"should return immediately after response if response is received back before timeOut", ^{
     NSDate *start = [NSDate date];
     YozioRequestManager *instance = [YozioRequestManager sharedInstance];
     
     void (^requestCallback)(id body, NSHTTPURLResponse *response, NSError *error);
     requestCallback = ^(id body, NSHTTPURLResponse *response, NSError *error){};
     
-    [instance urlRequest:@"http://www.google.com" timeOut:2 handler:requestCallback];
+    [instance urlRequest:@"http://www.google.com" timeOut:1 handler:requestCallback];
+    NSTimeInterval timeInterval = [start timeIntervalSinceNow];
+    [[theValue(timeInterval) should] beLessThan:theValue(1)];
+  });
+
+  it(@"should return after timeOut if response is not received before timeOut", ^{
+    NSDate *start = [NSDate date];
+    YozioRequestManager *instance = [YozioRequestManager sharedInstance];
+    instance.responseDelay = 2;
+    
+    void (^requestCallback)(id body, NSHTTPURLResponse *response, NSError *error);
+    requestCallback = ^(id body, NSHTTPURLResponse *response, NSError *error){};
+    
+    [instance urlRequest:@"http://www.google.com" timeOut:1 handler:requestCallback];
     NSTimeInterval timeInterval = [start timeIntervalSinceNow];
     [[theValue(timeInterval) should] beLessThan:theValue(2)];
   });

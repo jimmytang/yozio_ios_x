@@ -16,6 +16,7 @@
 @implementation YozioRequestManager
 
 static YozioRequestManager *instance = nil;
+@synthesize responseDelay; // used for testing
 
 + (void)initialize
 {
@@ -47,7 +48,11 @@ static YozioRequestManager *instance = nil;
     blocking = false;
   };
   
-  [YSeriously get:urlString handler:requestBlock];
+  if(responseDelay) {
+    [NSTimer scheduledTimerWithTimeInterval:responseDelay block:^{NSLog(@"still making the call"); [YSeriously get:urlString handler:requestBlock];} repeats:NO];
+  } else {
+    [YSeriously get:urlString handler:requestBlock];
+  }
   if (timeOut > 0) {
     NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.05];
     while (blocking && [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil]) {
