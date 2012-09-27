@@ -32,6 +32,7 @@
  * @param properties  Additional meta properties to tag your event.
  */
 + (void)userLoggedIn:(NSString *)userName;
+
 + (void)userLoggedIn:(NSString *)userName properties:(NSDictionary *)properties;
 
 /**
@@ -39,6 +40,8 @@
  * Makes a blocking HTTP request to download the experiment configurations. Not thread-safe.
  */
 + (void)initializeExperiments;
+
++ (void)initializeExperiments:(void(^)(void))callback;
 
 /**
  * Retrieve the String value for a given configuration key.
@@ -68,9 +71,19 @@
  * @return The Yozio short URL for the linkName, or destinationUrl if there is an error.
  */
 + (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl;
+
++ (NSString *)getUrl:(NSString *)linkName
+      destinationUrl:(NSString *)destinationUrl
+            callback:(void(^)(void))callback;
+
 + (NSString *)getUrl:(NSString *)linkName
       destinationUrl:(NSString *)destinationUrl
           properties:(NSDictionary *)properties;
+
++ (NSString *)getUrl:(NSString *)linkName
+      destinationUrl:(NSString *)destinationUrl
+          properties:(NSDictionary *)properties
+            callback:(void(^)(void))callback;
 
 /**
  * Retrieve the Yozio short url for a given linkName. Blocking. Not thread-safe.
@@ -87,11 +100,25 @@
        iosDestinationUrl:(NSString *)iosDestinationUrl
    androidDestinationUrl:(NSString *)androidDestinationUrl
  nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl;
+
++     (NSString *)getUrl:(NSString *)linkName
+       iosDestinationUrl:(NSString *)iosDestinationUrl
+   androidDestinationUrl:(NSString *)androidDestinationUrl
+ nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
+                callback:(void(^)(void))callback;
+
 +     (NSString *)getUrl:(NSString *)linkName
        iosDestinationUrl:(NSString *)iosDestinationUrl
    androidDestinationUrl:(NSString *)androidDestinationUrl
  nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
               properties:(NSString *)properties;
+
++     (NSString *)getUrl:(NSString *)linkName
+       iosDestinationUrl:(NSString *)iosDestinationUrl
+   androidDestinationUrl:(NSString *)androidDestinationUrl
+ nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
+              properties:(NSDictionary *)properties
+                callback:(void(^)(void))callback;
 
 /**
  * Notify Yozio that a user has viewed a link.

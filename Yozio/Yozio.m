@@ -181,6 +181,11 @@ static Yozio *instance = nil;
 
 + (void)initializeExperiments
 {
+  [self initializeExperiments:nil];
+}
+
++ (void)initializeExperiments:(void(^)(void))callback
+{
   if (![instance validateConfiguration]) {
     return;
   }
@@ -189,16 +194,15 @@ static Yozio *instance = nil;
    YOZIO_GET_CONFIGURATION_P_APP_KEY, [Yozio encodeToPercentEscapeString:instance._appKey],
    YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, [Yozio encodeToPercentEscapeString:instance.deviceId],
    YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, [Yozio encodeToPercentEscapeString:YOZIO_DEVICE_TYPE_IOS]];
-
+  
   NSString *urlString =
   [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_CONFIGURATIONS_ROUTE, urlParams];
-
+  
   [Yozio log:@"Final configuration request url: %@", urlString];
-
+  
   // Use this device identifier to force a variation in the UI to a specific device.
   NSLog(@"Yozio Device Identifier: %@", instance.deviceId);
-
-  // Blocking
+  
   [[YozioRequestManager sharedInstance] urlRequest:urlString timeOut:5 handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
     if (error) {
       [Yozio log:@"initializeExperiments error %@", error];
@@ -228,7 +232,9 @@ static Yozio *instance = nil;
         [Yozio log:@"config after update: %@", instance.experimentConfig];
       }
     }
-    // TODO(jt): stop background task if running in background
+    if (callback){
+      callback();
+    }
   }];
 }
 
@@ -277,12 +283,27 @@ static Yozio *instance = nil;
 
 + (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl
 {
-  return [Yozio getUrl:linkName destinationUrl:destinationUrl properties:nil];
+  return [Yozio getUrl:linkName destinationUrl:destinationUrl properties:nil callback:nil];
+}
+
++ (NSString *)getUrl:(NSString *)linkName
+      destinationUrl:(NSString *)destinationUrl
+          callback:(void(^)(void))callback
+{
+  return [Yozio getUrl:linkName destinationUrl:destinationUrl properties:nil callback:callback];
 }
 
 + (NSString *)getUrl:(NSString *)linkName
       destinationUrl:(NSString *)destinationUrl
           properties:(NSDictionary *)properties
+{
+  return [Yozio getUrl:linkName destinationUrl:destinationUrl properties:properties callback:nil];
+}
+
++ (NSString *)getUrl:(NSString *)linkName
+      destinationUrl:(NSString *)destinationUrl
+          properties:(NSDictionary *)properties
+            callback:(void(^)(void))callback
 {
   @try {
     NSMutableString *urlParams =
@@ -307,7 +328,7 @@ static Yozio *instance = nil;
     [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE, urlParams];
     [Yozio log:@"Final getUrl Request: %@", urlString];
     
-    return [instance getUrlRequest:urlString destUrl:destinationUrl];
+    return [instance getUrlRequest:urlString destUrl:destinationUrl callback:callback];
   }
   @catch (NSException * e) {
     return destinationUrl;
@@ -323,7 +344,22 @@ static Yozio *instance = nil;
      iosDestinationUrl:iosDestinationUrl
  androidDestinationUrl:androidDestinationUrl
 nonMobileDestinationUrl:nonMobileDestinationUrl
-            properties:nil];
+            properties:nil
+              callback:nil];
+}
+
++     (NSString *)getUrl:(NSString *)linkName
+       iosDestinationUrl:(NSString *)iosDestinationUrl
+   androidDestinationUrl:(NSString *)androidDestinationUrl
+ nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
+                callback:(void (^)(void))callback
+{
+  return [Yozio getUrl:linkName
+     iosDestinationUrl:iosDestinationUrl
+ androidDestinationUrl:androidDestinationUrl
+nonMobileDestinationUrl:nonMobileDestinationUrl
+            properties:nil
+              callback:callback];
 }
 
 +     (NSString *)getUrl:(NSString *)linkName
@@ -331,6 +367,21 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
    androidDestinationUrl:(NSString *)androidDestinationUrl
  nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
               properties:(NSDictionary *)properties
+{
+  return [Yozio getUrl:linkName
+     iosDestinationUrl:iosDestinationUrl
+ androidDestinationUrl:androidDestinationUrl
+nonMobileDestinationUrl:nonMobileDestinationUrl
+            properties:properties
+              callback:nil];
+}
+
++     (NSString *)getUrl:(NSString *)linkName
+       iosDestinationUrl:(NSString *)iosDestinationUrl
+   androidDestinationUrl:(NSString *)androidDestinationUrl
+ nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
+              properties:(NSDictionary *)properties
+                callback:(void (^)(void))callback
 {
   @try {
     NSMutableString *urlParams =
@@ -356,7 +407,7 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
     [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE, urlParams];
     [Yozio log:@"Final getUrl Request: %@", urlString];
     
-    return [instance getUrlRequest:urlString destUrl:nonMobileDestinationUrl];
+    return [instance getUrlRequest:urlString destUrl:nonMobileDestinationUrl callback:callback];
   }
   @catch (NSException * e) {
     return nonMobileDestinationUrl;
@@ -476,9 +527,8 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
   }
 }
 
-- (NSString *)getUrlRequest:(NSString *)urlString destUrl:(NSString *)destUrl
+- (NSString *)getUrlRequest:(NSString *)urlString destUrl:(NSString *)destUrl callback:(void(^)(void))callback
 {
-  NSLog(@"getUrlRequest");
   if (self.getUrlCache == nil) {
     self.getUrlCache = [NSMutableDictionary dictionary];
   }
@@ -487,9 +537,7 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
     return val;
   }
   else {
-    // Blocking
-    self.stopBlocking = false;
-    [[YozioRequestManager sharedInstance] urlRequest:urlString timeOut:5 handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+   [[YozioRequestManager sharedInstance] urlRequest:urlString timeOut:5 handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
       if (error) {
         [Yozio log:@"getUrl error %@", error];
       } else {
@@ -502,9 +550,12 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
           }
         }
       }
+      if(callback) {
+        callback();
+      }
     }];
     
-    // return the short url. Return nonMobileDestinationUrl if it can't find the short url.
+    // return the short url. Return destUrl if it can't find the short url.
     if (self.getUrlCache == nil) {
       return destUrl;
     }
