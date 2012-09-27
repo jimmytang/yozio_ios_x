@@ -32,13 +32,18 @@
  * @param properties  Additional meta properties to tag your event.
  */
 + (void)userLoggedIn:(NSString *)userName;
+
 + (void)userLoggedIn:(NSString *)userName properties:(NSDictionary *)properties;
 
 /**
  * Initializes the Yozio SDK for experiments. Must be called when the app is initialized.
  * Makes a blocking HTTP request to download the experiment configurations. Not thread-safe.
+ *
+ * @param callback  A callback method to execute on the completion of loading experiment values.
  */
 + (void)initializeExperiments;
+
++ (void)initializeExperimentsAsync:(void(^)(void))callback;
 
 /**
  * Retrieve the String value for a given configuration key.
@@ -65,12 +70,23 @@
  *                  Must match one of the link names created online.
  * @param destinationUrl  The url that the shortened url will redirect to.
  * @param properties  Additional meta properties to tag your link.
+ * @param callback  A callback method to execute on the url request completion. The argument passed into it will be the short link.
  * @return The Yozio short URL for the linkName, or destinationUrl if there is an error.
  */
 + (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl;
+
 + (NSString *)getUrl:(NSString *)linkName
       destinationUrl:(NSString *)destinationUrl
           properties:(NSDictionary *)properties;
+
++ (NSString *)getUrlAsync:(NSString *)linkName
+           destinationUrl:(NSString *)destinationUrl
+                 callback:(void(^)(NSString *))callback;
+
++ (NSString *)getUrlAsync:(NSString *)linkName
+           destinationUrl:(NSString *)destinationUrl
+               properties:(NSDictionary *)properties
+                 callback:(void(^)(NSString *))callback;
 
 /**
  * Retrieve the Yozio short url for a given linkName. Blocking. Not thread-safe.
@@ -81,17 +97,32 @@
  * @param androidDestinationUrl  The url that the shortened url will redirect to if an Android device.
  * @param nonMobileDestinationUrl  The url that the shortened url will redirect to if a non mobile device.
  * @param properties  Additional meta properties to tag your link.
+ * @param callback  A callback method to execute on the url request completion. The argument passed into it will be the short link.
  * @return The Yozio short URL for the linkName, or nonMobileDestinationUrl if there is an error.
  */
 +     (NSString *)getUrl:(NSString *)linkName
        iosDestinationUrl:(NSString *)iosDestinationUrl
    androidDestinationUrl:(NSString *)androidDestinationUrl
  nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl;
+
 +     (NSString *)getUrl:(NSString *)linkName
        iosDestinationUrl:(NSString *)iosDestinationUrl
    androidDestinationUrl:(NSString *)androidDestinationUrl
  nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
               properties:(NSString *)properties;
+
++     (NSString *)getUrlAsync:(NSString *)linkName
+            iosDestinationUrl:(NSString *)iosDestinationUrl
+        androidDestinationUrl:(NSString *)androidDestinationUrl
+      nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
+                     callback:(void(^)(NSString *))callback;
+
++     (NSString *)getUrlAsync:(NSString *)linkName
+            iosDestinationUrl:(NSString *)iosDestinationUrl
+        androidDestinationUrl:(NSString *)androidDestinationUrl
+      nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
+                   properties:(NSDictionary *)properties
+                     callback:(void(^)(NSString *))callback;
 
 /**
  * Notify Yozio that a user has viewed a link.

@@ -1,10 +1,12 @@
-//
-//  YozioRequestManager.m
-//  Yozio
-//
-//  Created by Jimmy Tang on 9/24/12.
-//  Copyright (c) 2012 University of California at Berkeley. All rights reserved.
-//
+/*
+ * Copyright (C) 2012 Yozio Inc.
+ *
+ * This file is part of the Yozio SDK.
+ *
+ * By using the Yozio SDK in your software, you agree to the terms of the
+ * Yozio SDK License Agreement which can be found at www.yozio.com/sdk_license.
+ */
+
 
 #import "YozioRequestManagerMock.h"
 #import "YozioRequestManager.h"
@@ -16,13 +18,13 @@
 @synthesize body;
 @synthesize response;
 @synthesize error;
-@synthesize timeOut;
+@synthesize actualTimeOut;
 
-- (void)urlRequest:(NSString *)urlString handler:(SeriouslyHandler)handler {
+- (void)urlRequest:(NSString *)urlString timeOut:(NSInteger)timeOut handler:(SeriouslyHandler)handler {
   self.block = handler;
   
-  if (timeOut) {
-    [NSTimer scheduledTimerWithTimeInterval:timeOut
+  if (actualTimeOut) {
+    [NSTimer scheduledTimerWithTimeInterval:actualTimeOut
                                      target:self
                                    selector:@selector(executeBlock)
                                    userInfo:nil
