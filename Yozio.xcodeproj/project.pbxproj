@@ -18,6 +18,7 @@
 		0E7848C3146A7468004269C5 /* YozioConfigureTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7848C2146A7468004269C5 /* YozioConfigureTests.m */; };
 		F71669A61613DB8D00FCF50C /* YNSTimer+Blocks.h in Headers */ = {isa = PBXBuildFile; fileRef = F71669A41613DB8D00FCF50C /* YNSTimer+Blocks.h */; };
 		F71669A71613DB8D00FCF50C /* YNSTimer+Blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = F71669A51613DB8D00FCF50C /* YNSTimer+Blocks.m */; };
+		F71669AA1613E34700FCF50C /* YozioRequestManagerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = F71669A91613E34700FCF50C /* YozioRequestManagerSpec.m */; };
 		F7595BD515169D2F0042ADB5 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7595BD415169D2F0042ADB5 /* Security.framework */; };
 		F7595BD815169D420042ADB5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7595BD715169D420042ADB5 /* UIKit.framework */; };
 		F7AB88AA159E496E00E054C6 /* yajl_common.h in Headers */ = {isa = PBXBuildFile; fileRef = F7AB8890159E496E00E054C6 /* yajl_common.h */; };
@@ -125,6 +126,7 @@
 		0E7848C2146A7468004269C5 /* YozioConfigureTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YozioConfigureTests.m; sourceTree = "<group>"; };
 		F71669A41613DB8D00FCF50C /* YNSTimer+Blocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "YNSTimer+Blocks.h"; sourceTree = "<group>"; };
 		F71669A51613DB8D00FCF50C /* YNSTimer+Blocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "YNSTimer+Blocks.m"; sourceTree = "<group>"; };
+		F71669A91613E34700FCF50C /* YozioRequestManagerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YozioRequestManagerSpec.m; sourceTree = "<group>"; };
 		F7595BD415169D2F0042ADB5 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		F7595BD715169D420042ADB5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		F7595C011516B0CF0042ADB5 /* libobjc.A.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libobjc.A.dylib; path = usr/lib/libobjc.A.dylib; sourceTree = SDKROOT; };
@@ -276,6 +278,7 @@
 				0E7848C1146A7468004269C5 /* YozioConfigureTests.h */,
 				0E7848C2146A7468004269C5 /* YozioConfigureTests.m */,
 				F7CABA3B16122D8900F51840 /* YozioRequestManagerMock.h */,
+				F71669A91613E34700FCF50C /* YozioRequestManagerSpec.m */,
 				F7CABA3C16122D8900F51840 /* YozioRequestManagerMock.m */,
 				0E7848BC146A7468004269C5 /* Supporting Files */,
 				F7DEC5B41610F30D005C43C6 /* YozioSpec.m */,
@@ -586,6 +589,7 @@
 				0E7848C3146A7468004269C5 /* YozioConfigureTests.m in Sources */,
 				F7DEC5B51610F30D005C43C6 /* YozioSpec.m in Sources */,
 				F7CABA3D16122D8900F51840 /* YozioRequestManagerMock.m in Sources */,
+				F71669AA1613E34700FCF50C /* YozioRequestManagerSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
