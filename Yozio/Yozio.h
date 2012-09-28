@@ -109,7 +109,7 @@
        iosDestinationUrl:(NSString *)iosDestinationUrl
    androidDestinationUrl:(NSString *)androidDestinationUrl
  nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
-              properties:(NSString *)properties;
+              properties:(NSDictionary *)properties;
 
 +     (NSString *)getUrlAsync:(NSString *)linkName
             iosDestinationUrl:(NSString *)iosDestinationUrl
