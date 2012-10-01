@@ -456,7 +456,7 @@ static Yozio *instance = nil;
     if (error) {
       [Yozio log:@"initializeExperiments error %@", error];
     } else {
-      if ([response statusCode] == 200) {
+      if ([response statusCode] == 200 && [body isKindOfClass:[NSDictionary class]]) {
         [Yozio log:@"config before update: %@", instance.experimentConfig];
         
         if ([body objectForKey:YOZIO_CONFIG_KEY] &&
@@ -648,7 +648,7 @@ static Yozio *instance = nil;
       [Yozio log:@"Flush error %@", error];
       self.dataToSend = nil;
     } else {
-      if ([response statusCode] == 200 || [response statusCode] == 400) {
+      if (([response statusCode] == 200 || [response statusCode] == 400) && [body isKindOfClass:[NSDictionary class]]) {
         [Yozio log:@"dataQueue before remove: %@", self.dataQueue];
         [self.dataQueue removeObjectsInArray:self.dataToSend];
         [Yozio log:@"dataQueue after remove: %@", self.dataQueue];
