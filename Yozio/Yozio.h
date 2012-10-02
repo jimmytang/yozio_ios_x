@@ -18,9 +18,10 @@
 
 /**
  * Configures Yozio with your application's information.
- 
- * @param appKey  The application name we provided you for your application.
- * @param secretKey  The top secret key that only you know about. Don't share this with others!
+ *
+ * @param appKey  Application name we provided you for your application.
+ * @param secretKey  Top secret key that only you know about.
+ *                   Don't share this with others!
  */
 + (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey;
 
@@ -28,95 +29,190 @@
  * Notify Yozio that your user logged in.
  * This allows you to tie your data with Yozio's by user name.
  *
- * @param userName  The name of the user that just logged in.
- * @param properties  Additional meta properties to tag your event.
+ * @param userName  Name of the user that just logged in.
  */
 + (void)userLoggedIn:(NSString *)userName;
 
+/**
+ * Notify Yozio that your user logged in.
+ * This allows you to tie your data with Yozio's by user name.
+ *
+ * @param userName  Name of the user that just logged in.
+ * @param properties  Arbitrary meta data to attach to this event.
+ */
 + (void)userLoggedIn:(NSString *)userName properties:(NSDictionary *)properties;
 
 /**
- * Initializes the Yozio SDK for experiments. Must be called when the app is initialized.
- * Makes a blocking HTTP request to download the experiment configurations. Not thread-safe.
- *
- * @param callback  A callback method to execute on the completion of loading experiment values.
+ * Initializes the Yozio SDK for experiments.
+ * Must be called when the app is initialized.
+ * Makes a blocking HTTP request to download the experiment configurations.
  */
 + (void)initializeExperiments;
 
+/**
+ * Initializes the Yozio SDK for experiments.
+ * Must be called when the app is initialized.
+ * Makes an asynchronous HTTP request to download the experiment configurations.
+ *
+ * @param callback  Called when experiments has been initialized. 
+ */
 + (void)initializeExperimentsAsync:(void(^)(void))callback;
 
 /**
  * Retrieve the String value for a given configuration key.
  *
- * @param key  The key of the value to retrieve. Must match a configuration key created online.
- * @param defaultValue  The value to return if the key is not found.
- * @return The configuration String value, or defaultValue if the key is not found.
+ * @param key  Key of the value to retrieve.
+ * @param defaultValue  Value to return if the key is not found.
+ * @return String value, or defaultValue if the key is not found.
  */
 + (NSString*)stringForKey:(NSString *)key defaultValue:(NSString *)defaultValue;
 
 /**
  * Retrieve the Int value for a given configuration key.
  *
- * @param key  The key of the value to retrieve. Must match a configuration key created online.
- * @param defaultValue  The value to return if the key is not found.
- * @return The configuration Int value, or defaultValue if the key is not found.
+ * @param key  Key of the value to retrieve.
+ * @param defaultValue  Value to return if the key is not found.
+ * @return Int value, or defaultValue if the key is not found.
  */
 + (NSInteger)intForKey:(NSString *)key defaultValue:(NSInteger)defaultValue;
 
 /**
- * Retrieve the Yozio short url for a given linkName. Blocking. Not thread-safe.
+ * Makes a blocking HTTP request to retrieve the Yozio short URL.
  *
- * @param linkName  The name of the viral tracking link.
- *                  Must match one of the link names created online.
- * @param destinationUrl  The url that the shortened url will redirect to.
- * @param properties  Additional meta properties to tag your link.
- * @param callback  A callback method to execute on the url request completion. The argument passed into it will be the short link.
- * @return The Yozio short URL for the linkName, or destinationUrl if there is an error.
+ * @param linkName  Name of the viral tracking link. Must match one of the
+ *                  viral tracking link names created on the Yozio dashboard.
+ * @param destinationUrl  Url that the shortened url will redirect to.
+ * @return The Yozio short URL, or destinationUrl if there is an error
+ *         retrieving the Yozio short URL.
  */
-+ (NSString *)getUrl:(NSString *)linkName destinationUrl:(NSString *)destinationUrl;
++ (NSString *)getUrl:(NSString *)linkName
+      destinationUrl:(NSString *)destinationUrl;
 
+/**
+ * Makes a blocking HTTP request to retrieve the Yozio short URL.
+ *
+ * @param linkName  Name of the viral tracking link. Must match one of the
+ *                  viral tracking link names created on the Yozio dashboard.
+ * @param destinationUrl  Url that the shortened url will redirect to.
+ * @param properties  Arbitrary meta data to attach to the Yozio short URL.
+ * @return The Yozio short URL, or destinationUrl if there is an error
+ *         retrieving the Yozio short URL.
+ */
 + (NSString *)getUrl:(NSString *)linkName
       destinationUrl:(NSString *)destinationUrl
           properties:(NSDictionary *)properties;
 
+/**
+ * Makes an asynchronous HTTP request to retrieve the Yozio short URL.
+ *
+ * @param linkName  Name of the viral tracking link. Must match one of the
+ *                  viral tracking link names created on the Yozio dashboard.
+ * @param destinationUrl  Url that the shortened url will redirect to.
+ * @param callback  Called when the HTTP request completes.
+ *                  The argument passed into the callback will be the Yozio
+ *                  short URL, or the destinationUrl if there is an error
+ *                  retrieving the Yozio short URL.
+ */
 + (NSString *)getUrlAsync:(NSString *)linkName
            destinationUrl:(NSString *)destinationUrl
                  callback:(void(^)(NSString *))callback;
 
+/**
+ * Makes an asynchronous HTTP request to retrieve the Yozio short URL.
+ *
+ * @param linkName  Name of the viral tracking link. Must match one of the
+ *                  viral tracking link names created on the Yozio dashboard.
+ * @param destinationUrl  Url that the shortened url will redirect to.
+ * @param properties  Arbitrary meta data to attach to the Yozio short URL.
+ * @param callback  Called when the HTTP request completes.
+ *                  The argument passed into the callback will be the Yozio
+ *                  short URL, or the destinationUrl if there is an error
+ *                  retrieving the Yozio short URL.
+ */
 + (NSString *)getUrlAsync:(NSString *)linkName
            destinationUrl:(NSString *)destinationUrl
                properties:(NSDictionary *)properties
                  callback:(void(^)(NSString *))callback;
 
 /**
- * Retrieve the Yozio short url for a given linkName. Blocking. Not thread-safe.
+ * Makes a blocking HTTP request to retrieve the Yozio short URL.
  *
- * @param linkName  The name of the viral tracking link.
- *                  Must match one of the link names created online.
- * @param iosDestinationUrl  The url that the shortened url will redirect to if an iOS device.
- * @param androidDestinationUrl  The url that the shortened url will redirect to if an Android device.
- * @param nonMobileDestinationUrl  The url that the shortened url will redirect to if a non mobile device.
- * @param properties  Additional meta properties to tag your link.
- * @param callback  A callback method to execute on the url request completion. The argument passed into it will be the short link.
- * @return The Yozio short URL for the linkName, or nonMobileDestinationUrl if there is an error.
+ * @param linkName  Name of the viral tracking link. Must match one of the
+ *                  viral tracking link names created on the Yozio dashboard.
+ * @param iosDestinationUrl  Url that the Yozio short Url will redirect to for
+ *                           iOS devices.
+ * @param androidDestinationUrl Url that the Yozio short Url will redirect to
+ *                              for Android devices.
+ * @param nonMobileDestinationUrl  Url that the Yozio short Url will redirect to
+ *                                 for all other devices.
+ * @return The Yozio short URL, or nonMobileDestinationUrl if there is an error
+ *         retrieving the Yozio short URL.
  */
 +     (NSString *)getUrl:(NSString *)linkName
        iosDestinationUrl:(NSString *)iosDestinationUrl
    androidDestinationUrl:(NSString *)androidDestinationUrl
  nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl;
 
+/**
+ * Makes a blocking HTTP request to retrieve the Yozio short URL.
+ *
+ * @param linkName  Name of the viral tracking link. Must match one of the
+ *                  viral tracking link names created on the Yozio dashboard.
+ * @param iosDestinationUrl  Url that the Yozio short Url will redirect to for
+ *                           iOS devices.
+ * @param androidDestinationUrl Url that the Yozio short Url will redirect to
+ *                              for Android devices.
+ * @param nonMobileDestinationUrl  Url that the Yozio short Url will redirect to
+ *                                 for all other devices.
+ * @param properties  Arbitrary meta data to attach to the Yozio short URL.
+ * @return The Yozio short URL, or nonMobileDestinationUrl if there is an error
+ *         retrieving the Yozio short URL.
+ */
 +     (NSString *)getUrl:(NSString *)linkName
        iosDestinationUrl:(NSString *)iosDestinationUrl
    androidDestinationUrl:(NSString *)androidDestinationUrl
  nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
               properties:(NSDictionary *)properties;
 
+/**
+ * Makes an asynchronous HTTP request to retrieve the Yozio short URL.
+ *
+ * @param linkName  Name of the viral tracking link. Must match one of the
+ *                  viral tracking link names created on the Yozio dashboard.
+ * @param iosDestinationUrl  Url that the Yozio short Url will redirect to for
+ *                           iOS devices.
+ * @param androidDestinationUrl Url that the Yozio short Url will redirect to
+ *                              for Android devices.
+ * @param nonMobileDestinationUrl  Url that the Yozio short Url will redirect to
+ *                                 for all other devices.
+ * @param callback  Called when the HTTP request completes.
+ *                  The argument passed into the callback will be the Yozio
+ *                  short URL, or the nonMobileDestinationUrl if there is an
+ *                  error retrieving the Yozio short URL.
+ */
 +     (NSString *)getUrlAsync:(NSString *)linkName
             iosDestinationUrl:(NSString *)iosDestinationUrl
         androidDestinationUrl:(NSString *)androidDestinationUrl
       nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
                      callback:(void(^)(NSString *))callback;
 
+/**
+ * Makes an asynchronous HTTP request to retrieve the Yozio short URL.
+ *
+ * @param linkName  Name of the viral tracking link. Must match one of the
+ *                  viral tracking link names created on the Yozio dashboard.
+ * @param iosDestinationUrl  Url that the Yozio short Url will redirect to for
+ *                           iOS devices.
+ * @param androidDestinationUrl Url that the Yozio short Url will redirect to
+ *                              for Android devices.
+ * @param nonMobileDestinationUrl  Url that the Yozio short Url will redirect to
+ *                                 for all other devices.
+ * @param properties  Arbitrary meta data to attach to the Yozio short URL.
+ * @param callback  Called when the HTTP request completes.
+ *                  The argument passed into the callback will be the Yozio
+ *                  short URL, or the nonMobileDestinationUrl if there is an
+ *                  error retrieving the Yozio short URL.
+ */
 +     (NSString *)getUrlAsync:(NSString *)linkName
             iosDestinationUrl:(NSString *)iosDestinationUrl
         androidDestinationUrl:(NSString *)androidDestinationUrl
@@ -127,21 +223,36 @@
 /**
  * Notify Yozio that a user has viewed a link.
  *
- * @param linkName  The name of the viral tracking link.
- *                  Must match one of the link names created online.
- * @param properties  Additional meta properties to tag your event.
+ * @param linkName  Name of the viral tracking link. Must match one of the
+ *                  viral tracking link names created on the Yozio dashboard.
  */
 + (void)viewedLink:(NSString *)linkName;
+
+/**
+ * Notify Yozio that a user has viewed a link.
+ *
+ * @param linkName  Name of the viral tracking link. Must match one of the
+ *                  viral tracking link names created on the Yozio dashboard.
+ * @param properties  Arbitrary meta data to attach to the event.
+ */
 + (void)viewedLink:(NSString *)linkName properties:(NSDictionary *)properties;
 
 /**
  * Notify Yozio that a user has shared a link.
  *
- * @param linkName  The name of the viral tracking link.
- *                  Must match one of the link names created online.
+ * @param linkName  Name of the viral tracking link. Must match one of the
+ *                  viral tracking link names created on the Yozio dashboard.
  * @param properties  Additional meta properties to tag your event.
  */
 + (void)sharedLink:(NSString *)linkName;
+
+/**
+ * Notify Yozio that a user has shared a link.
+ *
+ * @param linkName  Name of the viral tracking link. Must match one of the
+ *                  viral tracking link names created on the Yozio dashboard.
+ * @param properties  Arbitrary meta data to attach to the event.
+ */
 + (void)sharedLink:(NSString *)linkName properties:(NSDictionary *)properties;
 
 @end
