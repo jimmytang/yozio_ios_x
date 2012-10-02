@@ -139,13 +139,17 @@ describe(@"doFlush", ^{
       instance.dataToSend = nil;
       [instance doFlush];
       
+      
+      id body = [NSDictionary dictionaryWithObjectsAndKeys:
+                 @"ok", @"status",
+                 nil];
       NSInteger statusCode = 200;
       NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"123"]
                                                                 statusCode:statusCode
                                                                HTTPVersion:@"HTTP/1.1"
                                                               headerFields:[NSDictionary dictionary]];
       void (^block)(id, NSHTTPURLResponse*, NSError*) = handlerSpy.argument;
-      block(nil, response, nil);
+      block(body, response, nil);
       
       [[instance.dataQueue should] equal:[NSMutableArray array]];
       [instance.dataToSend shouldBeNil];
@@ -165,46 +169,23 @@ describe(@"doFlush", ^{
       instance.dataToSend = nil;
       [instance doFlush];
       
+      id body = [NSDictionary dictionaryWithObjectsAndKeys:
+                 @"ok", @"status",
+                 nil];
       NSInteger statusCode = 400;
       NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"123"]
                                                                 statusCode:statusCode
                                                                HTTPVersion:@"HTTP/1.1"
                                                               headerFields:[NSDictionary dictionary]];
       void (^block)(id, NSHTTPURLResponse*, NSError*) = handlerSpy.argument;
-      block(nil, response, nil);
+      block(body, response, nil);
       
       [[instance.dataQueue should] equal:[NSMutableArray array]];
       [instance.dataToSend shouldBeNil];
       
       [YozioRequestManager setInstance:yrmInstance];
     });
-    
-    it(@"should remove from dataQueue and dataToSend on a 400 response", ^{
-      YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
-      id yrmMock = [YozioRequestManager nullMock];
-      [YozioRequestManager setInstance:yrmMock];
-      KWCaptureSpy *handlerSpy = [yrmMock captureArgument:@selector(urlRequest:timeOut:handler:) atIndex:2];
-      
-      Yozio *instance = [Yozio getInstance];
-      instance._appKey = @"app key";
-      [instance.dataQueue addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil]];
-      instance.dataToSend = nil;
-      [instance doFlush];
-      
-      NSInteger statusCode = 400;
-      NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"123"]
-                                                                statusCode:statusCode
-                                                               HTTPVersion:@"HTTP/1.1"
-                                                              headerFields:[NSDictionary dictionary]];
-      void (^block)(id, NSHTTPURLResponse*, NSError*) = handlerSpy.argument;
-      block(nil, response, nil);
-      
-      [[instance.dataQueue should] equal:[NSMutableArray array]];
-      [instance.dataToSend shouldBeNil];
-      
-      [YozioRequestManager setInstance:yrmInstance];
-    });
-    
+        
     it(@"should remove from only dataToSend on any response", ^{
       YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
       id yrmMock = [YozioRequestManager nullMock];
@@ -770,15 +751,11 @@ describe(@"doCollect", ^{
 describe(@"getUrl", ^{
   context(@"", ^{
     it(@"should return destinationUrl if linkName is null", ^{
-      Yozio *instance = [Yozio getInstance];
-      instance.getUrlCache = [NSDictionary dictionaryWithObject:@"short url" forKey:@"twitter"];
       [[[Yozio getUrl:nil destinationUrl:@"destination url"] should] equal:@"destination url"];
       [[[Yozio getUrl:NULL destinationUrl:@"destination url"] should] equal:@"destination url"];
     });
     
     it(@"should return null if destinationUrl is null", ^{
-      Yozio *instance = [Yozio getInstance];
-      instance.getUrlCache = [NSDictionary dictionaryWithObject:@"short url" forKey:@"twitter"];
       [[Yozio getUrl:@"twitter" destinationUrl:nil] shouldBeNil];
     });
     
@@ -872,22 +849,6 @@ nonMobileDestinationUrl:@"non mobile destination"
 
 describe(@"getUrlRequest", ^{
   context(@"", ^{
-    it(@"should return destinationUrl if getUrlCache is null", ^{
-      Yozio *instance = [Yozio getInstance];
-      instance.getUrlCache = nil;
-      [[[instance getUrlRequest:@"url string" destUrl:@"dest url" timeOut:5 callback:nil] should] equal:@"dest url"];
-    });
-    
-    it(@"should return short link without making a request if the urlString exists in getUrlCache", ^{
-      YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
-      [[yrmInstance should] receive:@selector(urlRequest:timeOut:handler:) withCount:0];
-      
-      Yozio *instance = [Yozio getInstance];
-      NSLog(@"instnace class %@", [instance class]);
-      instance.getUrlCache = [NSMutableDictionary dictionaryWithObject:@"short link" forKey:@"url string"];
-      [[[instance getUrlRequest:@"url string" destUrl:@"dest url" timeOut:5 callback:nil] should] equal:@"short link"];
-    });
-    
     it(@"should return destination url if an error occurs", ^{
       YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
       YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
@@ -902,13 +863,12 @@ describe(@"getUrlRequest", ^{
       yrmMock.error = error;
       
       Yozio *instance = [Yozio getInstance];
-      instance.getUrlCache = nil;
       [[[instance getUrlRequest:@"url string" destUrl:@"dest url" timeOut:5 callback:nil] should] equal:@"dest url"];
       
       [YozioRequestManager setInstance:yrmInstance];
     });
     
-    it(@"should update getUrlCache & return a short link on a 200", ^{
+    it(@"should update return a short link on a 200", ^{
       YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
       YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
       [YozioRequestManager setInstance:yrmMock];
@@ -922,7 +882,6 @@ describe(@"getUrlRequest", ^{
       yrmMock.response = response;
       
       Yozio *instance = [Yozio getInstance];
-      instance.getUrlCache = [NSMutableDictionary dictionary];
       [[[instance getUrlRequest:@"url string" destUrl:@"dest url" timeOut:5 callback:nil] should] equal:@"short link"];
       
       [YozioRequestManager setInstance:yrmInstance];
@@ -942,35 +901,13 @@ describe(@"getUrlRequest", ^{
       yrmMock.response = response;
       
       Yozio *instance = [Yozio getInstance];
-      instance.getUrlCache = [NSMutableDictionary dictionary];
       __block NSString *testShortLink = @"";
       [instance getUrlRequest:@"url string" destUrl:@"dest url" timeOut:0 callback:^(NSString * shortLink){ testShortLink = shortLink; }];
       [[testShortLink should] equal:@"short link"];
       [YozioRequestManager setInstance:yrmInstance];
     });
-    
-    it(@"should not update getUrlCache on any other response", ^{
-      YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
-      YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
-      [YozioRequestManager setInstance:yrmMock];
-      NSInteger statusCode = 999;
-      NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"123"]
-                                                                statusCode:statusCode
-                                                               HTTPVersion:@"HTTP/1.1"
-                                                              headerFields:[NSDictionary dictionary]];
-      
-      yrmMock.body = [NSDictionary dictionaryWithObject:@"short link" forKey:@"url"];
-      yrmMock.response = response;
-      
-      Yozio *instance = [Yozio getInstance];
-      instance.getUrlCache = [NSMutableDictionary dictionary];
-      [instance getUrlRequest:@"url string" destUrl:@"dest url" timeOut:5 callback:nil];
-      [[theValue([instance.getUrlCache count]) should] equal:theValue(0)];
-      
-      [YozioRequestManager setInstance:yrmInstance];
-    });
-    
-    it(@"should not update getUrlCache if the body isn't json", ^{
+
+    it(@"should return destination url if response isn't json", ^{
       YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
       YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
       [YozioRequestManager setInstance:yrmMock];
@@ -979,39 +916,16 @@ describe(@"getUrlRequest", ^{
                                                                 statusCode:statusCode
                                                                HTTPVersion:@"HTTP/1.1"
                                                               headerFields:[NSDictionary dictionary]];
-      
-      yrmMock.body = @"not dictionary";
+      NSError *error = [[NSError alloc] initWithDomain:NSPOSIXErrorDomain code:errno userInfo:nil];
+      yrmMock.body = @"not a dictionary";
       yrmMock.response = response;
+      yrmMock.error = error;
       
       Yozio *instance = [Yozio getInstance];
-      instance.getUrlCache = [NSMutableDictionary dictionary];
-      [instance getUrlRequest:@"url string" destUrl:@"dest url" timeOut:5 callback:nil];
-      [[theValue([instance.getUrlCache count]) should] equal:theValue(0)];
+      [[[instance getUrlRequest:@"url string" destUrl:@"dest url" timeOut:5 callback:nil] should] equal:@"dest url"];
       
       [YozioRequestManager setInstance:yrmInstance];
     });
-    
-    it(@"should not update getUrlCache if the value is nil", ^{
-      YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
-      YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
-      [YozioRequestManager setInstance:yrmMock];
-      NSInteger statusCode = 200;
-      NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"123"]
-                                                                statusCode:statusCode
-                                                               HTTPVersion:@"HTTP/1.1"
-                                                              headerFields:[NSDictionary dictionary]];
-      
-      yrmMock.body = [NSDictionary dictionary];
-      yrmMock.response = response;
-      
-      Yozio *instance = [Yozio getInstance];
-      instance.getUrlCache = [NSMutableDictionary dictionary];
-      [instance getUrlRequest:@"url string" destUrl:@"dest url" timeOut:5 callback:nil];
-      [[theValue([instance.getUrlCache count]) should] equal:theValue(0)];
-      
-      [YozioRequestManager setInstance:yrmInstance];
-    });
-    
   });
 });
 

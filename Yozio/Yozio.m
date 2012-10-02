@@ -42,7 +42,6 @@
 @synthesize dataToSend;
 @synthesize dataCount;
 @synthesize dateFormatter;
-@synthesize getUrlCache;
 @synthesize experimentConfig;
 @synthesize eventYozioProperties;
 @synthesize linkYozioProperties;
@@ -81,7 +80,6 @@ static Yozio *instance = nil;
   self.dataCount = 0;
   self.dataQueue = [NSMutableArray array];
   self.dataToSend = nil;
-  self.getUrlCache = [NSMutableDictionary dictionary];
   self.experimentConfig = [NSMutableDictionary dictionary];
   self.eventYozioProperties = [NSMutableDictionary dictionary];
   self.linkYozioProperties = [NSMutableDictionary dictionary];
@@ -237,13 +235,6 @@ static Yozio *instance = nil;
   return [Yozio getUrlHelper:linkName destinationUrl:destinationUrl properties:nil timeOut:5 callback:nil];
 }
 
-+ (NSString *)getUrlAsync:(NSString *)linkName
-           destinationUrl:(NSString *)destinationUrl
-                 callback:(void(^)(NSString *))callback
-{
-  return [Yozio getUrlHelper:linkName destinationUrl:destinationUrl properties:nil timeOut:0 callback:callback];
-}
-
 + (NSString *)getUrl:(NSString *)linkName
       destinationUrl:(NSString *)destinationUrl
           properties:(NSDictionary *)properties
@@ -251,12 +242,19 @@ static Yozio *instance = nil;
   return [Yozio getUrlHelper:linkName destinationUrl:destinationUrl properties:properties timeOut:5 callback:nil];
 }
 
-+ (NSString *)getUrlAsync:(NSString *)linkName
-           destinationUrl:(NSString *)destinationUrl
-               properties:(NSDictionary *)properties
-                 callback:(void(^)(NSString *))callback
++ (void)getUrlAsync:(NSString *)linkName
+     destinationUrl:(NSString *)destinationUrl
+           callback:(void(^)(NSString *))callback
 {
-  return [Yozio getUrlHelper:linkName destinationUrl:destinationUrl properties:properties timeOut:0 callback:callback];
+  [Yozio getUrlHelper:linkName destinationUrl:destinationUrl properties:nil timeOut:0 callback:callback];
+}
+
++ (void)getUrlAsync:(NSString *)linkName
+     destinationUrl:(NSString *)destinationUrl
+         properties:(NSDictionary *)properties
+           callback:(void(^)(NSString *))callback
+{
+  [Yozio getUrlHelper:linkName destinationUrl:destinationUrl properties:properties timeOut:0 callback:callback];
 }
 
 +     (NSString *)getUrl:(NSString *)linkName
@@ -271,21 +269,6 @@ static Yozio *instance = nil;
                   properties:nil
                      timeOut:5
                     callback:nil];
-}
-
-+     (NSString *)getUrlAsync:(NSString *)linkName
-       iosDestinationUrl:(NSString *)iosDestinationUrl
-   androidDestinationUrl:(NSString *)androidDestinationUrl
- nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
-                callback:(void (^)(NSString *))callback
-{
-  return [Yozio getUrlHelper:linkName
-           iosDestinationUrl:iosDestinationUrl
-       androidDestinationUrl:androidDestinationUrl
-     nonMobileDestinationUrl:nonMobileDestinationUrl
-                  properties:nil
-                     timeOut:0
-                    callback:callback];
 }
 
 +     (NSString *)getUrl:(NSString *)linkName
@@ -303,20 +286,35 @@ static Yozio *instance = nil;
                     callback:nil];
 }
 
-+     (NSString *)getUrlAsync:(NSString *)linkName
++      (void)getUrlAsync:(NSString *)linkName
+       iosDestinationUrl:(NSString *)iosDestinationUrl
+   androidDestinationUrl:(NSString *)androidDestinationUrl
+ nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
+                callback:(void (^)(NSString *))callback
+{
+    [Yozio getUrlHelper:linkName
+      iosDestinationUrl:iosDestinationUrl
+  androidDestinationUrl:androidDestinationUrl
+nonMobileDestinationUrl:nonMobileDestinationUrl
+             properties:nil
+                timeOut:0
+               callback:callback];
+}
+
++     (void)getUrlAsync:(NSString *)linkName
        iosDestinationUrl:(NSString *)iosDestinationUrl
    androidDestinationUrl:(NSString *)androidDestinationUrl
  nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
               properties:(NSDictionary *)properties
                 callback:(void (^)(NSString *))callback
 {
-  return [Yozio getUrlHelper:linkName
-           iosDestinationUrl:iosDestinationUrl
-       androidDestinationUrl:androidDestinationUrl
-     nonMobileDestinationUrl:nonMobileDestinationUrl
-                  properties:properties
-                     timeOut:0
-                    callback:callback];
+    [Yozio getUrlHelper:linkName
+      iosDestinationUrl:iosDestinationUrl
+  androidDestinationUrl:androidDestinationUrl
+nonMobileDestinationUrl:nonMobileDestinationUrl
+             properties:properties
+                timeOut:0
+               callback:callback];
 }
 
 + (void)viewedLink:(NSString *)linkName
@@ -395,7 +393,7 @@ static Yozio *instance = nil;
     [Yozio addIfNotNil:d key:YOZIO_D_LINK_NAME obj:linkName];
     [Yozio addIfNotNil:d key:YOZIO_D_TIMESTAMP obj:[self timeStampString]];
     [Yozio addIfNotNil:d key:YOZIO_D_EVENT_IDENTIFIER obj:[self eventID]];
-    [Yozio addIfNotNil:d key:YOZIO_P_EXTERNAL_PROPERTIES obj:[properties JSONString]];
+    [Yozio addIfNotNil:d key:YOZIO_P_EXTERNAL_PROPERTIES obj:[properties JSONString]]; // [nil JSONString] == nil
 
     [self.dataQueue addObject:d];
     [Yozio log:@"doCollect: %@", d];
@@ -576,38 +574,26 @@ static Yozio *instance = nil;
 
 - (NSString *)getUrlRequest:(NSString *)urlString destUrl:(NSString *)destUrl timeOut:(NSInteger)timeOut callback:(void(^)(NSString *))callback
 {
-  if (self.getUrlCache == nil) {
-    [Yozio log:@"ERROR: getUrlCache is empty %@"];    
-    return destUrl;
-  }
-  NSString *val = [self.getUrlCache objectForKey:urlString];
-  if (val != nil) {
-    return val;
-  }
-  else {
-   [[YozioRequestManager sharedInstance] urlRequest:urlString timeOut:timeOut handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
-      if (error) {
-        [Yozio log:@"getUrl error %@", error];
-      } else {
-        if ([response statusCode] == 200 && [body isKindOfClass:[NSDictionary class]]) {
-          NSString *shortenedUrl = [body objectForKey:@"url"];
-          if (shortenedUrl) {
-            @synchronized(self) {
-              [self.getUrlCache setObject:shortenedUrl forKey:urlString];
-            }
+  __block NSMutableString *yozioUrl = [NSMutableString stringWithString:destUrl];
+  [yozioUrl retain];
+  [[YozioRequestManager sharedInstance] urlRequest:urlString timeOut:timeOut handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+    if (error) {
+      [Yozio log:@"getUrl error %@", error];
+    } else {
+      if ([response statusCode] == 200 && [body isKindOfClass:[NSDictionary class]]) {
+        if ([body objectForKey:@"url"]) {
+          if(callback) {
+            callback([body objectForKey:@"url"]);
+          } else {
+            [yozioUrl setString:[body objectForKey:@"url"]];
           }
         }
       }
-      if(callback) {
-        NSString *val = [self.getUrlCache objectForKey:urlString];
-        val = (val != nil) ? val : destUrl;
-        callback(val);
-      }
-    }];
-    
-    NSString *val = [self.getUrlCache objectForKey:urlString];
-    return val != nil ? val : destUrl;
-  }
+    }
+    [yozioUrl autorelease];
+  }];
+  
+  return yozioUrl;
 }
 
 - (void)checkDataQueueSize
