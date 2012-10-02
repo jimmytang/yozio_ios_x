@@ -163,7 +163,7 @@
 
 + (void)initializeExperimentsHelper:(NSInteger)timeOut callback:(void(^)(void))callback;
 
-- (NSString *)getUrlRequest:(NSString *)urlString
+- (NSString *)getUrlRequest:(NSDictionary *)urlParams
                     destUrl:(NSString *)destUrl
                     timeOut:(NSInteger)timeOut
                    callback:(void(^)(NSString *))callback;

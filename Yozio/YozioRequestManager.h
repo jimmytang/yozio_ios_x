@@ -18,7 +18,10 @@
 }
 + (YozioRequestManager *)sharedInstance;
 + (YozioRequestManager *)setInstance:(YozioRequestManager *)newInstance;
-- (void)urlRequest:(NSString *)urlString timeOut:(NSInteger)timeOut handler:(SeriouslyHandler)block;
+- (void)urlRequest:(NSString *)urlString
+           options:(NSDictionary *)options
+           timeOut:(NSInteger)timeOut
+           handler:(SeriouslyHandler)block;
 
 // User set instrumentation variables.
 @property(nonatomic, assign) NSInteger responseDelay;
