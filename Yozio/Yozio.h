@@ -17,7 +17,8 @@
 @interface Yozio : NSObject
 
 /**
- * Configures the Yozio SDK. Must be called when the app is initialized.
+ * Configures the Yozio SDK. Must be called when your app is launched and
+ * before any other method.
  *
  * @param appKey  Application specific key provided by Yozio.
  * @param secretKey  Application specific secret key provided by Yozio.
@@ -26,13 +27,15 @@
 
 /**
  * Makes a blocking HTTP request to download the experiment configurations.
- * Must be called when the app is initialized.
+ * Must be called prior to using any experiment related SDK calls
+ * (i.e. stringForKey and intForKey).
  */
 + (void)initializeExperiments;
 
 /**
  * Makes an asynchronous HTTP request to download the experiment configurations.
- * Must be called when the app is initialized.
+ * Must be called prior to using any experiment related SDK calls
+ * (i.e. stringForKey and intForKey).
  *
  * @param callback  Called when experiments has been initialized. 
  */
