@@ -17,13 +17,44 @@
 @interface Yozio : NSObject
 
 /**
- * Configures Yozio with your application's information.
+ * Configures the Yozio SDK. Must be called when the app is initialized.
  *
- * @param appKey  Application name we provided you for your application.
- * @param secretKey  Top secret key that only you know about.
- *                   Don't share this with others!
+ * @param appKey  Application specific key provided by Yozio.
+ * @param secretKey  Application specific secret key provided by Yozio.
  */
 + (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey;
+
+/**
+ * Makes a blocking HTTP request to download the experiment configurations.
+ * Must be called when the app is initialized.
+ */
++ (void)initializeExperiments;
+
+/**
+ * Makes an asynchronous HTTP request to download the experiment configurations.
+ * Must be called when the app is initialized.
+ *
+ * @param callback  Called when experiments has been initialized. 
+ */
++ (void)initializeExperimentsAsync:(void(^)(void))callback;
+
+/**
+ * Retrieve the string value for a given configuration key.
+ *
+ * @param key  Key of the value to retrieve.
+ * @param defaultValue  Value to return if the key is not found.
+ * @return String value, or defaultValue if the key is not found.
+ */
++ (NSString*)stringForKey:(NSString *)key defaultValue:(NSString *)defaultValue;
+
+/**
+ * Retrieve the integer value for a given configuration key.
+ *
+ * @param key  Key of the value to retrieve.
+ * @param defaultValue  Value to return if the key is not found.
+ * @return Integer value, or defaultValue if the key is not found.
+ */
++ (NSInteger)intForKey:(NSString *)key defaultValue:(NSInteger)defaultValue;
 
 /**
  * Notify Yozio that your user logged in.
@@ -43,45 +74,11 @@
 + (void)userLoggedIn:(NSString *)userName properties:(NSDictionary *)properties;
 
 /**
- * Initializes the Yozio SDK for experiments.
- * Must be called when the app is initialized.
- * Makes a blocking HTTP request to download the experiment configurations.
- */
-+ (void)initializeExperiments;
-
-/**
- * Initializes the Yozio SDK for experiments.
- * Must be called when the app is initialized.
- * Makes an asynchronous HTTP request to download the experiment configurations.
- *
- * @param callback  Called when experiments has been initialized. 
- */
-+ (void)initializeExperimentsAsync:(void(^)(void))callback;
-
-/**
- * Retrieve the String value for a given configuration key.
- *
- * @param key  Key of the value to retrieve.
- * @param defaultValue  Value to return if the key is not found.
- * @return String value, or defaultValue if the key is not found.
- */
-+ (NSString*)stringForKey:(NSString *)key defaultValue:(NSString *)defaultValue;
-
-/**
- * Retrieve the Int value for a given configuration key.
- *
- * @param key  Key of the value to retrieve.
- * @param defaultValue  Value to return if the key is not found.
- * @return Int value, or defaultValue if the key is not found.
- */
-+ (NSInteger)intForKey:(NSString *)key defaultValue:(NSInteger)defaultValue;
-
-/**
  * Makes a blocking HTTP request to retrieve the Yozio short URL.
  *
  * @param linkName  Name of the viral tracking link. Must match one of the
  *                  viral tracking link names created on the Yozio dashboard.
- * @param destinationUrl  Url that the shortened url will redirect to.
+ * @param destinationUrl  URL that the Yozio short URL will redirect to.
  * @return The Yozio short URL, or destinationUrl if there is an error
  *         retrieving the Yozio short URL.
  */
@@ -93,7 +90,7 @@
  *
  * @param linkName  Name of the viral tracking link. Must match one of the
  *                  viral tracking link names created on the Yozio dashboard.
- * @param destinationUrl  Url that the shortened url will redirect to.
+ * @param destinationUrl  URL that the Yozio short URL will redirect to.
  * @param properties  Arbitrary meta data to attach to the Yozio short URL.
  * @return The Yozio short URL, or destinationUrl if there is an error
  *         retrieving the Yozio short URL.
@@ -107,7 +104,7 @@
  *
  * @param linkName  Name of the viral tracking link. Must match one of the
  *                  viral tracking link names created on the Yozio dashboard.
- * @param destinationUrl  Url that the shortened url will redirect to.
+ * @param destinationUrl  URL that the Yozio short URL will redirect to.
  * @param callback  Called when the HTTP request completes.
  *                  The argument passed into the callback will be the Yozio
  *                  short URL, or the destinationUrl if there is an error
@@ -122,7 +119,7 @@
  *
  * @param linkName  Name of the viral tracking link. Must match one of the
  *                  viral tracking link names created on the Yozio dashboard.
- * @param destinationUrl  Url that the shortened url will redirect to.
+ * @param destinationUrl  URL that the Yozio short URL will redirect to.
  * @param properties  Arbitrary meta data to attach to the Yozio short URL.
  * @param callback  Called when the HTTP request completes.
  *                  The argument passed into the callback will be the Yozio
