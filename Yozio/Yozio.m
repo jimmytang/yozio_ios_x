@@ -441,39 +441,40 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
   [[YozioRequestManager sharedInstance] urlRequest:urlString
                                            options:urlParams
                                            timeOut:timeOut
-                                           handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
-                                             if (error) {
-                                               [Yozio log:@"initializeExperiments error %@", error];
-                                             } else {
-                                               if ([response statusCode] == 200 && [body isKindOfClass:[NSDictionary class]]) {
-                                                 [Yozio log:@"config before update: %@", instance.experimentConfig];
-                                                 
-                                                 if ([body objectForKey:YOZIO_CONFIG_KEY] &&
-                                                     [[body objectForKey:YOZIO_CONFIG_KEY] isKindOfClass:[NSDictionary class]]) {
-                                                   instance.experimentConfig = [body objectForKey:YOZIO_CONFIG_KEY];
-                                                 }
-                                                 
-                                                 if ([body objectForKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY] &&
-                                                     [[body objectForKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY] isKindOfClass:[NSDictionary class]]) {
-                                                   NSDictionary *experimentDetails = [body objectForKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY];
-                                                   if([experimentDetails count] > 0) {
-                                                     [Yozio log:@"event super properties before update: %@", instance.eventYozioProperties];
-                                                     [Yozio log:@"link super properties before update: %@", instance.linkYozioProperties];
-                                                     @synchronized(self) {
-                                                       [instance.eventYozioProperties setObject:experimentDetails forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS];
-                                                       [instance.linkYozioProperties setObject:experimentDetails forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS];
-                                                     }
-                                                     [Yozio log:@"event super properties after update: %@", instance.eventYozioProperties];
-                                                     [Yozio log:@"link super properties after update: %@", instance.linkYozioProperties];
-                                                   }
-                                                 }
-                                                 [Yozio log:@"config after update: %@", instance.experimentConfig];
-                                               }
-                                             }
-                                             if (callback){
-                                               callback();
-                                             }
-                                           }];
+                                           handler:^(id body, NSHTTPURLResponse *response, NSError *error)
+  {
+    if (error) {
+     [Yozio log:@"initializeExperiments error %@", error];
+    } else {
+     if ([response statusCode] == 200 && [body isKindOfClass:[NSDictionary class]]) {
+       [Yozio log:@"config before update: %@", instance.experimentConfig];
+       
+       if ([body objectForKey:YOZIO_CONFIG_KEY] &&
+           [[body objectForKey:YOZIO_CONFIG_KEY] isKindOfClass:[NSDictionary class]]) {
+         instance.experimentConfig = [body objectForKey:YOZIO_CONFIG_KEY];
+       }
+       
+       if ([body objectForKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY] &&
+           [[body objectForKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY] isKindOfClass:[NSDictionary class]]) {
+         NSDictionary *experimentDetails = [body objectForKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY];
+         if([experimentDetails count] > 0) {
+           [Yozio log:@"event super properties before update: %@", instance.eventYozioProperties];
+           [Yozio log:@"link super properties before update: %@", instance.linkYozioProperties];
+           @synchronized(self) {
+             [instance.eventYozioProperties setObject:experimentDetails forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS];
+             [instance.linkYozioProperties setObject:experimentDetails forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS];
+           }
+           [Yozio log:@"event super properties after update: %@", instance.eventYozioProperties];
+           [Yozio log:@"link super properties after update: %@", instance.linkYozioProperties];
+         }
+       }
+       [Yozio log:@"config after update: %@", instance.experimentConfig];
+     }
+    }
+    if (callback){
+     callback();
+    }
+  }];
 }
 
 + (NSString *)getUrlHelper:(NSString *)linkName
