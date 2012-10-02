@@ -125,7 +125,7 @@ describe(@"doFlush", ^{
       NSString *urlString = urlSpy.argument;
       NSString *expectedUrlString = [NSString stringWithFormat:@"http://yoz.io/api/sdk/v1/batch_events"];
       NSDictionary *urlParams = urlParamsSpy.argument;
-      NSDictionary *expectedUrlParams = [NSDictionary dictionaryWithObject:[Yozio encodeToPercentEscapeString:expectedJsonPayload] forKey:@"data"];
+      NSDictionary *expectedUrlParams = [NSDictionary dictionaryWithObject:expectedJsonPayload forKey:@"data"];
       [[urlString should] equal:expectedUrlString];
       [[[urlParams JSONString] should] equal:[expectedUrlParams JSONString]];
       [YozioRequestManager setInstance:yrmInstance];
@@ -782,11 +782,11 @@ describe(@"getUrl", ^{
       
       NSMutableDictionary *expectedUrlParams =
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
-       [Yozio encodeToPercentEscapeString:appKey], YOZIO_GET_CONFIGURATION_P_APP_KEY,
-       [Yozio encodeToPercentEscapeString:deviceId], YOZIO_GET_CONFIGURATION_P_YOZIO_UDID,
-       [Yozio encodeToPercentEscapeString:YOZIO_DEVICE_TYPE_IOS], YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE,
-       [Yozio encodeToPercentEscapeString:linkName], YOZIO_GET_URL_P_LINK_NAME,
-       [Yozio encodeToPercentEscapeString:destinationUrl], YOZIO_GET_URL_P_DEST_URL, nil];
+       appKey, YOZIO_GET_CONFIGURATION_P_APP_KEY,
+       deviceId, YOZIO_GET_CONFIGURATION_P_YOZIO_UDID,
+       YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE,
+       linkName, YOZIO_GET_URL_P_LINK_NAME,
+       destinationUrl, YOZIO_GET_URL_P_DEST_URL, nil];
       [Yozio addIfNotNil:expectedUrlParams
                      key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
                      obj:[linkYozioProperties JSONString]];
@@ -820,11 +820,11 @@ describe(@"getUrl", ^{
       
       NSMutableDictionary *expectedUrlParams =
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
-       [Yozio encodeToPercentEscapeString:appKey], YOZIO_GET_CONFIGURATION_P_APP_KEY,
-       [Yozio encodeToPercentEscapeString:deviceId], YOZIO_GET_CONFIGURATION_P_YOZIO_UDID,
-       [Yozio encodeToPercentEscapeString:YOZIO_DEVICE_TYPE_IOS], YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE,
-       [Yozio encodeToPercentEscapeString:linkName], YOZIO_GET_URL_P_LINK_NAME,
-       [Yozio encodeToPercentEscapeString:destinationUrl], YOZIO_GET_URL_P_DEST_URL, nil];
+       appKey, YOZIO_GET_CONFIGURATION_P_APP_KEY,
+       deviceId, YOZIO_GET_CONFIGURATION_P_YOZIO_UDID,
+       YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE,
+       linkName, YOZIO_GET_URL_P_LINK_NAME,
+       destinationUrl, YOZIO_GET_URL_P_DEST_URL, nil];
       [Yozio addIfNotNil:expectedUrlParams
                      key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
                      obj:[linkYozioProperties JSONString]];
@@ -863,13 +863,13 @@ describe(@"getUrl", ^{
       
       NSMutableDictionary *expectedUrlParams =
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
-       [Yozio encodeToPercentEscapeString:appKey], YOZIO_GET_CONFIGURATION_P_APP_KEY,
-       [Yozio encodeToPercentEscapeString:deviceId], YOZIO_GET_CONFIGURATION_P_YOZIO_UDID,
-       [Yozio encodeToPercentEscapeString:YOZIO_DEVICE_TYPE_IOS], YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE,
-       [Yozio encodeToPercentEscapeString:linkName], YOZIO_GET_URL_P_LINK_NAME,
-       [Yozio encodeToPercentEscapeString:iosDestinationUrl], YOZIO_GET_URL_P_IOS_DEST_URL,
-       [Yozio encodeToPercentEscapeString:androidDestinationUrl], YOZIO_GET_URL_P_ANDROID_DEST_URL,
-       [Yozio encodeToPercentEscapeString:nonMobileDestinationUrl], YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, nil];
+       appKey, YOZIO_GET_CONFIGURATION_P_APP_KEY,
+       deviceId, YOZIO_GET_CONFIGURATION_P_YOZIO_UDID,
+       YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE,
+       linkName, YOZIO_GET_URL_P_LINK_NAME,
+       iosDestinationUrl, YOZIO_GET_URL_P_IOS_DEST_URL,
+       androidDestinationUrl, YOZIO_GET_URL_P_ANDROID_DEST_URL,
+       nonMobileDestinationUrl, YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, nil];
       [Yozio addIfNotNil:expectedUrlParams
                      key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
                      obj:[linkYozioProperties JSONString]];
@@ -907,13 +907,13 @@ nonMobileDestinationUrl:nonMobileDestinationUrl];
       
       NSMutableDictionary *expectedUrlParams =
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
-       [Yozio encodeToPercentEscapeString:appKey], YOZIO_GET_CONFIGURATION_P_APP_KEY,
-       [Yozio encodeToPercentEscapeString:deviceId], YOZIO_GET_CONFIGURATION_P_YOZIO_UDID,
-       [Yozio encodeToPercentEscapeString:YOZIO_DEVICE_TYPE_IOS], YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE,
-       [Yozio encodeToPercentEscapeString:linkName], YOZIO_GET_URL_P_LINK_NAME,
-       [Yozio encodeToPercentEscapeString:iosDestinationUrl], YOZIO_GET_URL_P_IOS_DEST_URL,
-       [Yozio encodeToPercentEscapeString:androidDestinationUrl], YOZIO_GET_URL_P_ANDROID_DEST_URL,
-       [Yozio encodeToPercentEscapeString:nonMobileDestinationUrl], YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, nil];
+       appKey, YOZIO_GET_CONFIGURATION_P_APP_KEY,
+       deviceId, YOZIO_GET_CONFIGURATION_P_YOZIO_UDID,
+       YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE,
+       linkName, YOZIO_GET_URL_P_LINK_NAME,
+       iosDestinationUrl, YOZIO_GET_URL_P_IOS_DEST_URL,
+       androidDestinationUrl, YOZIO_GET_URL_P_ANDROID_DEST_URL,
+       nonMobileDestinationUrl, YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, nil];
       [Yozio addIfNotNil:expectedUrlParams
                      key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
                      obj:[linkYozioProperties JSONString]];

@@ -149,9 +149,6 @@
 + (void)addIfNotNil:(NSMutableDictionary*)dict
                 key:(NSString *)key
                 obj:(NSObject *)obj;
-+ (void)appendParamIfNotNil:(NSMutableString*)paramString
-                   paramKey:(NSString*)paramKey
-                 paramValue:(NSString*)paramValue;
 - (BOOL)validateConfiguration;
 - (void)doCollect:(NSString *)name
          linkName:(NSString *)linkName
@@ -170,7 +167,6 @@
 // Instrumentation data helper methods.
 - (NSString *)timeStampString;
 - (NSString *)eventID;
-+ (NSString *)encodeToPercentEscapeString:(NSString *)string;
 // File system helper methods.
 - (void)saveUnsentData;
 - (void)loadUnsentData;
