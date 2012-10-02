@@ -575,19 +575,22 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
 - (NSString *)getUrlRequest:(NSString *)urlString destUrl:(NSString *)destUrl timeOut:(NSInteger)timeOut callback:(void(^)(NSString *))callback
 {
   __block NSMutableString *yozioUrl = [NSMutableString stringWithString:destUrl];
+  [yozioUrl retain];
   [[YozioRequestManager sharedInstance] urlRequest:urlString timeOut:timeOut handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
     if (error) {
       [Yozio log:@"getUrl error %@", error];
     } else {
       if ([response statusCode] == 200 && [body isKindOfClass:[NSDictionary class]]) {
         if ([body objectForKey:@"url"]) {
-          [yozioUrl setString:[body objectForKey:@"url"]];       
+          if(callback) {
+            callback([body objectForKey:@"url"]);
+          } else {
+            [yozioUrl setString:[body objectForKey:@"url"]];
+          }
         }
       }
     }
-    if(callback) {
-      callback(yozioUrl);
-    }
+    [yozioUrl autorelease];
   }];
   
   return yozioUrl;
