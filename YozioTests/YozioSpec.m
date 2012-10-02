@@ -139,13 +139,17 @@ describe(@"doFlush", ^{
       instance.dataToSend = nil;
       [instance doFlush];
       
+      
+      id body = [NSDictionary dictionaryWithObjectsAndKeys:
+                 @"ok", @"status",
+                 nil];
       NSInteger statusCode = 200;
       NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"123"]
                                                                 statusCode:statusCode
                                                                HTTPVersion:@"HTTP/1.1"
                                                               headerFields:[NSDictionary dictionary]];
       void (^block)(id, NSHTTPURLResponse*, NSError*) = handlerSpy.argument;
-      block(nil, response, nil);
+      block(body, response, nil);
       
       [[instance.dataQueue should] equal:[NSMutableArray array]];
       [instance.dataToSend shouldBeNil];
@@ -165,46 +169,23 @@ describe(@"doFlush", ^{
       instance.dataToSend = nil;
       [instance doFlush];
       
+      id body = [NSDictionary dictionaryWithObjectsAndKeys:
+                 @"ok", @"status",
+                 nil];
       NSInteger statusCode = 400;
       NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"123"]
                                                                 statusCode:statusCode
                                                                HTTPVersion:@"HTTP/1.1"
                                                               headerFields:[NSDictionary dictionary]];
       void (^block)(id, NSHTTPURLResponse*, NSError*) = handlerSpy.argument;
-      block(nil, response, nil);
+      block(body, response, nil);
       
       [[instance.dataQueue should] equal:[NSMutableArray array]];
       [instance.dataToSend shouldBeNil];
       
       [YozioRequestManager setInstance:yrmInstance];
     });
-    
-    it(@"should remove from dataQueue and dataToSend on a 400 response", ^{
-      YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
-      id yrmMock = [YozioRequestManager nullMock];
-      [YozioRequestManager setInstance:yrmMock];
-      KWCaptureSpy *handlerSpy = [yrmMock captureArgument:@selector(urlRequest:timeOut:handler:) atIndex:2];
-      
-      Yozio *instance = [Yozio getInstance];
-      instance._appKey = @"app key";
-      [instance.dataQueue addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil]];
-      instance.dataToSend = nil;
-      [instance doFlush];
-      
-      NSInteger statusCode = 400;
-      NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"123"]
-                                                                statusCode:statusCode
-                                                               HTTPVersion:@"HTTP/1.1"
-                                                              headerFields:[NSDictionary dictionary]];
-      void (^block)(id, NSHTTPURLResponse*, NSError*) = handlerSpy.argument;
-      block(nil, response, nil);
-      
-      [[instance.dataQueue should] equal:[NSMutableArray array]];
-      [instance.dataToSend shouldBeNil];
-      
-      [YozioRequestManager setInstance:yrmInstance];
-    });
-    
+        
     it(@"should remove from only dataToSend on any response", ^{
       YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
       id yrmMock = [YozioRequestManager nullMock];

@@ -113,9 +113,9 @@
  *                  short URL, or the destinationUrl if there is an error
  *                  retrieving the Yozio short URL.
  */
-+ (NSString *)getUrlAsync:(NSString *)linkName
-           destinationUrl:(NSString *)destinationUrl
-                 callback:(void(^)(NSString *))callback;
++ (void)getUrlAsync:(NSString *)linkName
+     destinationUrl:(NSString *)destinationUrl
+           callback:(void(^)(NSString *))callback;
 
 /**
  * Makes an asynchronous HTTP request to retrieve the Yozio short URL.
@@ -129,10 +129,10 @@
  *                  short URL, or the destinationUrl if there is an error
  *                  retrieving the Yozio short URL.
  */
-+ (NSString *)getUrlAsync:(NSString *)linkName
-           destinationUrl:(NSString *)destinationUrl
-               properties:(NSDictionary *)properties
-                 callback:(void(^)(NSString *))callback;
++ (void)getUrlAsync:(NSString *)linkName
+     destinationUrl:(NSString *)destinationUrl
+         properties:(NSDictionary *)properties
+           callback:(void(^)(NSString *))callback;
 
 /**
  * Makes a blocking HTTP request to retrieve the Yozio short URL.
@@ -190,11 +190,11 @@
  *                  short URL, or the nonMobileDestinationUrl if there is an
  *                  error retrieving the Yozio short URL.
  */
-+     (NSString *)getUrlAsync:(NSString *)linkName
-            iosDestinationUrl:(NSString *)iosDestinationUrl
-        androidDestinationUrl:(NSString *)androidDestinationUrl
-      nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
-                     callback:(void(^)(NSString *))callback;
++     (void)getUrlAsync:(NSString *)linkName
+      iosDestinationUrl:(NSString *)iosDestinationUrl
+  androidDestinationUrl:(NSString *)androidDestinationUrl
+nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
+               callback:(void(^)(NSString *))callback;
 
 /**
  * Makes an asynchronous HTTP request to retrieve the Yozio short URL.
@@ -213,12 +213,12 @@
  *                  short URL, or the nonMobileDestinationUrl if there is an
  *                  error retrieving the Yozio short URL.
  */
-+     (NSString *)getUrlAsync:(NSString *)linkName
-            iosDestinationUrl:(NSString *)iosDestinationUrl
-        androidDestinationUrl:(NSString *)androidDestinationUrl
-      nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
-                   properties:(NSDictionary *)properties
-                     callback:(void(^)(NSString *))callback;
++     (void)getUrlAsync:(NSString *)linkName
+      iosDestinationUrl:(NSString *)iosDestinationUrl
+  androidDestinationUrl:(NSString *)androidDestinationUrl
+nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
+             properties:(NSDictionary *)properties
+               callback:(void(^)(NSString *))callback;
 
 /**
  * Notify Yozio that a user has viewed a link.
