@@ -42,7 +42,6 @@
 @synthesize dataToSend;
 @synthesize dataCount;
 @synthesize dateFormatter;
-@synthesize getUrlCache;
 @synthesize experimentConfig;
 @synthesize eventYozioProperties;
 @synthesize linkYozioProperties;
@@ -81,7 +80,6 @@ static Yozio *instance = nil;
   self.dataCount = 0;
   self.dataQueue = [NSMutableArray array];
   self.dataToSend = nil;
-  self.getUrlCache = [NSMutableDictionary dictionary];
   self.experimentConfig = [NSMutableDictionary dictionary];
   self.eventYozioProperties = [NSMutableDictionary dictionary];
   self.linkYozioProperties = [NSMutableDictionary dictionary];
@@ -576,43 +574,26 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
 
 - (NSString *)getUrlRequest:(NSString *)urlString destUrl:(NSString *)destUrl timeOut:(NSInteger)timeOut callback:(void(^)(NSString *))callback
 {
-  if (self.getUrlCache == nil) {
-    [Yozio log:@"ERROR: getUrlCache is empty %@"];    
-    return destUrl;
-  }
-  NSString *val = [self.getUrlCache objectForKey:urlString];
-  if (val != nil) {
-    if(callback) {
-      callback(val);
-      return val;
+  __block NSString *yozioUrl = destUrl;
+  [[YozioRequestManager sharedInstance] urlRequest:urlString timeOut:timeOut handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+    if (error) {
+      [Yozio log:@"getUrl error %@", error];
     } else {
-      return val;
-    }
-  }
-  else {
-   [[YozioRequestManager sharedInstance] urlRequest:urlString timeOut:timeOut handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
-      if (error) {
-        [Yozio log:@"getUrl error %@", error];
-      } else {
-        if ([response statusCode] == 200 && [body isKindOfClass:[NSDictionary class]]) {
-          NSString *shortenedUrl = [body objectForKey:@"url"];
-          if (shortenedUrl) {
-            @synchronized(self) {
-              [self.getUrlCache setObject:shortenedUrl forKey:urlString];
-            }
+      if ([response statusCode] == 200 && [body isKindOfClass:[NSDictionary class]]) {
+        NSString *shortenedUrl = [body objectForKey:@"url"];
+        if (shortenedUrl) {
+          @synchronized(self) {
+            yozioUrl = shortenedUrl;
           }
         }
       }
-      if(callback) {
-        NSString *val = [self.getUrlCache objectForKey:urlString];
-        val = (val != nil) ? val : destUrl;
-        callback(val);
-      }
-    }];
-    
-    NSString *val = [self.getUrlCache objectForKey:urlString];
-    return val != nil ? val : destUrl;
-  }
+    }
+    if(callback) {
+      callback(yozioUrl);
+    }
+  }];
+  
+  return yozioUrl;
 }
 
 - (void)checkDataQueueSize

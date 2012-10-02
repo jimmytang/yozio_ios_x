@@ -108,7 +108,6 @@
   NSInteger dataCount;
   NSMutableArray *dataQueue;
   NSArray *dataToSend;
-  NSMutableDictionary *getUrlCache;
   NSMutableDictionary *experimentConfig;
   NSMutableDictionary *eventYozioProperties;
   NSMutableDictionary *linkYozioProperties;
@@ -132,7 +131,6 @@
 @property(nonatomic, assign) NSInteger dataCount;
 @property(nonatomic, retain) NSMutableArray *dataQueue;
 @property(nonatomic, retain) NSArray *dataToSend;
-@property(nonatomic, retain) NSMutableDictionary *getUrlCache;
 @property(nonatomic, retain) NSMutableDictionary *experimentConfig;
 @property(nonatomic, retain) NSMutableDictionary *eventYozioProperties;
 @property(nonatomic, retain) NSMutableDictionary *linkYozioProperties;
