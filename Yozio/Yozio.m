@@ -560,14 +560,14 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
 
 - (NSString *)getUrlRequest:(NSDictionary *)urlParams destUrl:(NSString *)destUrl timeOut:(NSInteger)timeOut callback:(void(^)(NSString *))callback
 {
-  NSString *url = [NSString stringWithFormat:@"%@%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE];
-  [Yozio log:@"Final getUrl Request URL: %@", url];
+  NSString *urlString = [NSString stringWithFormat:@"%@%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE];
+  [Yozio log:@"Final getUrl Request URL: %@", urlString];
   [Yozio log:@"Final getUrl Request Params: %@", urlParams];
   
   __block NSMutableString *yozioUrl = [NSMutableString string];
   [destUrl retain];
   [yozioUrl retain];
-  [[YozioRequestManager sharedInstance] urlRequest:url options:urlParams timeOut:timeOut handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+  [[YozioRequestManager sharedInstance] urlRequest:urlString options:urlParams timeOut:timeOut handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
     if (error) {
       [Yozio log:@"getUrl error %@", error];
     } else {
@@ -624,10 +624,10 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
   NSString *payloadStr = [self buildPayload];
   NSDictionary *urlParams = [NSDictionary dictionaryWithObject:payloadStr
                                                         forKey:YOZIO_BATCH_EVENTS_P_DATA];
-  NSString *url = [NSString stringWithFormat:@"%@%@", YOZIO_DEFAULT_BASE_URL, YOZIO_BATCH_EVENTS_ROUTE];
+  NSString *urlString = [NSString stringWithFormat:@"%@%@", YOZIO_DEFAULT_BASE_URL, YOZIO_BATCH_EVENTS_ROUTE];
   
-  [Yozio log:@"Final get request url: %@", url];
-  [[YozioRequestManager sharedInstance] urlRequest:url
+  [Yozio log:@"Final get request url: %@", urlString];
+  [[YozioRequestManager sharedInstance] urlRequest:urlString
                                            options:urlParams
                                            timeOut:0
                                            handler:^(id body, NSHTTPURLResponse *response, NSError *error)

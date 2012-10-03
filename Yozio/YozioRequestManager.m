@@ -35,7 +35,7 @@ static YozioRequestManager *instance = nil;
   return instance;
 }
 
-- (void)urlRequest:(NSString *)url options:(NSDictionary *)options timeOut:(NSInteger)timeOut handler:(SeriouslyHandler)callback {
+- (void)urlRequest:(NSString *)urlString options:(NSDictionary *)options timeOut:(NSInteger)timeOut handler:(SeriouslyHandler)callback {
   __block BOOL blocking = true;
   [NSTimer scheduledTimerWithTimeInterval:timeOut block:^{blocking = false;} repeats:NO];
   
@@ -49,10 +49,10 @@ static YozioRequestManager *instance = nil;
     [NSTimer scheduledTimerWithTimeInterval:responseDelay
                                       block:^{
                                         NSLog(@"still making the call");
-                                        [YSeriously post:url options:options handler:requestBlock];}
+                                        [YSeriously post:urlString options:options handler:requestBlock];}
                                     repeats:NO];
   } else {
-    [YSeriously post:url options:options handler:requestBlock];
+    [YSeriously post:urlString options:options handler:requestBlock];
   }
   if (timeOut > 0) {
     NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.05];

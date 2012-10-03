@@ -913,7 +913,7 @@ nonMobileDestinationUrl:nonMobileDestinationUrl];
        linkName, YOZIO_GET_URL_P_LINK_NAME,
        iosDestinationUrl, YOZIO_GET_URL_P_IOS_DEST_URL,
        androidDestinationUrl, YOZIO_GET_URL_P_ANDROID_DEST_URL,
-       nonMobileDestinationUrl, YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, nil];
+       nonMobileDestinationUrl], YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, nil];
       [Yozio addIfNotNil:expectedUrlParams
                      key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
                      obj:[linkYozioProperties JSONString]];
