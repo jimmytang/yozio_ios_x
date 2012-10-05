@@ -223,37 +223,36 @@
 /**
  * Notify Yozio that a user has viewed a link.
  *
- * @param linkName  Name of the viral tracking link. Must match one of the
- *                  viral tracking link names created on the Yozio dashboard.
+ * @param viralLoopName  Name of the viral loop. Must match the name of one of
+ *                       the viral loops created on the Yozio dashboard.
  */
-+ (void)viewedLink:(NSString *)linkName;
++ (void)viewedLink:(NSString *)viralLoopName;
 
 /**
  * Notify Yozio that a user has viewed a link.
  *
- * @param linkName  Name of the viral tracking link. Must match one of the
- *                  viral tracking link names created on the Yozio dashboard.
+ * @param viralLoopName  Name of the viral loop. Must match the name of one of
+ *                       the viral loops created on the Yozio dashboard.
  * @param properties  Arbitrary meta data to attach to the event.
  */
-+ (void)viewedLink:(NSString *)linkName properties:(NSDictionary *)properties;
++ (void)viewedLink:(NSString *)viralLoopName properties:(NSDictionary *)properties;
 
 /**
  * Notify Yozio that a user has shared a link.
  *
- * @param linkName  Name of the viral tracking link. Must match one of the
- *                  viral tracking link names created on the Yozio dashboard.
- * @param properties  Additional meta properties to tag your event.
+ * @param viralLoopName  Name of the viral loop. Must match the name of one of
+ *                       the viral loops created on the Yozio dashboard.
  */
-+ (void)sharedLink:(NSString *)linkName;
++ (void)sharedLink:(NSString *)viralLoopName;
 
 /**
  * Notify Yozio that a user has shared a link.
  *
- * @param linkName  Name of the viral tracking link. Must match one of the
- *                  viral tracking link names created on the Yozio dashboard.
+ * @param viralLoopName  Name of the viral loop. Must match the name of one of
+ *                       the viral loops created on the Yozio dashboard.
  * @param properties  Arbitrary meta data to attach to the event.
  */
-+ (void)sharedLink:(NSString *)linkName properties:(NSDictionary *)properties;
++ (void)sharedLink:(NSString *)viralLoopName properties:(NSDictionary *)properties;
 
 @end
 
