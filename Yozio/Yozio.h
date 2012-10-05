@@ -61,7 +61,10 @@
 
 /**
  * Notify Yozio that your user logged in.
- * This allows you to tie your data with Yozio's by user name.
+ *
+ * This will allow you to tie exported Yozio data with your own data.
+ *
+ * Warning: do not provide any personally identifiable information.
  *
  * @param userName  Name of the user that just logged in.
  */
@@ -69,7 +72,10 @@
 
 /**
  * Notify Yozio that your user logged in.
- * This allows you to tie your data with Yozio's by user name.
+ *
+ * This will allow you to tie exported Yozio data with your own data.
+ *
+ * Warning: do not provide any personally identifiable information.
  *
  * @param userName  Name of the user that just logged in.
  * @param properties  Arbitrary meta data to attach to this event.
