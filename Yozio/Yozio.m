@@ -317,12 +317,12 @@ static Yozio *instance = nil;
                      callback:callback];
 }
 
-+ (void)viewedLink:(NSString *)viralLoopName
++ (void)enteredViralLoop:(NSString *)viralLoopName
 {
-  [self viewedLink:viralLoopName properties:nil];
+  [self enteredViralLoop:viralLoopName properties:nil];
 }
 
-+ (void)viewedLink:(NSString *)viralLoopName properties:(NSDictionary *)properties
++ (void)enteredViralLoop:(NSString *)viralLoopName properties:(NSDictionary *)properties
 {
   [instance doCollect:YOZIO_VIEWED_LINK_ACTION
              viralLoopName:viralLoopName
@@ -330,12 +330,12 @@ static Yozio *instance = nil;
            properties:properties];
 }
 
-+ (void)sharedLink:(NSString *)viralLoopName
++ (void)sharedYozioLink:(NSString *)viralLoopName
 {
-  [self sharedLink:viralLoopName properties:nil];
+  [self sharedYozioLink:viralLoopName properties:nil];
 }
 
-+ (void)sharedLink:(NSString *)viralLoopName properties:(NSDictionary *)properties
++ (void)sharedYozioLink:(NSString *)viralLoopName properties:(NSDictionary *)properties
 {
   [instance doCollect:YOZIO_SHARED_LINK_ACTION
         viralLoopName:viralLoopName

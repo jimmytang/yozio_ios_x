@@ -662,7 +662,7 @@ describe(@"doCollect", ^{
       [Yozio setInstance:instance];
     });
   });
-  context(@"viewedLink", ^{
+  context(@"enteredViralLoop", ^{
     it(@"should call collect with the correct parameters", ^{
       Yozio *instance = [Yozio getInstance];
       
@@ -674,9 +674,9 @@ describe(@"doCollect", ^{
       KWCaptureSpy *propertiesSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:maxQueue:properties:) atIndex:3];
       [Yozio setInstance:yozioMock];
       
-      [Yozio viewedLink:@"link name" properties:[NSDictionary dictionary]];
+      [Yozio enteredViralLoop:@"loop name" properties:[NSDictionary dictionary]];
       [[typeSpy.argument should] equal:YOZIO_VIEWED_LINK_ACTION];
-      [[viralLoopNameSpy.argument should] equal:@"link name"];
+      [[viralLoopNameSpy.argument should] equal:@"loop name"];
       [[maxQueueSpy.argument should] equal:theValue(YOZIO_ACTION_DATA_LIMIT)];
       [[propertiesSpy.argument should] equal:[NSDictionary dictionary]];
       
@@ -684,7 +684,7 @@ describe(@"doCollect", ^{
     });
   });
 
-  context(@"sharedLink", ^{
+  context(@"sharedYozioLink", ^{
     it(@"should call collect with the correct parameters", ^{
       Yozio *instance = [Yozio getInstance];
       
@@ -696,9 +696,9 @@ describe(@"doCollect", ^{
       KWCaptureSpy *propertiesSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:maxQueue:properties:) atIndex:3];
       [Yozio setInstance:yozioMock];
       
-      [Yozio sharedLink:@"link name" properties:[NSDictionary dictionary]];
+      [Yozio sharedYozioLink:@"loop name" properties:[NSDictionary dictionary]];
       [[typeSpy.argument should] equal:YOZIO_SHARED_LINK_ACTION];
-      [[viralLoopNameSpy.argument should] equal:@"link name"];
+      [[viralLoopNameSpy.argument should] equal:@"loop name"];
       [[maxQueueSpy.argument should] equal:theValue(YOZIO_ACTION_DATA_LIMIT)];
       [[propertiesSpy.argument should] equal:[NSDictionary dictionary]];
       
@@ -717,7 +717,7 @@ describe(@"doCollect", ^{
       Yozio *instance = [Yozio getInstance];
       instance.dataCount = 0;
       NSString *type = YOZIO_SHARED_LINK_ACTION;
-      NSString *viralLoopName = @"link name";
+      NSString *viralLoopName = @"loop name";
       NSDictionary *properties = [NSDictionary dictionaryWithObject:@"value" forKey:@"property"];
       [instance stub:@selector(timeStampString) andReturn:@"time stamp string"];
       [instance stub:@selector(eventID) andReturn:@"event id"];
@@ -728,7 +728,7 @@ describe(@"doCollect", ^{
     it(@"should add a new event to the dataQueue with correct parameters", ^{
       Yozio *instance = [Yozio getInstance];
       NSString *type = YOZIO_SHARED_LINK_ACTION;
-      NSString *viralLoopName = @"link name";
+      NSString *viralLoopName = @"loop name";
       NSDictionary *properties = [NSDictionary dictionaryWithObject:@"value" forKey:@"property"];
       [instance stub:@selector(timeStampString) andReturn:@"time stamp string"];
       [instance stub:@selector(eventID) andReturn:@"event id"];
@@ -868,7 +868,7 @@ describe(@"getYozioLinkRequest", ^{
       [YozioRequestManager setInstance:yrmInstance];
     });
     
-    it(@"should update return a short link on a 200", ^{
+    it(@"should update return a Yozio link on a 200", ^{
       YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
       YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
       [YozioRequestManager setInstance:yrmMock];
@@ -878,11 +878,11 @@ describe(@"getYozioLinkRequest", ^{
                                                                HTTPVersion:@"HTTP/1.1"
                                                               headerFields:[NSDictionary dictionary]];
       
-      yrmMock.body = [NSDictionary dictionaryWithObject:@"short link" forKey:@"url"];
+      yrmMock.body = [NSDictionary dictionaryWithObject:@"yozio link" forKey:@"url"];
       yrmMock.response = response;
       
       Yozio *instance = [Yozio getInstance];
-      [[[instance getYozioLinkRequest:@"url string" destUrl:@"dest url" timeOut:5 callback:nil] should] equal:@"short link"];
+      [[[instance getYozioLinkRequest:@"url string" destUrl:@"dest url" timeOut:5 callback:nil] should] equal:@"yozio link"];
       
       [YozioRequestManager setInstance:yrmInstance];
     });
@@ -897,13 +897,13 @@ describe(@"getYozioLinkRequest", ^{
                                                                HTTPVersion:@"HTTP/1.1"
                                                               headerFields:[NSDictionary dictionary]];
       
-      yrmMock.body = [NSDictionary dictionaryWithObject:@"short link" forKey:@"url"];
+      yrmMock.body = [NSDictionary dictionaryWithObject:@"yozio link" forKey:@"url"];
       yrmMock.response = response;
       
       Yozio *instance = [Yozio getInstance];
       __block NSString *testShortLink = @"";
       [instance getYozioLinkRequest:@"url string" destUrl:@"dest url" timeOut:0 callback:^(NSString * shortLink){ testShortLink = shortLink; }];
-      [[testShortLink should] equal:@"short link"];
+      [[testShortLink should] equal:@"yozio link"];
       [YozioRequestManager setInstance:yrmInstance];
     });
 
