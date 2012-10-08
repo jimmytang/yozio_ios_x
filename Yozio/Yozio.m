@@ -446,11 +446,10 @@ static Yozio *instance = nil;
      if ([response statusCode] == 200 && [body isKindOfClass:[NSDictionary class]]) {
        [Yozio log:@"config before update: %@", instance.experimentConfig];
        NSMutableDictionary *experimentConfig = [body objectForKey:YOZIO_CONFIG_KEY];
-       if (experimentConfig && [experimentConfig isKindOfClass:[NSDictionary class]]) {
-         instance.experimentConfig = experimentConfig;
-       }
        NSMutableDictionary *experimentDetails = [body objectForKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY];
-       if (experimentDetails && [experimentDetails isKindOfClass:[NSDictionary class]] && [experimentDetails count] > 0) {
+       if (experimentConfig && [experimentConfig isKindOfClass:[NSDictionary class]] &&
+           experimentDetails && [experimentDetails isKindOfClass:[NSDictionary class]]) {
+         instance.experimentConfig = experimentConfig;
          instance.experimentVariationSids = experimentDetails;
        }
        [Yozio log:@"config after update: %@", instance.experimentConfig];

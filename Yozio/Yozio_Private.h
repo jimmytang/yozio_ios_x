@@ -15,7 +15,7 @@
 
 #import "Yozio.h"
 
-#define YOZIO_SDK_VERSION @"IOS-v2.4"
+#define YOZIO_SDK_VERSION @"IOS-v3.0"
 #define YOZIO_DEFAULT_BASE_URL @"http://yoz.io"
 #define YOZIO_GET_CONFIGURATIONS_ROUTE @"/api/yozio/v1/get_configurations"
 #define YOZIO_GET_URL_ROUTE @"/api/viral/v1/get_url"

@@ -332,6 +332,39 @@ describe(@"initializeExperiments", ^{
       [YozioRequestManager setInstance:yrmInstance];
     });
     
+    it(@"should not set either the experimentConfig nor the experimentVariationSids if one of them is blank and the other isn't", ^{
+      YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
+      
+      YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
+      
+      NSInteger statusCode = 200;
+      NSDictionary *experimentConfig = [NSDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil];
+      NSDictionary *experimentSids = nil;
+      id body = [NSDictionary dictionaryWithObjectsAndKeys:
+                 experimentConfig, YOZIO_CONFIG_KEY,
+                 experimentSids, YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY,
+                 nil];
+      NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"123"]
+                                                                statusCode:statusCode
+                                                               HTTPVersion:@"HTTP/1.1"
+                                                              headerFields:[NSDictionary dictionary]];
+      yrmMock.body = body;
+      yrmMock.response = response;
+      yrmMock.error = nil;
+      
+      [YozioRequestManager setInstance:yrmMock];
+      
+      [Yozio initializeExperiments];
+      
+      Yozio *instance = [Yozio getInstance];
+      [[instance.experimentConfig should] equal:[NSDictionary dictionary]];
+      [[instance.experimentVariationSids should] equal:[NSDictionary dictionary]];
+      
+      [YozioRequestManager setInstance:yrmInstance];
+    });
+    
+
+    
     it(@"should not set the experimentConfig, eventYozioProperties, linkYozioProperties if not 200", ^{
       YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
       
