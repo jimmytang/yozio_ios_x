@@ -149,7 +149,7 @@
                 obj:(NSObject *)obj;
 - (BOOL)validateConfiguration;
 - (void)doCollect:(NSString *)name
-         linkName:(NSString *)linkName
+    viralLoopName:(NSString *)viralLoopName
          maxQueue:(NSInteger)maxQueue
        properties:(NSDictionary *)properties;
 - (void)checkDataQueueSize;
@@ -158,10 +158,10 @@
 
 + (void)initializeExperimentsHelper:(NSInteger)timeOut callback:(void(^)(void))callback;
 
-- (NSString *)getUrlRequest:(NSDictionary *)urlParams
-                    destUrl:(NSString *)destUrl
-                    timeOut:(NSInteger)timeOut
-                   callback:(void(^)(NSString *))callback;
+- (NSString *))getYozioLinkRequest:(NSDictionary *)urlParams
+                    	   destUrl:(NSString *)destUrl
+                           timeOut:(NSInteger)timeOut
+                          callback:(void(^)(NSString *))callback;
 // Instrumentation data helper methods.
 - (NSString *)timeStampString;
 - (NSString *)eventID;
