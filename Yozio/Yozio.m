@@ -721,7 +721,6 @@ static const char* jailbreak_apps[] =
   {
     if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithUTF8String:jailbreak_apps[i]]])
     {
-      //NSLog(@"isjailbroken: %s", jailbreak_apps[i]);
       return YES;
     }
   }
@@ -761,26 +760,22 @@ static const char* jailbreak_apps[] =
   
   if ((mib[5] = if_nametoindex("en0")) == 0)
   {
-    NSLog(@"Error: if_nametoindex error\n");
     return NULL;
   }
   
   if (sysctl(mib, 6, NULL, &len, NULL, 0) < 0)
   {
-    NSLog(@"Error: sysctl, take 1\n");
     return NULL;
   }
   
   if ((buf = malloc(len)) == NULL)
   {
-    NSLog(@"Could not allocate memory. error!\n");
     free(buf);
     return NULL;
   }
   
   if (sysctl(mib, 6, buf, &len, NULL, 0) < 0)
   {
-    NSLog(@"Error: sysctl, take 2");
     free(buf);
     return NULL;
   }

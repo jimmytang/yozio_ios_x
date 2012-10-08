@@ -48,7 +48,6 @@ static YozioRequestManager *instance = nil;
   if(responseDelay) {
     [NSTimer scheduledTimerWithTimeInterval:responseDelay
                                       block:^{
-                                        NSLog(@"still making the call");
                                         [YSeriously post:urlString body:body handler:requestBlock];}
                                     repeats:NO];
   } else {
