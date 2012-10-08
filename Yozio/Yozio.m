@@ -73,8 +73,7 @@ static Yozio *instance = nil;
   self.hardware = [device model];
   self.osVersion = [device systemVersion];
   
-  // Initialize  mutable instrumentation variables.
-  
+  // Initialize  mutable instrumentation variables.  
   self.dataCount = 0;
   self.dataQueue = [NSMutableArray array];
   self.dataToSend = nil;
@@ -436,7 +435,7 @@ static Yozio *instance = nil;
   NSLog(@"Yozio Device Identifier: %@", instance.deviceId);
   
   [[YozioRequestManager sharedInstance] urlRequest:urlString
-                                           body:urlParams
+                                              body:urlParams
                                            timeOut:timeOut
                                            handler:^(id body, NSHTTPURLResponse *response, NSError *error)
   {
@@ -483,7 +482,7 @@ static Yozio *instance = nil;
         viralLoopName, YOZIO_GET_URL_P_LINK_NAME,
         destinationUrl, YOZIO_GET_URL_P_DEST_URL, nil];
 
-    if (instance.experimentVariationSids) {
+    if (instance.experimentVariationSids && [instance.experimentVariationSids count] > 0) {
       NSDictionary *d = [NSDictionary dictionaryWithObject:instance.experimentVariationSids
                                                     forKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY];
       [self addIfNotNil:urlParams
@@ -529,7 +528,7 @@ static Yozio *instance = nil;
        androidDestinationUrl, YOZIO_GET_URL_P_ANDROID_DEST_URL,
        nonMobileDestinationUrl, YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, nil];
 
-    if (instance.experimentVariationSids) {
+    if (instance.experimentVariationSids && [instance.experimentVariationSids count] > 0) {
       NSDictionary *d = [NSDictionary dictionaryWithObject:instance.experimentVariationSids
                                                     forKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY];
       [self addIfNotNil:urlParams
