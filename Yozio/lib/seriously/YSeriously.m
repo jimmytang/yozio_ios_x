@@ -100,10 +100,15 @@ NSString *yozioUserAgent = @"Yozio iOS SDK";
 
 + (YSeriouslyOperation *)post:(id)url options:(NSDictionary *)userOptions handler:(SeriouslyHandler)handler {
   NSMutableDictionary *options = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"POST", kSeriouslyMethod, nil];
-  NSString* formattedQueryParams = [self formatQueryParams:userOptions];
+  [options addEntriesFromDictionary:userOptions];
+  return [self requestURL:url options:options handler:handler];
+}
+
++ (YSeriouslyOperation *)post:(id)url body:(NSDictionary *)body handler:(SeriouslyHandler)handler {
+  NSMutableDictionary *options = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"POST", kSeriouslyMethod, nil];
+  NSString* formattedQueryParams = [self formatQueryParams:body];
   NSData *escapedBodyData = [formattedQueryParams dataUsingEncoding: NSUTF8StringEncoding];
   [options setObject:escapedBodyData forKey:kSeriouslyBody];
-  [options addEntriesFromDictionary:userOptions];
   return [self requestURL:url options:options handler:handler];
 }
 

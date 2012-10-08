@@ -43,8 +43,7 @@
 @synthesize dataCount;
 @synthesize dateFormatter;
 @synthesize experimentConfig;
-@synthesize eventYozioProperties;
-@synthesize linkYozioProperties;
+@synthesize experimentVariationSids;
 
 /*******************************************
  * Initialization.
@@ -80,8 +79,6 @@ static Yozio *instance = nil;
   self.dataQueue = [NSMutableArray array];
   self.dataToSend = nil;
   self.experimentConfig = [NSMutableDictionary dictionary];
-  self.eventYozioProperties = [NSMutableDictionary dictionary];
-  self.linkYozioProperties = [NSMutableDictionary dictionary];
   
   // Initialize dateFormatter.
   NSTimeZone *gmt = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
@@ -439,7 +436,7 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
   NSLog(@"Yozio Device Identifier: %@", instance.deviceId);
   
   [[YozioRequestManager sharedInstance] urlRequest:urlString
-                                           options:urlParams
+                                           body:urlParams
                                            timeOut:timeOut
                                            handler:^(id body, NSHTTPURLResponse *response, NSError *error)
   {
@@ -448,31 +445,19 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
     } else {
      if ([response statusCode] == 200 && [body isKindOfClass:[NSDictionary class]]) {
        [Yozio log:@"config before update: %@", instance.experimentConfig];
-       
-       if ([body objectForKey:YOZIO_CONFIG_KEY] &&
-           [[body objectForKey:YOZIO_CONFIG_KEY] isKindOfClass:[NSDictionary class]]) {
-         instance.experimentConfig = [body objectForKey:YOZIO_CONFIG_KEY];
+       NSMutableDictionary *experimentConfig = [body objectForKey:YOZIO_CONFIG_KEY];
+       if (experimentConfig && [experimentConfig isKindOfClass:[NSDictionary class]]) {
+         instance.experimentConfig = experimentConfig;
        }
-       
-       if ([body objectForKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY] &&
-           [[body objectForKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY] isKindOfClass:[NSDictionary class]]) {
-         NSDictionary *experimentDetails = [body objectForKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY];
-         if([experimentDetails count] > 0) {
-           [Yozio log:@"event super properties before update: %@", instance.eventYozioProperties];
-           [Yozio log:@"link super properties before update: %@", instance.linkYozioProperties];
-           @synchronized(self) {
-             [instance.eventYozioProperties setObject:experimentDetails forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS];
-             [instance.linkYozioProperties setObject:experimentDetails forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS];
-           }
-           [Yozio log:@"event super properties after update: %@", instance.eventYozioProperties];
-           [Yozio log:@"link super properties after update: %@", instance.linkYozioProperties];
-         }
+       NSMutableDictionary *experimentDetails = [body objectForKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY];
+       if (experimentDetails && [experimentDetails isKindOfClass:[NSDictionary class]] && [experimentDetails count] > 0) {
+         instance.experimentVariationSids = experimentDetails;
        }
        [Yozio log:@"config after update: %@", instance.experimentConfig];
      }
     }
     if (callback){
-     callback();
+      callback();
     }
   }];
 }
@@ -497,10 +482,13 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
      YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE,
      linkName, YOZIO_GET_URL_P_LINK_NAME,
      destinationUrl, YOZIO_GET_URL_P_DEST_URL, nil];
-    if (instance.linkYozioProperties && [instance.linkYozioProperties count] > 0) {
+
+    if (instance.experimentVariationSids) {
+      NSDictionary *d = [NSDictionary dictionaryWithObject:instance.experimentVariationSids
+                                                    forKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY];
       [self addIfNotNil:urlParams
                     key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
-                    obj:[instance.linkYozioProperties JSONString]];
+                    obj:[d JSONString]];
     }
     if (properties && [properties count] > 0) {
       [self addIfNotNil:urlParams
@@ -539,10 +527,12 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
      iosDestinationUrl, YOZIO_GET_URL_P_IOS_DEST_URL,
      androidDestinationUrl, YOZIO_GET_URL_P_ANDROID_DEST_URL,
      nonMobileDestinationUrl, YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, nil];
-    if (instance.linkYozioProperties && [instance.linkYozioProperties count] > 0) {
+    if (instance.experimentVariationSids) {
+      NSDictionary *d = [NSDictionary dictionaryWithObject:instance.experimentVariationSids
+                                                    forKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY];
       [self addIfNotNil:urlParams
                     key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
-                    obj:[instance.linkYozioProperties JSONString]];
+                    obj:[d JSONString]];
     }
     if (properties && [properties count] > 0) {
       [self addIfNotNil:urlParams
@@ -567,7 +557,7 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
   __block NSMutableString *yozioUrl = [NSMutableString string];
   [destUrl retain];
   [yozioUrl retain];
-  [[YozioRequestManager sharedInstance] urlRequest:urlString options:urlParams timeOut:timeOut handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
+  [[YozioRequestManager sharedInstance] urlRequest:urlString body:urlParams timeOut:timeOut handler:^(id body, NSHTTPURLResponse *response, NSError *error) {
     if (error) {
       [Yozio log:@"getUrl error %@", error];
     } else {
@@ -628,7 +618,7 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
   
   [Yozio log:@"Final get request url: %@", urlString];
   [[YozioRequestManager sharedInstance] urlRequest:urlString
-                                           options:urlParams
+                                           body:urlParams
                                            timeOut:0
                                            handler:^(id body, NSHTTPURLResponse *response, NSError *error)
   {
@@ -674,7 +664,7 @@ nonMobileDestinationUrl:nonMobileDestinationUrl
   [Yozio addIfNotNil:payload key:YOZIO_P_APP_VERSION obj:[Yozio bundleVersion]];
   [Yozio addIfNotNil:payload
                  key:YOZIO_P_EXPERIMENT_VARIATION_SIDS
-                 obj:[eventYozioProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]];
+                 obj:instance.experimentVariationSids];
   
   [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
   [Yozio log:@"payload: %@", payload];

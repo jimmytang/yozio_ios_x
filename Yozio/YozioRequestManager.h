@@ -19,7 +19,7 @@
 + (YozioRequestManager *)sharedInstance;
 + (YozioRequestManager *)setInstance:(YozioRequestManager *)newInstance;
 - (void)urlRequest:(NSString *)urlString
-           options:(NSDictionary *)options
+           body:(NSDictionary *)body
            timeOut:(NSInteger)timeOut
            handler:(SeriouslyHandler)block;
 

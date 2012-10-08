@@ -20,7 +20,7 @@
 @synthesize error;
 @synthesize actualTimeOut;
 
-- (void)urlRequest:(NSString *)urlString options:(NSDictionary *)options timeOut:(NSInteger)timeOut handler:(SeriouslyHandler)handler {
+- (void)urlRequest:(NSString *)urlString body:(NSDictionary *)body timeOut:(NSInteger)timeOut handler:(SeriouslyHandler)handler {
   self.block = handler;
   
   if (actualTimeOut) {

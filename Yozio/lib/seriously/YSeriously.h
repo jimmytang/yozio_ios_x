@@ -24,6 +24,7 @@
 + (YSeriouslyOperation *)get:(id)url options:(NSDictionary *)options handler:(SeriouslyHandler)handler;
 + (YSeriouslyOperation *)post:(id)url handler:(SeriouslyHandler)handler;
 + (YSeriouslyOperation *)post:(id)url options:(NSDictionary *)userOptions handler:(SeriouslyHandler)handler;
++ (YSeriouslyOperation *)post:(id)url body:(NSDictionary *)body handler:(SeriouslyHandler)handler;
 + (YSeriouslyOperation *)put:(id)url handler:(SeriouslyHandler)handler;
 + (YSeriouslyOperation *)put:(id)url options:(NSDictionary *)userOptions handler:(SeriouslyHandler)handler;
 + (YSeriouslyOperation *)delete:(id)url handler:(SeriouslyHandler)handler;

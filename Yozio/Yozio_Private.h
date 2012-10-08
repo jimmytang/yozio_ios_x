@@ -109,8 +109,7 @@
   NSMutableArray *dataQueue;
   NSArray *dataToSend;
   NSMutableDictionary *experimentConfig;
-  NSMutableDictionary *eventYozioProperties;
-  NSMutableDictionary *linkYozioProperties;
+  NSMutableDictionary *experimentVariationSids;
   NSDateFormatter *dateFormatter;
   BOOL stopBlocking;
 }
@@ -132,8 +131,7 @@
 @property(nonatomic, retain) NSMutableArray *dataQueue;
 @property(nonatomic, retain) NSArray *dataToSend;
 @property(nonatomic, retain) NSMutableDictionary *experimentConfig;
-@property(nonatomic, retain) NSMutableDictionary *eventYozioProperties;
-@property(nonatomic, retain) NSMutableDictionary *linkYozioProperties;
+@property(nonatomic, retain) NSMutableDictionary *experimentVariationSids;
 @property(nonatomic, retain) NSDateFormatter *dateFormatter;
 @property(nonatomic, assign) BOOL stopBlocking;
 
