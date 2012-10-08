@@ -428,7 +428,7 @@ static Yozio *instance = nil;
    YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, nil];
   
   NSString *urlString =
-  [NSString stringWithFormat:@"%@%@?%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_CONFIGURATIONS_ROUTE, urlParams];
+  [NSString stringWithFormat:@"%@%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_CONFIGURATIONS_ROUTE];
   
   [Yozio log:@"Final configuration request url: %@", urlString];
   
