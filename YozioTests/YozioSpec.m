@@ -41,7 +41,7 @@ describe(@"doFlush", ^{
     });
 
     it(@"should not flush when the dataQueue is empty", ^{
-      [[[YozioRequestManager sharedInstance] should] receive:@selector(urlRequest:timeOut:handler:) withCount:0];
+      [[[YozioRequestManager sharedInstance] should] receive:@selector(urlRequest:body:timeOut:handler:) withCount:0];
       Yozio *instance = [Yozio getInstance];
       instance._appKey = @"app key";
       instance.dataQueue = [NSMutableArray array];
@@ -49,7 +49,7 @@ describe(@"doFlush", ^{
     });
     
     it(@"should flush when the dataQueue is not empty", ^{
-      [[[YozioRequestManager sharedInstance] should] receive:@selector(urlRequest:timeOut:handler:) withCount:1];
+      [[[YozioRequestManager sharedInstance] should] receive:@selector(urlRequest:body:timeOut:handler:) withCount:1];
       Yozio *instance = [Yozio getInstance];
       instance._appKey = @"app key";
       instance.dataQueue = [NSMutableArray arrayWithObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil]];
@@ -58,7 +58,7 @@ describe(@"doFlush", ^{
     });
 
     it(@"should not flush when already flushing", ^{
-      [[[YozioRequestManager sharedInstance] should] receive:@selector(urlRequest:timeOut:handler:) withCount:0];
+      [[[YozioRequestManager sharedInstance] should] receive:@selector(urlRequest:body:timeOut:handler:) withCount:0];
       Yozio *instance = [Yozio getInstance];
       instance._appKey = @"app key";
       instance.dataQueue = [NSMutableArray arrayWithObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil]];
@@ -98,7 +98,8 @@ describe(@"doFlush", ^{
       YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
       id yrmMock = [YozioRequestManager nullMock];
       [YozioRequestManager setInstance:yrmMock];
-      KWCaptureSpy *spy = [yrmMock captureArgument:@selector(urlRequest:timeOut:handler:) atIndex:0];
+      KWCaptureSpy *urlSpy = [yrmMock captureArgument:@selector(urlRequest:body:timeOut:handler:) atIndex:0];
+      KWCaptureSpy *urlParamsSpy = [yrmMock captureArgument:@selector(urlRequest:body:timeOut:handler:) atIndex:1];
 
       Yozio *instance = [Yozio getInstance];
       instance._appKey = @"app key";
@@ -121,9 +122,12 @@ describe(@"doFlush", ^{
                                         @"0", @"is_jailbroken",
                                         nil] JSONString];
 
-      NSString *urlString = spy.argument;
-      NSString *expectedUrlString = [NSString stringWithFormat:@"http://yoz.io/api/sdk/v1/batch_events?data=%@", [Yozio encodeToPercentEscapeString:expectedJsonPayload]];
+      NSString *urlString = urlSpy.argument;
+      NSString *expectedUrlString = [NSString stringWithFormat:@"http://yoz.io/api/sdk/v1/batch_events"];
+      NSDictionary *urlParams = urlParamsSpy.argument;
+      NSDictionary *expectedUrlParams = [NSDictionary dictionaryWithObject:expectedJsonPayload forKey:@"data"];
       [[urlString should] equal:expectedUrlString];
+      [[[urlParams JSONString] should] equal:[expectedUrlParams JSONString]];
       [YozioRequestManager setInstance:yrmInstance];
     });
     
@@ -131,7 +135,7 @@ describe(@"doFlush", ^{
       YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
       id yrmMock = [YozioRequestManager nullMock];
       [YozioRequestManager setInstance:yrmMock];
-      KWCaptureSpy *handlerSpy = [yrmMock captureArgument:@selector(urlRequest:timeOut:handler:) atIndex:2];
+      KWCaptureSpy *handlerSpy = [yrmMock captureArgument:@selector(urlRequest:body:timeOut:handler:) atIndex:3];
       
       Yozio *instance = [Yozio getInstance];
       instance._appKey = @"app key";
@@ -161,7 +165,7 @@ describe(@"doFlush", ^{
       YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
       id yrmMock = [YozioRequestManager nullMock];
       [YozioRequestManager setInstance:yrmMock];
-      KWCaptureSpy *handlerSpy = [yrmMock captureArgument:@selector(urlRequest:timeOut:handler:) atIndex:2];
+      KWCaptureSpy *handlerSpy = [yrmMock captureArgument:@selector(urlRequest:body:timeOut:handler:) atIndex:3];
       
       Yozio *instance = [Yozio getInstance];
       instance._appKey = @"app key";
@@ -190,7 +194,7 @@ describe(@"doFlush", ^{
       YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
       id yrmMock = [YozioRequestManager nullMock];
       [YozioRequestManager setInstance:yrmMock];
-      KWCaptureSpy *handlerSpy = [yrmMock captureArgument:@selector(urlRequest:timeOut:handler:) atIndex:2];
+      KWCaptureSpy *handlerSpy = [yrmMock captureArgument:@selector(urlRequest:body:timeOut:handler:) atIndex:3];
       
       Yozio *instance = [Yozio getInstance];
       instance._appKey = @"app key";
@@ -216,7 +220,7 @@ describe(@"doFlush", ^{
       YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
       id yrmMock = [YozioRequestManager nullMock];
       [YozioRequestManager setInstance:yrmMock];
-      KWCaptureSpy *handlerSpy = [yrmMock captureArgument:@selector(urlRequest:timeOut:handler:) atIndex:2];
+      KWCaptureSpy *handlerSpy = [yrmMock captureArgument:@selector(urlRequest:body:timeOut:handler:) atIndex:3];
       
       Yozio *instance = [Yozio getInstance];
       instance._appKey = @"app key";
@@ -289,9 +293,7 @@ describe(@"initializeExperiments", ^{
       instance._appKey = @"app key";
       instance._secretKey = @"secret key";
       instance.experimentConfig = [NSMutableDictionary dictionary];
-      instance.eventYozioProperties = [NSMutableDictionary dictionary];
-      instance.linkYozioProperties = [NSMutableDictionary dictionary];
-
+      instance.experimentVariationSids = [NSMutableDictionary dictionary];
     });
     
     afterEach(^{
@@ -299,7 +301,7 @@ describe(@"initializeExperiments", ^{
       KWClearAllObjectStubs();
     });
     
-    it(@"should set the experimentConfig, eventYozioProperties, linkYozioProperties if 200", ^{
+    it(@"should set the experimentConfig and experimentVariationSids if 200", ^{
       YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
       
       YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
@@ -325,11 +327,43 @@ describe(@"initializeExperiments", ^{
       
       Yozio *instance = [Yozio getInstance];
       [[instance.experimentConfig should] equal:experimentConfig];
-      [[[instance.eventYozioProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS] should] equal:experimentSids];
-      [[[instance.linkYozioProperties objectForKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS] should] equal:experimentSids];
+      [[instance.experimentVariationSids should] equal:experimentSids];
       
       [YozioRequestManager setInstance:yrmInstance];
     });
+    
+    it(@"should not set either the experimentConfig nor the experimentVariationSids if one of them is blank and the other isn't", ^{
+      YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
+      
+      YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
+      
+      NSInteger statusCode = 200;
+      NSDictionary *experimentConfig = [NSDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil];
+      NSDictionary *experimentSids = nil;
+      id body = [NSDictionary dictionaryWithObjectsAndKeys:
+                 experimentConfig, YOZIO_CONFIG_KEY,
+                 experimentSids, YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY,
+                 nil];
+      NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"123"]
+                                                                statusCode:statusCode
+                                                               HTTPVersion:@"HTTP/1.1"
+                                                              headerFields:[NSDictionary dictionary]];
+      yrmMock.body = body;
+      yrmMock.response = response;
+      yrmMock.error = nil;
+      
+      [YozioRequestManager setInstance:yrmMock];
+      
+      [Yozio initializeExperiments];
+      
+      Yozio *instance = [Yozio getInstance];
+      [[instance.experimentConfig should] equal:[NSDictionary dictionary]];
+      [[instance.experimentVariationSids should] equal:[NSDictionary dictionary]];
+      
+      [YozioRequestManager setInstance:yrmInstance];
+    });
+    
+
     
     it(@"should not set the experimentConfig, eventYozioProperties, linkYozioProperties if not 200", ^{
       YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
@@ -357,8 +391,7 @@ describe(@"initializeExperiments", ^{
       
       Yozio *instance = [Yozio getInstance];
       [[instance.experimentConfig should] equal:[NSMutableDictionary dictionary]];
-      [[instance.eventYozioProperties should] equal:[NSMutableDictionary dictionary]];
-      [[instance.linkYozioProperties should] equal:[NSMutableDictionary dictionary]];
+      [[instance.experimentVariationSids should] equal:[NSMutableDictionary dictionary]];
       
       [YozioRequestManager setInstance:yrmInstance];
     });
@@ -454,8 +487,7 @@ describe(@"initializeExperiments", ^{
         instance._secretKey = @"secret key";
         [Yozio initializeExperiments];
         
-        [[instance.eventYozioProperties should] equal:[NSMutableDictionary dictionary]];
-        [[instance.linkYozioProperties should] equal:[NSMutableDictionary dictionary]];
+        [[instance.experimentVariationSids should] equal:[NSMutableDictionary dictionary]];
         
         [YozioRequestManager setInstance:yrmInstance];
       });
@@ -489,8 +521,7 @@ describe(@"initializeExperiments", ^{
         instance._secretKey = @"secret key";
         [Yozio initializeExperiments];
         
-        [[instance.eventYozioProperties should] equal:[NSMutableDictionary dictionary]];
-        [[instance.linkYozioProperties should] equal:[NSMutableDictionary dictionary]];
+        [[instance.experimentVariationSids should] equal:[NSMutableDictionary dictionary]];
         
         [YozioRequestManager setInstance:yrmInstance];
       });
@@ -515,9 +546,7 @@ describe(@"initializeExperimentsAsync", ^{
       instance._appKey = @"app key";
       instance._secretKey = @"secret key";
       instance.experimentConfig = [NSMutableDictionary dictionary];
-      instance.eventYozioProperties = [NSMutableDictionary dictionary];
-      instance.linkYozioProperties = [NSMutableDictionary dictionary];
-      
+      instance.experimentVariationSids = [NSMutableDictionary dictionary];
     });
     
     it(@"should execute the callback", ^{
@@ -644,8 +673,7 @@ describe(@"doCollect", ^{
     it(@"should call collect with the correct parameters", ^{
       Yozio *instance = [Yozio getInstance];
       
-      id yozioMock = [Yozio mock];
-      [yozioMock stub:@selector(updateUserName:)];
+      id yozioMock = [Yozio nullMock];
       [yozioMock stub:@selector(doCollect:viralLoopName:maxQueue:properties:)];
       KWCaptureSpy *typeSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:maxQueue:properties:) atIndex:0];
       KWCaptureSpy *viralLoopNameSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:maxQueue:properties:) atIndex:1];
@@ -762,17 +790,34 @@ describe(@"getYozioLink", ^{
     it(@"should call getYozioLinkRequest with the correct parameters if single destination Url", ^{
       Yozio *instance = [Yozio getInstance];
       
+      NSString *appKey = @"app key";
+      NSString *deviceId = @"device id";
+      NSString *linkName = @"twitter";
+      NSString *destinationUrl = @"destination url";
+      NSDictionary *experimentVariationSids = [NSDictionary dictionaryWithObject:@"value" forKey:@"key"];
+
       id yozioMock = [Yozio mock];
-      [yozioMock stub:@selector(getYozioLinkRequest:destUrl:timeOut:callback:)];
-      [yozioMock stub:@selector(_appKey) andReturn:@"app key"];
-      [yozioMock stub:@selector(deviceId) andReturn:@"device id"];
-      [yozioMock stub:@selector(linkYozioProperties) andReturn:[NSDictionary dictionaryWithObject:[NSDictionary dictionaryWithObject:@"value" forKey:@"key"] forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]];
-      KWCaptureSpy *urlStringSpy = [yozioMock captureArgument:@selector(getYozioLinkRequest:destUrl:timeOut:callback:) atIndex:0];
+      [yozioMock stub:@selector(_appKey) andReturn:appKey];
+      [yozioMock stub:@selector(deviceId) andReturn:deviceId];
+      [yozioMock stub:@selector(experimentVariationSids) andReturn:experimentVariationSids];
+      KWCaptureSpy *urlParamsSpy = [yozioMock captureArgument:@selector(getYozioLinkRequest:destUrl:timeOut:callback:) atIndex:0];
       KWCaptureSpy *destUrlSpy = [yozioMock captureArgument:@selector(getYozioLinkRequest:destUrl:timeOut:callback:) atIndex:1];
+      [yozioMock stub:@selector(getYozioLinkRequest:destUrl:timeOut:callback:)];
       [Yozio setInstance:yozioMock];
       
-      [Yozio getYozioLink:@"twitter" destinationUrl:@"destination url"];
-      [[urlStringSpy.argument should] equal:@"http://yoz.io/api/viral/v1/get_url?app_key=app%20key&yozio_udid=device%20id&device_type=2&link_name=twitter&dest_url=destination%20url&yozio_properties=%7B%22experiment_variation_sids%22%3A%7B%22key%22%3A%22value%22%7D%7D"];
+      NSMutableDictionary *expectedUrlParams =
+      [NSMutableDictionary dictionaryWithObjectsAndKeys:
+       appKey, YOZIO_GET_CONFIGURATION_P_APP_KEY,
+       deviceId, YOZIO_GET_CONFIGURATION_P_YOZIO_UDID,
+       YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE,
+       linkName, YOZIO_GET_URL_P_LINK_NAME,
+       destinationUrl, YOZIO_GET_URL_P_DEST_URL, nil];
+      [Yozio addIfNotNil:expectedUrlParams
+                     key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
+                     obj:[[NSDictionary dictionaryWithObject:[NSDictionary dictionaryWithObject:@"value" forKey:@"key"] forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS] JSONString]];
+
+      [Yozio getYozioLink:linkName destinationUrl:destinationUrl];
+      [[[urlParamsSpy.argument JSONString] should] equal:[expectedUrlParams JSONString]];
       [[destUrlSpy.argument should] equal:@"destination url"];
       
       [Yozio setInstance:instance];
@@ -781,19 +826,41 @@ describe(@"getYozioLink", ^{
     it(@"should call getYozioLinkRequest with the correct parameters if single destination Url with properties", ^{
       Yozio *instance = [Yozio getInstance];
       
+      NSString *appKey = @"app key";
+      NSString *deviceId = @"device id";
+      NSString *linkName = @"twitter";
+      NSString *destinationUrl = @"destination url";
+      NSDictionary *properties = [NSDictionary dictionaryWithObject:@"prop value" forKey:@"prop key"];
+      NSDictionary *experimentVariationSids = [NSMutableDictionary dictionaryWithObject:@"value" forKey:@"key"];
+
       id yozioMock = [Yozio mock];
       [yozioMock stub:@selector(getYozioLinkRequest:destUrl:timeOut:callback:)];
-      [yozioMock stub:@selector(_appKey) andReturn:@"app key"];
-      [yozioMock stub:@selector(deviceId) andReturn:@"device id"];
-      [yozioMock stub:@selector(linkYozioProperties) andReturn:[NSDictionary dictionaryWithObject:[NSDictionary dictionaryWithObject:@"value" forKey:@"key"] forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]];
-      KWCaptureSpy *urlStringSpy = [yozioMock captureArgument:@selector(getYozioLinkRequest:destUrl:timeOut:callback:) atIndex:0];
+      [yozioMock stub:@selector(_appKey) andReturn:appKey];
+      [yozioMock stub:@selector(deviceId) andReturn:deviceId];
+      [yozioMock stub:@selector(experimentVariationSids) andReturn:experimentVariationSids];
+      KWCaptureSpy *urlParamsSpy = [yozioMock captureArgument:@selector(getYozioLinkRequest:destUrl:timeOut:callback:) atIndex:0];
       KWCaptureSpy *destUrlSpy = [yozioMock captureArgument:@selector(getYozioLinkRequest:destUrl:timeOut:callback:) atIndex:1];
       [Yozio setInstance:yozioMock];
       
+      
+      NSMutableDictionary *expectedUrlParams =
+      [NSMutableDictionary dictionaryWithObjectsAndKeys:
+       appKey, YOZIO_GET_CONFIGURATION_P_APP_KEY,
+       deviceId, YOZIO_GET_CONFIGURATION_P_YOZIO_UDID,
+       YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE,
+       linkName, YOZIO_GET_URL_P_LINK_NAME,
+       destinationUrl, YOZIO_GET_URL_P_DEST_URL, nil];
+      [Yozio addIfNotNil:expectedUrlParams
+                     key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
+                     obj:[[NSDictionary dictionaryWithObject:experimentVariationSids forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS] JSONString]];
+      [Yozio addIfNotNil:expectedUrlParams
+                     key:YOZIO_P_EXTERNAL_PROPERTIES
+                     obj:[properties JSONString]];
+
       [Yozio getYozioLink:@"twitter"
-     destinationUrl:@"destination url"
-         properties:[NSDictionary dictionaryWithObject:@"prop value" forKey:@"prop key"]];
-      [[urlStringSpy.argument should] equal:@"http://yoz.io/api/viral/v1/get_url?app_key=app%20key&yozio_udid=device%20id&device_type=2&link_name=twitter&dest_url=destination%20url&yozio_properties=%7B%22experiment_variation_sids%22%3A%7B%22key%22%3A%22value%22%7D%7D&external_properties=%7B%22prop%20key%22%3A%22prop%20value%22%7D"];
+     destinationUrl:destinationUrl
+         properties:properties];
+      [[[urlParamsSpy.argument JSONString] should] equal:[expectedUrlParams JSONString]];
       [[destUrlSpy.argument should] equal:@"destination url"];
       
       [Yozio setInstance:instance];
@@ -802,20 +869,42 @@ describe(@"getYozioLink", ^{
     it(@"should call getYozioLinkRequest with the correct parameters if multiple destination Url", ^{
       Yozio *instance = [Yozio getInstance];
       
+      NSString *appKey = @"app key";
+      NSString *deviceId = @"device id";
+      NSString *linkName = @"twitter";
+      NSString *iosDestinationUrl = @"ios destination";
+      NSString *androidDestinationUrl = @"android destination";
+      NSString *nonMobileDestinationUrl = @"non mobile destination";
+      NSDictionary *experimentVariationSids = [NSDictionary dictionaryWithObject:@"value" forKey:@"key"];
+
       id yozioMock = [Yozio mock];
       [yozioMock stub:@selector(getYozioLinkRequest:destUrl:timeOut:callback:)];
-      [yozioMock stub:@selector(_appKey) andReturn:@"app key"];
-      [yozioMock stub:@selector(deviceId) andReturn:@"device id"];
-      [yozioMock stub:@selector(linkYozioProperties) andReturn:[NSDictionary dictionaryWithObject:[NSDictionary dictionaryWithObject:@"value" forKey:@"key"] forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]];
-      KWCaptureSpy *urlStringSpy = [yozioMock captureArgument:@selector(getYozioLinkRequest:destUrl:timeOut:callback:) atIndex:0];
+      [yozioMock stub:@selector(_appKey) andReturn:appKey];
+      [yozioMock stub:@selector(deviceId) andReturn:deviceId];
+      [yozioMock stub:@selector(experimentVariationSids) andReturn:experimentVariationSids];
+      KWCaptureSpy *urlParamsSpy = [yozioMock captureArgument:@selector(getYozioLinkRequest:destUrl:timeOut:callback:) atIndex:0];
       KWCaptureSpy *destUrlSpy = [yozioMock captureArgument:@selector(getYozioLinkRequest:destUrl:timeOut:callback:) atIndex:1];
-      [Yozio setInstance:yozioMock];
+      [Yozio setInstance:yozioMock];      
       
-      [Yozio getYozioLink:@"twitter"
-  iosDestinationUrl:@"ios destination"
-androidDestinationUrl:@"android destination"
-nonMobileDestinationUrl:@"non mobile destination"];
-      [[urlStringSpy.argument should] equal:@"http://yoz.io/api/viral/v1/get_url?app_key=app%20key&yozio_udid=device%20id&device_type=2&link_name=twitter&ios_dest_url=ios%20destination&android_dest_url=android%20destination&non_mobile_dest_url=non%20mobile%20destination&yozio_properties=%7B%22experiment_variation_sids%22%3A%7B%22key%22%3A%22value%22%7D%7D"];
+      NSMutableDictionary *expectedUrlParams =
+      [NSMutableDictionary dictionaryWithObjectsAndKeys:
+       appKey, YOZIO_GET_CONFIGURATION_P_APP_KEY,
+       deviceId, YOZIO_GET_CONFIGURATION_P_YOZIO_UDID,
+       YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE,
+       linkName, YOZIO_GET_URL_P_LINK_NAME,
+       iosDestinationUrl, YOZIO_GET_URL_P_IOS_DEST_URL,
+       androidDestinationUrl, YOZIO_GET_URL_P_ANDROID_DEST_URL,
+       nonMobileDestinationUrl, YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, nil];
+      [Yozio addIfNotNil:expectedUrlParams
+                     key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
+                     obj:[[NSDictionary dictionaryWithObject:experimentVariationSids forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS] JSONString]];
+
+      [Yozio getYozioLink:linkName
+        iosDestinationUrl:iosDestinationUrl
+    androidDestinationUrl:androidDestinationUrl
+  nonMobileDestinationUrl:nonMobileDestinationUrl];
+      
+      [[[urlParamsSpy.argument JSONString] should] equal:[expectedUrlParams JSONString]];
       [[destUrlSpy.argument should] equal:@"non mobile destination"];
       
       [Yozio setInstance:instance];
@@ -824,21 +913,46 @@ nonMobileDestinationUrl:@"non mobile destination"];
     it(@"should call getYozioLinkRequest with the correct parameters if multiple destination Url with properties", ^{
       Yozio *instance = [Yozio getInstance];
       
+      NSString *appKey = @"app key";
+      NSString *deviceId = @"device id";
+      NSString *linkName = @"twitter";
+      NSString *iosDestinationUrl = @"ios destination";
+      NSString *androidDestinationUrl = @"android destination";
+      NSString *nonMobileDestinationUrl = @"non mobile destination";
+      NSDictionary *properties = [NSDictionary dictionaryWithObject:@"prop value" forKey:@"prop key"];
+      NSDictionary *experimentVariationSids = [NSDictionary dictionaryWithObject:@"value" forKey:@"key"];
       id yozioMock = [Yozio mock];
       [yozioMock stub:@selector(getYozioLinkRequest:destUrl:timeOut:callback:)];
-      [yozioMock stub:@selector(_appKey) andReturn:@"app key"];
-      [yozioMock stub:@selector(deviceId) andReturn:@"device id"];
-      [yozioMock stub:@selector(linkYozioProperties) andReturn:[NSDictionary dictionaryWithObject:[NSDictionary dictionaryWithObject:@"value" forKey:@"key"] forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS]];
-      KWCaptureSpy *urlStringSpy = [yozioMock captureArgument:@selector(getYozioLinkRequest:destUrl:timeOut:callback:) atIndex:0];
+      [yozioMock stub:@selector(_appKey) andReturn:appKey];
+      [yozioMock stub:@selector(deviceId) andReturn:deviceId];
+      [yozioMock stub:@selector(experimentVariationSids) andReturn:experimentVariationSids];
+      KWCaptureSpy *urlParamsSpy = [yozioMock captureArgument:@selector(getYozioLinkRequest:destUrl:timeOut:callback:) atIndex:0];
       KWCaptureSpy *destUrlSpy = [yozioMock captureArgument:@selector(getYozioLinkRequest:destUrl:timeOut:callback:) atIndex:1];
       [Yozio setInstance:yozioMock];
       
-      [Yozio getYozioLink:@"twitter"
-  iosDestinationUrl:@"ios destination"
-androidDestinationUrl:@"android destination"
-nonMobileDestinationUrl:@"non mobile destination"
-         properties:[NSDictionary dictionaryWithObject:@"prop value" forKey:@"prop key"]];
-      [[urlStringSpy.argument should] equal:@"http://yoz.io/api/viral/v1/get_url?app_key=app%20key&yozio_udid=device%20id&device_type=2&link_name=twitter&ios_dest_url=ios%20destination&android_dest_url=android%20destination&non_mobile_dest_url=non%20mobile%20destination&yozio_properties=%7B%22experiment_variation_sids%22%3A%7B%22key%22%3A%22value%22%7D%7D&external_properties=%7B%22prop%20key%22%3A%22prop%20value%22%7D"];
+      NSMutableDictionary *expectedUrlParams =
+      [NSMutableDictionary dictionaryWithObjectsAndKeys:
+       appKey, YOZIO_GET_CONFIGURATION_P_APP_KEY,
+       deviceId, YOZIO_GET_CONFIGURATION_P_YOZIO_UDID,
+       YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE,
+       linkName, YOZIO_GET_URL_P_LINK_NAME,
+       iosDestinationUrl, YOZIO_GET_URL_P_IOS_DEST_URL,
+       androidDestinationUrl, YOZIO_GET_URL_P_ANDROID_DEST_URL,
+       nonMobileDestinationUrl, YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, nil];
+      [Yozio addIfNotNil:expectedUrlParams
+                     key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
+                     obj:[[NSDictionary dictionaryWithObject:experimentVariationSids forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS] JSONString]];
+      [Yozio addIfNotNil:expectedUrlParams
+                     key:YOZIO_P_EXTERNAL_PROPERTIES
+                     obj:[properties JSONString]];
+      
+      
+      [Yozio getYozioLink:linkName
+        iosDestinationUrl:iosDestinationUrl
+    androidDestinationUrl:androidDestinationUrl
+  nonMobileDestinationUrl:nonMobileDestinationUrl
+               properties:properties];
+      [[[urlParamsSpy.argument JSONString] should] equal:[expectedUrlParams JSONString]];
       [[destUrlSpy.argument should] equal:@"non mobile destination"];
       
       [Yozio setInstance:instance];
@@ -863,7 +977,7 @@ describe(@"getYozioLinkRequest", ^{
       yrmMock.error = error;
       
       Yozio *instance = [Yozio getInstance];
-      [[[instance getYozioLinkRequest:@"url string" destUrl:@"dest url" timeOut:5 callback:nil] should] equal:@"dest url"];
+      [[[instance getYozioLinkRequest:[NSDictionary dictionary] destUrl:@"dest url" timeOut:5 callback:nil] should] equal:@"dest url"];
       
       [YozioRequestManager setInstance:yrmInstance];
     });
@@ -882,7 +996,7 @@ describe(@"getYozioLinkRequest", ^{
       yrmMock.response = response;
       
       Yozio *instance = [Yozio getInstance];
-      [[[instance getYozioLinkRequest:@"url string" destUrl:@"dest url" timeOut:5 callback:nil] should] equal:@"yozio link"];
+      [[[instance getYozioLinkRequest:[NSDictionary dictionary] destUrl:@"dest url" timeOut:5 callback:nil] should] equal:@"yozio link"];
       
       [YozioRequestManager setInstance:yrmInstance];
     });
@@ -902,7 +1016,7 @@ describe(@"getYozioLinkRequest", ^{
       
       Yozio *instance = [Yozio getInstance];
       __block NSString *testShortLink = @"";
-      [instance getYozioLinkRequest:@"url string" destUrl:@"dest url" timeOut:0 callback:^(NSString * shortLink){ testShortLink = shortLink; }];
+      [instance getYozioLinkRequest:[NSDictionary dictionary] destUrl:@"dest url" timeOut:0 callback:^(NSString * shortLink){ testShortLink = shortLink; }];
       [[testShortLink should] equal:@"yozio link"];
       [YozioRequestManager setInstance:yrmInstance];
     });
@@ -922,7 +1036,7 @@ describe(@"getYozioLinkRequest", ^{
       yrmMock.error = error;
       
       Yozio *instance = [Yozio getInstance];
-      [[[instance getYozioLinkRequest:@"url string" destUrl:@"dest url" timeOut:5 callback:nil] should] equal:@"dest url"];
+      [[[instance getYozioLinkRequest:[NSDictionary dictionary] destUrl:@"dest url" timeOut:5 callback:nil] should] equal:@"dest url"];
       
       [YozioRequestManager setInstance:yrmInstance];
     });

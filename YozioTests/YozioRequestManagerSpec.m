@@ -25,7 +25,7 @@ describe(@"urlRequest", ^{
     void (^requestCallback)(id body, NSHTTPURLResponse *response, NSError *error);
     requestCallback = ^(id body, NSHTTPURLResponse *response, NSError *error){};
     
-    [instance urlRequest:@"http://www.google.com" timeOut:1 handler:requestCallback];
+    [instance urlRequest:@"http://www.google.com" body:[NSDictionary dictionary] timeOut:1 handler:requestCallback];
     NSTimeInterval timeInterval = [start timeIntervalSinceNow];
     [[theValue(timeInterval) should] beLessThan:theValue(1)];
   });
@@ -38,7 +38,7 @@ describe(@"urlRequest", ^{
     void (^requestCallback)(id body, NSHTTPURLResponse *response, NSError *error);
     requestCallback = ^(id body, NSHTTPURLResponse *response, NSError *error){};
     
-    [instance urlRequest:@"http://www.google.com" timeOut:1 handler:requestCallback];
+    [instance urlRequest:@"http://www.google.com" body:[NSDictionary dictionary] timeOut:1 handler:requestCallback];
     NSTimeInterval timeInterval = [start timeIntervalSinceNow];
     [[theValue(timeInterval) should] beLessThan:theValue(2)];
   });

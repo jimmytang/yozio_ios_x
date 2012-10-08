@@ -15,7 +15,7 @@
 
 #import "Yozio.h"
 
-#define YOZIO_SDK_VERSION @"IOS-v2.4"
+#define YOZIO_SDK_VERSION @"IOS-v3.0"
 #define YOZIO_DEFAULT_BASE_URL @"http://yoz.io"
 #define YOZIO_GET_CONFIGURATIONS_ROUTE @"/api/yozio/v1/get_configurations"
 #define YOZIO_GET_URL_ROUTE @"/api/viral/v1/get_url"
@@ -109,8 +109,7 @@
   NSMutableArray *dataQueue;
   NSArray *dataToSend;
   NSMutableDictionary *experimentConfig;
-  NSMutableDictionary *eventYozioProperties;
-  NSMutableDictionary *linkYozioProperties;
+  NSMutableDictionary *experimentVariationSids;
   NSDateFormatter *dateFormatter;
   BOOL stopBlocking;
 }
@@ -132,8 +131,7 @@
 @property(nonatomic, retain) NSMutableArray *dataQueue;
 @property(nonatomic, retain) NSArray *dataToSend;
 @property(nonatomic, retain) NSMutableDictionary *experimentConfig;
-@property(nonatomic, retain) NSMutableDictionary *eventYozioProperties;
-@property(nonatomic, retain) NSMutableDictionary *linkYozioProperties;
+@property(nonatomic, retain) NSMutableDictionary *experimentVariationSids;
 @property(nonatomic, retain) NSDateFormatter *dateFormatter;
 @property(nonatomic, assign) BOOL stopBlocking;
 
@@ -149,9 +147,6 @@
 + (void)addIfNotNil:(NSMutableDictionary*)dict
                 key:(NSString *)key
                 obj:(NSObject *)obj;
-+ (void)appendParamIfNotNil:(NSMutableString*)paramString
-                   paramKey:(NSString*)paramKey
-                 paramValue:(NSString*)paramValue;
 - (BOOL)validateConfiguration;
 - (void)doCollect:(NSString *)name
     viralLoopName:(NSString *)viralLoopName
@@ -163,14 +158,13 @@
 
 + (void)initializeExperimentsHelper:(NSInteger)timeOut callback:(void(^)(void))callback;
 
-- (NSString *)getYozioLinkRequest:(NSString *)urlString
+- (NSString *)getYozioLinkRequest:(NSDictionary *)urlParams
                           destUrl:(NSString *)destUrl
                           timeOut:(NSInteger)timeOut
                          callback:(void(^)(NSString *))callback;
 // Instrumentation data helper methods.
 - (NSString *)timeStampString;
 - (NSString *)eventID;
-+ (NSString *)encodeToPercentEscapeString:(NSString *)string;
 // File system helper methods.
 - (void)saveUnsentData;
 - (void)loadUnsentData;
