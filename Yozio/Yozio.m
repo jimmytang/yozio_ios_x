@@ -475,13 +475,15 @@ static Yozio *instance = nil;
     if (!viralLoopName) {
       return destinationUrl;
     }
-    NSMutableString *urlParams =
-    [NSMutableString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
-     YOZIO_GET_CONFIGURATION_P_APP_KEY, [Yozio encodeToPercentEscapeString:instance._appKey],
-     YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, [Yozio encodeToPercentEscapeString:instance.deviceId],
-     YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, [Yozio encodeToPercentEscapeString:YOZIO_DEVICE_TYPE_IOS],
-     YOZIO_GET_URL_P_LINK_NAME, [Yozio encodeToPercentEscapeString:viralLoopName],
-     YOZIO_GET_URL_P_DEST_URL, [Yozio encodeToPercentEscapeString:destinationUrl]];
+
+    NSMutableDictionary *urlParams =
+      [NSMutableDictionary dictionaryWithObjectsAndKeys:
+        instance._appKey, YOZIO_GET_CONFIGURATION_P_APP_KEY,
+        instance.deviceId, YOZIO_GET_CONFIGURATION_P_YOZIO_UDID,
+        YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE,
+        viralLoopName, YOZIO_GET_URL_P_LINK_NAME,
+        destinationUrl, YOZIO_GET_URL_P_DEST_URL, nil];
+
     if (instance.experimentVariationSids) {
       NSDictionary *d = [NSDictionary dictionaryWithObject:instance.experimentVariationSids
                                                     forKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY];
@@ -517,15 +519,17 @@ static Yozio *instance = nil;
     if (!viralLoopName) {
       return nonMobileDestinationUrl;
     }
-    NSMutableString *urlParams =
-    [NSMutableString stringWithFormat:@"%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@&%@=%@",
-     YOZIO_GET_CONFIGURATION_P_APP_KEY, [Yozio encodeToPercentEscapeString:instance._appKey],
-     YOZIO_GET_CONFIGURATION_P_YOZIO_UDID, [Yozio encodeToPercentEscapeString:instance.deviceId],
-     YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE, [Yozio encodeToPercentEscapeString:YOZIO_DEVICE_TYPE_IOS],
-     YOZIO_GET_URL_P_LINK_NAME, [Yozio encodeToPercentEscapeString:viralLoopName],
-     YOZIO_GET_URL_P_IOS_DEST_URL, [Yozio encodeToPercentEscapeString:iosDestinationUrl],
-     YOZIO_GET_URL_P_ANDROID_DEST_URL, [Yozio encodeToPercentEscapeString:androidDestinationUrl],
-     YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, [Yozio encodeToPercentEscapeString:nonMobileDestinationUrl]];
+    
+    NSMutableDictionary *urlParams =
+      [NSMutableDictionary dictionaryWithObjectsAndKeys:
+       instance._appKey, YOZIO_GET_CONFIGURATION_P_APP_KEY,
+       instance.deviceId, YOZIO_GET_CONFIGURATION_P_YOZIO_UDID,
+       YOZIO_DEVICE_TYPE_IOS, YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE,
+       viralLoopName, YOZIO_GET_URL_P_LINK_NAME,
+       iosDestinationUrl, YOZIO_GET_URL_P_IOS_DEST_URL,
+       androidDestinationUrl, YOZIO_GET_URL_P_ANDROID_DEST_URL,
+       nonMobileDestinationUrl, YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, nil];
+
     if (instance.experimentVariationSids) {
       NSDictionary *d = [NSDictionary dictionaryWithObject:instance.experimentVariationSids
                                                     forKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY];
@@ -538,7 +542,6 @@ static Yozio *instance = nil;
                     key:YOZIO_P_EXTERNAL_PROPERTIES
                     obj:[properties JSONString]];
     }
-    
     return [instance getYozioLinkRequest:urlParams destUrl:nonMobileDestinationUrl timeOut:timeOut callback:callback];
   }
   @catch (NSException * e) {

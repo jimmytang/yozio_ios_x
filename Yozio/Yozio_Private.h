@@ -158,10 +158,10 @@
 
 + (void)initializeExperimentsHelper:(NSInteger)timeOut callback:(void(^)(void))callback;
 
-- (NSString *))getYozioLinkRequest:(NSDictionary *)urlParams
-                    	   destUrl:(NSString *)destUrl
-                           timeOut:(NSInteger)timeOut
-                          callback:(void(^)(NSString *))callback;
+- (NSString *)getYozioLinkRequest:(NSDictionary *)urlParams
+                          destUrl:(NSString *)destUrl
+                          timeOut:(NSInteger)timeOut
+                         callback:(void(^)(NSString *))callback;
 // Instrumentation data helper methods.
 - (NSString *)timeStampString;
 - (NSString *)eventID;

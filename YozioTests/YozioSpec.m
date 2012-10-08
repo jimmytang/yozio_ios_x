@@ -764,12 +764,12 @@ describe(@"getYozioLink", ^{
       NSDictionary *experimentVariationSids = [NSDictionary dictionaryWithObject:@"value" forKey:@"key"];
 
       id yozioMock = [Yozio mock];
-      [yozioMock stub:@selector(getYozioLinkRequest:destUrl:timeOut:callback:)];
       [yozioMock stub:@selector(_appKey) andReturn:appKey];
       [yozioMock stub:@selector(deviceId) andReturn:deviceId];
       [yozioMock stub:@selector(experimentVariationSids) andReturn:experimentVariationSids];
       KWCaptureSpy *urlParamsSpy = [yozioMock captureArgument:@selector(getYozioLinkRequest:destUrl:timeOut:callback:) atIndex:0];
       KWCaptureSpy *destUrlSpy = [yozioMock captureArgument:@selector(getYozioLinkRequest:destUrl:timeOut:callback:) atIndex:1];
+      [yozioMock stub:@selector(getYozioLinkRequest:destUrl:timeOut:callback:)];
       [Yozio setInstance:yozioMock];
       
       NSMutableDictionary *expectedUrlParams =
@@ -845,12 +845,12 @@ describe(@"getYozioLink", ^{
       NSDictionary *experimentVariationSids = [NSDictionary dictionaryWithObject:@"value" forKey:@"key"];
 
       id yozioMock = [Yozio mock];
-      [yozioMock stub:@selector(getYozioLinkRequest:destUrl:timeOut:callback::)];
+      [yozioMock stub:@selector(getYozioLinkRequest:destUrl:timeOut:callback:)];
       [yozioMock stub:@selector(_appKey) andReturn:appKey];
       [yozioMock stub:@selector(deviceId) andReturn:deviceId];
       [yozioMock stub:@selector(experimentVariationSids) andReturn:experimentVariationSids];
-      KWCaptureSpy *urlParamsSpy = [yozioMock captureArgument:@selector(getYozioLinkRequest:destUrl:timeOut:callback::) atIndex:0];
-      KWCaptureSpy *destUrlSpy = [yozioMock captureArgument:@selector(getYozioLinkRequest:destUrl:timeOut:callback::) atIndex:1];
+      KWCaptureSpy *urlParamsSpy = [yozioMock captureArgument:@selector(getYozioLinkRequest:destUrl:timeOut:callback:) atIndex:0];
+      KWCaptureSpy *destUrlSpy = [yozioMock captureArgument:@selector(getYozioLinkRequest:destUrl:timeOut:callback:) atIndex:1];
       [Yozio setInstance:yozioMock];      
       
       NSMutableDictionary *expectedUrlParams =
@@ -963,7 +963,7 @@ describe(@"getYozioLinkRequest", ^{
       yrmMock.response = response;
       
       Yozio *instance = [Yozio getInstance];
-      [[[instance getYozioLinkRequest:[NSDictionary dictionary] destUrl:@"dest url" timeOut:5 callback:nil] should] equal:@"short link"];
+      [[[instance getYozioLinkRequest:[NSDictionary dictionary] destUrl:@"dest url" timeOut:5 callback:nil] should] equal:@"yozio link"];
       
       [YozioRequestManager setInstance:yrmInstance];
     });
