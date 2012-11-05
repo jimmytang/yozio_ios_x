@@ -166,7 +166,8 @@ static Yozio *instance = nil;
 {
   instance._userName = userName;
   [instance doCollect:YOZIO_LOGIN_ACTION
-             viralLoopName:@""
+        viralLoopName:@""
+              channel:@""
              maxQueue:YOZIO_ACTION_DATA_LIMIT
            properties:properties];
 }
@@ -225,39 +226,66 @@ static Yozio *instance = nil;
   }
 }
 
-+ (NSString *)getYozioLink:(NSString *)viralLoopName destinationUrl:(NSString *)destinationUrl
++ (NSString *)getYozioLink:(NSString *)viralLoopName
+                   channel:(NSString *)channel
+            destinationUrl:(NSString *)destinationUrl
 {
-  return [Yozio getYozioLinkHelper:viralLoopName destinationUrl:destinationUrl properties:nil timeOut:5 callback:nil];
+  return [Yozio getYozioLinkHelper:viralLoopName
+                           channel:channel
+                    destinationUrl:destinationUrl
+                        properties:nil
+                           timeOut:5
+                          callback:nil];
 }
 
 + (NSString *)getYozioLink:(NSString *)viralLoopName
+                   channel:(NSString *)channel
             destinationUrl:(NSString *)destinationUrl
                 properties:(NSDictionary *)properties
 {
-  return [Yozio getYozioLinkHelper:viralLoopName destinationUrl:destinationUrl properties:properties timeOut:5 callback:nil];
+  return [Yozio getYozioLinkHelper:viralLoopName
+                           channel:channel
+                    destinationUrl:destinationUrl
+                        properties:properties
+                           timeOut:5
+                          callback:nil];
 }
 
 + (void)getYozioLinkAsync:(NSString *)viralLoopName
+                  channel:(NSString *)channel
            destinationUrl:(NSString *)destinationUrl
                  callback:(void(^)(NSString *))callback
 {
-  [Yozio getYozioLinkHelper:viralLoopName destinationUrl:destinationUrl properties:nil timeOut:0 callback:callback];
+  [Yozio getYozioLinkHelper:viralLoopName
+                    channel:channel
+             destinationUrl:destinationUrl
+                 properties:nil
+                    timeOut:0
+                   callback:callback];
 }
 
 + (void)getYozioLinkAsync:(NSString *)viralLoopName
+                  channel:(NSString *)channel
            destinationUrl:(NSString *)destinationUrl
                properties:(NSDictionary *)properties
                  callback:(void(^)(NSString *))callback
 {
-  [Yozio getYozioLinkHelper:viralLoopName destinationUrl:destinationUrl properties:properties timeOut:0 callback:callback];
+  [Yozio getYozioLinkHelper:viralLoopName
+                    channel:channel
+             destinationUrl:destinationUrl
+                 properties:properties
+                    timeOut:0
+                   callback:callback];
 }
 
 +     (NSString *)getYozioLink:(NSString *)viralLoopName
+                       channel:(NSString *)channel
              iosDestinationUrl:(NSString *)iosDestinationUrl
          androidDestinationUrl:(NSString *)androidDestinationUrl
        nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
 {
   return [Yozio getYozioLinkHelper:viralLoopName
+                           channel:channel
                  iosDestinationUrl:iosDestinationUrl
              androidDestinationUrl:androidDestinationUrl
            nonMobileDestinationUrl:nonMobileDestinationUrl
@@ -267,12 +295,14 @@ static Yozio *instance = nil;
 }
 
 +     (NSString *)getYozioLink:(NSString *)viralLoopName
+                       channel:(NSString *)channel
              iosDestinationUrl:(NSString *)iosDestinationUrl
          androidDestinationUrl:(NSString *)androidDestinationUrl
        nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
                     properties:(NSDictionary *)properties
 {
   return [Yozio getYozioLinkHelper:viralLoopName
+                           channel:channel
                  iosDestinationUrl:iosDestinationUrl
              androidDestinationUrl:androidDestinationUrl
            nonMobileDestinationUrl:nonMobileDestinationUrl
@@ -282,12 +312,14 @@ static Yozio *instance = nil;
 }
 
 +      (void)getYozioLinkAsync:(NSString *)viralLoopName
+                       channel:(NSString *)channel
              iosDestinationUrl:(NSString *)iosDestinationUrl
          androidDestinationUrl:(NSString *)androidDestinationUrl
        nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
                       callback:(void (^)(NSString *))callback
 {
     [Yozio getYozioLinkHelper:viralLoopName
+                      channel:channel
             iosDestinationUrl:iosDestinationUrl
         androidDestinationUrl:androidDestinationUrl
       nonMobileDestinationUrl:nonMobileDestinationUrl
@@ -297,6 +329,7 @@ static Yozio *instance = nil;
 }
 
 +     (void)getYozioLinkAsync:(NSString *)viralLoopName
+                      channel:(NSString *)channel
             iosDestinationUrl:(NSString *)iosDestinationUrl
         androidDestinationUrl:(NSString *)androidDestinationUrl
       nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
@@ -304,6 +337,7 @@ static Yozio *instance = nil;
                      callback:(void (^)(NSString *))callback
 {
     [Yozio getYozioLinkHelper:viralLoopName
+                      channel:channel
             iosDestinationUrl:iosDestinationUrl
         androidDestinationUrl:androidDestinationUrl
       nonMobileDestinationUrl:nonMobileDestinationUrl
@@ -312,28 +346,30 @@ static Yozio *instance = nil;
                      callback:callback];
 }
 
-+ (void)enteredViralLoop:(NSString *)viralLoopName
++ (void)enteredViralLoop:(NSString *)viralLoopName channel:(NSString *)channel
 {
-  [self enteredViralLoop:viralLoopName properties:nil];
+  [self enteredViralLoop:viralLoopName channel:channel properties:nil];
 }
 
-+ (void)enteredViralLoop:(NSString *)viralLoopName properties:(NSDictionary *)properties
++ (void)enteredViralLoop:(NSString *)viralLoopName channel:(NSString *)channel properties:(NSDictionary *)properties
 {
   [instance doCollect:YOZIO_VIEWED_LINK_ACTION
-             viralLoopName:viralLoopName
+        viralLoopName:viralLoopName
+              channel:channel
              maxQueue:YOZIO_ACTION_DATA_LIMIT
            properties:properties];
 }
 
-+ (void)sharedYozioLink:(NSString *)viralLoopName
++ (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel
 {
-  [self sharedYozioLink:viralLoopName properties:nil];
+  [self sharedYozioLink:viralLoopName channel:channel properties:nil];
 }
 
-+ (void)sharedYozioLink:(NSString *)viralLoopName properties:(NSDictionary *)properties
++ (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel properties:(NSDictionary *)properties
 {
   [instance doCollect:YOZIO_SHARED_LINK_ACTION
         viralLoopName:viralLoopName
+              channel:channel
              maxQueue:YOZIO_ACTION_DATA_LIMIT
            properties:properties];
 }
@@ -375,6 +411,7 @@ static Yozio *instance = nil;
 
 - (void)doCollect:(NSString *)type
     viralLoopName:(NSString *)viralLoopName
+          channel:(NSString *)channel
          maxQueue:(NSInteger)maxQueue
        properties:(NSDictionary *)properties
 {
@@ -386,6 +423,7 @@ static Yozio *instance = nil;
     NSMutableDictionary* d = [NSMutableDictionary dictionary];
     [Yozio addIfNotNil:d key:YOZIO_D_EVENT_TYPE obj:type];
     [Yozio addIfNotNil:d key:YOZIO_D_LINK_NAME obj:viralLoopName];
+    [Yozio addIfNotNil:d key:YOZIO_D_CHANNEL obj:channel];
     [Yozio addIfNotNil:d key:YOZIO_D_TIMESTAMP obj:[self timeStampString]];
     [Yozio addIfNotNil:d key:YOZIO_D_EVENT_IDENTIFIER obj:[self eventID]];
     [Yozio addIfNotNil:d key:YOZIO_P_EXTERNAL_PROPERTIES obj:[properties JSONString]]; // [nil JSONString] == nil
@@ -400,6 +438,7 @@ static Yozio *instance = nil;
 {
   [instance doCollect:YOZIO_OPENED_APP_ACTION
         viralLoopName:@""
+              channel:@""
              maxQueue:YOZIO_ACTION_DATA_LIMIT
            properties:nil];
 }
@@ -461,6 +500,7 @@ static Yozio *instance = nil;
 }
 
 + (NSString *)getYozioLinkHelper:(NSString *)viralLoopName
+                         channel:(NSString *)channel
                   destinationUrl:(NSString *)destinationUrl
                       properties:(NSDictionary *)properties
                          timeOut:(NSInteger)timeOut
@@ -503,6 +543,7 @@ static Yozio *instance = nil;
 }
 
 + (NSString *)getYozioLinkHelper:(NSString *)viralLoopName
+                         channel:(NSString *)channel
                iosDestinationUrl:(NSString *)iosDestinationUrl
            androidDestinationUrl:(NSString *)androidDestinationUrl
          nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
@@ -529,8 +570,9 @@ static Yozio *instance = nil;
        nonMobileDestinationUrl, YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, nil];
 
     if (instance.experimentVariationSids && [instance.experimentVariationSids count] > 0) {
-      NSDictionary *d = [NSDictionary dictionaryWithObject:instance.experimentVariationSids
-                                                    forKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY];
+      NSDictionary *d = [NSDictionary dictionaryWithObjectsAndKeys:
+                         instance.experimentVariationSids, YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY,
+                         channel, YOZIO_GET_URL_P_CHANNEL, nil];
       [self addIfNotNil:urlParams
                     key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
                     obj:[d JSONString]];
@@ -548,7 +590,10 @@ static Yozio *instance = nil;
 }
 
 
-- (NSString *)getYozioLinkRequest:(NSDictionary *)urlParams destUrl:(NSString *)destUrl timeOut:(NSInteger)timeOut callback:(void(^)(NSString *))callback
+- (NSString *)getYozioLinkRequest:(NSDictionary *)urlParams
+                          destUrl:(NSString *)destUrl
+                          timeOut:(NSInteger)timeOut
+                         callback:(void(^)(NSString *))callback
 {
   NSString *urlString = [NSString stringWithFormat:@"%@%@", YOZIO_DEFAULT_BASE_URL, YOZIO_GET_URL_ROUTE];
   [Yozio log:@"Final getUrl Request URL: %@", urlString];
