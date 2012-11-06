@@ -94,6 +94,7 @@ id mock;
     @"mock UUID", @"event_identifier",
     @"5", @"event_type",
     @"", @"link_name",
+    @"", @"channel",
     @"2011-07-17 07:48:34", @"timestamp",
     nil];
   [Yozio configure:@"app key" secretKey:@"secret key"];

@@ -112,7 +112,7 @@ describe(@"doFlush", ^{
                                         instance.dataToSend, @"payload",
                                         @"Unknown", @"hardware",
                                         @"open udid value", @"open_udid",
-                                        @"5.1", @"os_version",
+                                        @"5.0", @"os_version",
                                         @"device id", @"yozio_udid",
                                         @"1", @"open_udid_count",
                                         @"1.000000", @"display_multiplier",
@@ -264,7 +264,7 @@ describe(@"buildPayload", ^{
      instance.dataToSend, @"payload",
      @"Unknown", @"hardware",
      @"open udid value", @"open_udid",
-     @"5.1", @"os_version",
+     @"5.0", @"os_version",
      @"device id", @"yozio_udid",
      @"1", @"open_udid_count",
      @"1.000000", @"display_multiplier",
@@ -674,16 +674,18 @@ describe(@"doCollect", ^{
       Yozio *instance = [Yozio getInstance];
       
       id yozioMock = [Yozio nullMock];
-      [yozioMock stub:@selector(doCollect:viralLoopName:maxQueue:properties:)];
-      KWCaptureSpy *typeSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:maxQueue:properties:) atIndex:0];
-      KWCaptureSpy *viralLoopNameSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:maxQueue:properties:) atIndex:1];
-      KWCaptureSpy *maxQueueSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:maxQueue:properties:) atIndex:2];
-      KWCaptureSpy *propertiesSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:maxQueue:properties:) atIndex:3];
+      [yozioMock stub:@selector(doCollect:viralLoopName:channel:maxQueue:properties:)];
+      KWCaptureSpy *typeSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:maxQueue:properties:) atIndex:0];
+      KWCaptureSpy *viralLoopNameSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:maxQueue:properties:) atIndex:1];
+      KWCaptureSpy *channelSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:maxQueue:properties:) atIndex:2];
+      KWCaptureSpy *maxQueueSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:maxQueue:properties:) atIndex:3];
+      KWCaptureSpy *propertiesSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:maxQueue:properties:) atIndex:4];
       [Yozio setInstance:yozioMock];
       
       [Yozio userLoggedIn:@"popo" properties:[NSDictionary dictionary]];
       [[typeSpy.argument should] equal:YOZIO_LOGIN_ACTION];
       [[viralLoopNameSpy.argument should] equal:@""];
+      [[channelSpy.argument should] equal:@""];
       [[maxQueueSpy.argument should] equal:theValue(YOZIO_ACTION_DATA_LIMIT)];
       [[propertiesSpy.argument should] equal:[NSDictionary dictionary]];
 
@@ -695,16 +697,18 @@ describe(@"doCollect", ^{
       Yozio *instance = [Yozio getInstance];
       
       id yozioMock = [Yozio mock];
-      [yozioMock stub:@selector(doCollect:viralLoopName:maxQueue:properties:)];
-      KWCaptureSpy *typeSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:maxQueue:properties:) atIndex:0];
-      KWCaptureSpy *viralLoopNameSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:maxQueue:properties:) atIndex:1];
-      KWCaptureSpy *maxQueueSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:maxQueue:properties:) atIndex:2];
-      KWCaptureSpy *propertiesSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:maxQueue:properties:) atIndex:3];
+      [yozioMock stub:@selector(doCollect:viralLoopName:channel:maxQueue:properties:)];
+      KWCaptureSpy *typeSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:maxQueue:properties:) atIndex:0];
+      KWCaptureSpy *viralLoopNameSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:maxQueue:properties:) atIndex:1];
+      KWCaptureSpy *channelSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:maxQueue:properties:) atIndex:2];
+      KWCaptureSpy *maxQueueSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:maxQueue:properties:) atIndex:3];
+      KWCaptureSpy *propertiesSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:maxQueue:properties:) atIndex:4];
       [Yozio setInstance:yozioMock];
       
-      [Yozio enteredViralLoop:@"loop name" properties:[NSDictionary dictionary]];
+      [Yozio enteredViralLoop:@"loop name" channel:@"channel" properties:[NSDictionary dictionary]];
       [[typeSpy.argument should] equal:YOZIO_VIEWED_LINK_ACTION];
       [[viralLoopNameSpy.argument should] equal:@"loop name"];
+      [[channelSpy.argument should] equal:@"channel"];
       [[maxQueueSpy.argument should] equal:theValue(YOZIO_ACTION_DATA_LIMIT)];
       [[propertiesSpy.argument should] equal:[NSDictionary dictionary]];
       
@@ -718,15 +722,17 @@ describe(@"doCollect", ^{
       
       id yozioMock = [Yozio mock];
       [yozioMock stub:@selector(doCollect:viralLoopName:maxQueue:properties:)];
-      KWCaptureSpy *typeSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:maxQueue:properties:) atIndex:0];
-      KWCaptureSpy *viralLoopNameSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:maxQueue:properties:) atIndex:1];
-      KWCaptureSpy *maxQueueSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:maxQueue:properties:) atIndex:2];
-      KWCaptureSpy *propertiesSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:maxQueue:properties:) atIndex:3];
+      KWCaptureSpy *typeSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:maxQueue:properties:) atIndex:0];
+      KWCaptureSpy *viralLoopNameSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:maxQueue:properties:) atIndex:1];
+      KWCaptureSpy *channelSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:maxQueue:properties:) atIndex:2];
+      KWCaptureSpy *maxQueueSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:maxQueue:properties:) atIndex:3];
+      KWCaptureSpy *propertiesSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:maxQueue:properties:) atIndex:4];
       [Yozio setInstance:yozioMock];
       
-      [Yozio sharedYozioLink:@"loop name" properties:[NSDictionary dictionary]];
+      [Yozio sharedYozioLink:@"loop name" channel:@"channel" properties:[NSDictionary dictionary]];
       [[typeSpy.argument should] equal:YOZIO_SHARED_LINK_ACTION];
       [[viralLoopNameSpy.argument should] equal:@"loop name"];
+      [[channelSpy.argument should] equal:@"channel"];
       [[maxQueueSpy.argument should] equal:theValue(YOZIO_ACTION_DATA_LIMIT)];
       [[propertiesSpy.argument should] equal:[NSDictionary dictionary]];
       
@@ -749,7 +755,7 @@ describe(@"doCollect", ^{
       NSDictionary *properties = [NSDictionary dictionaryWithObject:@"value" forKey:@"property"];
       [instance stub:@selector(timeStampString) andReturn:@"time stamp string"];
       [instance stub:@selector(eventID) andReturn:@"event id"];
-      [instance doCollect:type viralLoopName:viralLoopName maxQueue:YOZIO_ACTION_DATA_LIMIT properties:properties];
+      [instance doCollect:type viralLoopName:viralLoopName channel:@"channel" maxQueue:YOZIO_ACTION_DATA_LIMIT properties:properties];
       [[theValue(instance.dataCount) should] equal:theValue(1)];
     });
     
@@ -764,13 +770,14 @@ describe(@"doCollect", ^{
                                     [NSDictionary dictionaryWithObjectsAndKeys:
                                      type, YOZIO_D_EVENT_TYPE,
                                      viralLoopName, YOZIO_D_LINK_NAME,
+                                     @"channel", YOZIO_D_CHANNEL,
                                      @"time stamp string", YOZIO_D_TIMESTAMP,
                                      @"event id", YOZIO_D_EVENT_IDENTIFIER,
                                      [properties JSONString], YOZIO_P_EXTERNAL_PROPERTIES,
                                      nil],
                                     nil];
       instance.dataQueue = [NSMutableArray array];
-      [instance doCollect:type viralLoopName:viralLoopName maxQueue:YOZIO_ACTION_DATA_LIMIT properties:properties];
+      [instance doCollect:type viralLoopName:viralLoopName channel:@"channel" maxQueue:YOZIO_ACTION_DATA_LIMIT properties:properties];
       [[instance.dataQueue should] equal:expectedDataQueue];
     });
   });
@@ -779,12 +786,12 @@ describe(@"doCollect", ^{
 describe(@"getYozioLink", ^{
   context(@"", ^{
     it(@"should return destinationUrl if viralLoopName is null", ^{
-      [[[Yozio getYozioLink:nil destinationUrl:@"destination url"] should] equal:@"destination url"];
-      [[[Yozio getYozioLink:NULL destinationUrl:@"destination url"] should] equal:@"destination url"];
+      [[[Yozio getYozioLink:nil channel:@"channel" destinationUrl:@"destination url"] should] equal:@"destination url"];
+      [[[Yozio getYozioLink:NULL channel:@"channel" destinationUrl:@"destination url"] should] equal:@"destination url"];
     });
     
     it(@"should return null if destinationUrl is null", ^{
-      [[Yozio getYozioLink:@"twitter" destinationUrl:nil] shouldBeNil];
+      [[Yozio getYozioLink:@"twitter" channel:@"channel" destinationUrl:nil] shouldBeNil];
     });
     
     it(@"should call getYozioLinkRequest with the correct parameters if single destination Url", ^{
@@ -814,9 +821,11 @@ describe(@"getYozioLink", ^{
        destinationUrl, YOZIO_GET_URL_P_DEST_URL, nil];
       [Yozio addIfNotNil:expectedUrlParams
                      key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
-                     obj:[[NSDictionary dictionaryWithObject:[NSDictionary dictionaryWithObject:@"value" forKey:@"key"] forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS] JSONString]];
+                     obj:[[NSDictionary dictionaryWithObjectsAndKeys:
+                           [NSDictionary dictionaryWithObject:@"value" forKey:@"key"], YOZIO_P_EXPERIMENT_VARIATION_SIDS,
+                           @"channel", YOZIO_GET_URL_P_CHANNEL, nil] JSONString]];
 
-      [Yozio getYozioLink:linkName destinationUrl:destinationUrl];
+      [Yozio getYozioLink:linkName channel:@"channel" destinationUrl:destinationUrl];
       [[[urlParamsSpy.argument JSONString] should] equal:[expectedUrlParams JSONString]];
       [[destUrlSpy.argument should] equal:@"destination url"];
       
@@ -852,14 +861,17 @@ describe(@"getYozioLink", ^{
        destinationUrl, YOZIO_GET_URL_P_DEST_URL, nil];
       [Yozio addIfNotNil:expectedUrlParams
                      key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
-                     obj:[[NSDictionary dictionaryWithObject:experimentVariationSids forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS] JSONString]];
+                     obj:[[NSDictionary dictionaryWithObjectsAndKeys:
+                           experimentVariationSids, YOZIO_P_EXPERIMENT_VARIATION_SIDS,
+                           @"channel", YOZIO_GET_URL_P_CHANNEL, nil] JSONString]];
       [Yozio addIfNotNil:expectedUrlParams
                      key:YOZIO_P_EXTERNAL_PROPERTIES
                      obj:[properties JSONString]];
 
       [Yozio getYozioLink:@"twitter"
-     destinationUrl:destinationUrl
-         properties:properties];
+                  channel:@"channel"
+           destinationUrl:destinationUrl
+               properties:properties];
       [[[urlParamsSpy.argument JSONString] should] equal:[expectedUrlParams JSONString]];
       [[destUrlSpy.argument should] equal:@"destination url"];
       
@@ -872,6 +884,7 @@ describe(@"getYozioLink", ^{
       NSString *appKey = @"app key";
       NSString *deviceId = @"device id";
       NSString *linkName = @"twitter";
+      NSString *channel = @"channel";
       NSString *iosDestinationUrl = @"ios destination";
       NSString *androidDestinationUrl = @"android destination";
       NSString *nonMobileDestinationUrl = @"non mobile destination";
@@ -897,9 +910,10 @@ describe(@"getYozioLink", ^{
        nonMobileDestinationUrl, YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, nil];
       [Yozio addIfNotNil:expectedUrlParams
                      key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
-                     obj:[[NSDictionary dictionaryWithObject:experimentVariationSids forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS] JSONString]];
+                     obj:[[NSDictionary dictionaryWithObjectsAndKeys:experimentVariationSids, YOZIO_P_EXPERIMENT_VARIATION_SIDS, @"channel", YOZIO_GET_URL_P_CHANNEL, nil] JSONString]];
 
       [Yozio getYozioLink:linkName
+                  channel:channel
         iosDestinationUrl:iosDestinationUrl
     androidDestinationUrl:androidDestinationUrl
   nonMobileDestinationUrl:nonMobileDestinationUrl];
@@ -916,6 +930,7 @@ describe(@"getYozioLink", ^{
       NSString *appKey = @"app key";
       NSString *deviceId = @"device id";
       NSString *linkName = @"twitter";
+      NSString *channel = @"channel";
       NSString *iosDestinationUrl = @"ios destination";
       NSString *androidDestinationUrl = @"android destination";
       NSString *nonMobileDestinationUrl = @"non mobile destination";
@@ -941,13 +956,14 @@ describe(@"getYozioLink", ^{
        nonMobileDestinationUrl, YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, nil];
       [Yozio addIfNotNil:expectedUrlParams
                      key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
-                     obj:[[NSDictionary dictionaryWithObject:experimentVariationSids forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS] JSONString]];
+                     obj:[[NSDictionary dictionaryWithObjectsAndKeys:experimentVariationSids, YOZIO_P_EXPERIMENT_VARIATION_SIDS, @"channel", YOZIO_GET_URL_P_CHANNEL, nil] JSONString]];
       [Yozio addIfNotNil:expectedUrlParams
                      key:YOZIO_P_EXTERNAL_PROPERTIES
                      obj:[properties JSONString]];
       
       
       [Yozio getYozioLink:linkName
+                  channel:channel
         iosDestinationUrl:iosDestinationUrl
     androidDestinationUrl:androidDestinationUrl
   nonMobileDestinationUrl:nonMobileDestinationUrl

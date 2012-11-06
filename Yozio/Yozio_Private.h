@@ -25,6 +25,7 @@
 #define YOZIO_GET_CONFIGURATION_P_YOZIO_UDID @"yozio_udid"
 #define YOZIO_GET_CONFIGURATION_P_DEVICE_TYPE @"device_type"
 #define YOZIO_GET_URL_P_LINK_NAME @"link_name"
+#define YOZIO_GET_URL_P_CHANNEL @"channel"
 #define YOZIO_GET_URL_P_YOZIO_PROPERTIES @"yozio_properties"
 #define YOZIO_GET_URL_P_DEST_URL @"dest_url"
 #define YOZIO_GET_URL_P_IOS_DEST_URL @"ios_dest_url"
@@ -60,6 +61,7 @@
 // Payload data entry keys.
 #define YOZIO_D_EVENT_TYPE @"event_type"
 #define YOZIO_D_LINK_NAME @"link_name"
+#define YOZIO_D_CHANNEL @"channel"
 #define YOZIO_D_TIMESTAMP @"timestamp"
 #define YOZIO_D_EVENT_IDENTIFIER @"event_identifier"
 
@@ -111,7 +113,6 @@
   NSMutableDictionary *experimentConfig;
   NSMutableDictionary *experimentVariationSids;
   NSDateFormatter *dateFormatter;
-  BOOL stopBlocking;
 }
 
 // User set instrumentation variables.
@@ -133,7 +134,6 @@
 @property(nonatomic, retain) NSMutableDictionary *experimentConfig;
 @property(nonatomic, retain) NSMutableDictionary *experimentVariationSids;
 @property(nonatomic, retain) NSDateFormatter *dateFormatter;
-@property(nonatomic, assign) BOOL stopBlocking;
 
 + (Yozio *)getInstance;
 + (Yozio *)setInstance:(Yozio *)newInstance;
@@ -150,6 +150,7 @@
 - (BOOL)validateConfiguration;
 - (void)doCollect:(NSString *)name
     viralLoopName:(NSString *)viralLoopName
+          channel:(NSString *)channel
          maxQueue:(NSInteger)maxQueue
        properties:(NSDictionary *)properties;
 - (void)checkDataQueueSize;

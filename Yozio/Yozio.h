@@ -87,11 +87,14 @@
  *
  * @param viralLoopName  Name of the viral loop. Must match the name of one of
  *                       the viral loops created on the Yozio dashboard.
+ * @param channel  The social channel being used. Must match the channels
+                   selected for the viral loop created on Yozio dashboard.
  * @param destinationUrl  URL that the generated Yozio link will redirect to.
  * @return A Yozio link, or the destinationUrl if there is an error generating
  *         the Yozio link.
  */
 + (NSString *)getYozioLink:(NSString *)viralLoopName
+                   channel:(NSString *)channel
             destinationUrl:(NSString *)destinationUrl;
 
 /**
@@ -99,12 +102,15 @@
  *
  * @param viralLoopName  Name of the viral loop. Must match the name of one of
  *                       the viral loops created on the Yozio dashboard.
+ * @param channel  The social channel being used. Must match the channels
+                   selected for the viral loop created on Yozio dashboard.
  * @param destinationUrl  URL that the generated Yozio link will redirect to.
  * @param properties  Arbitrary meta data to attach to the generated Yozio link.
  * @return A Yozio link, or the destinationUrl if there is an error generating
  *         the Yozio link.
  */
 + (NSString *)getYozioLink:(NSString *)viralLoopName
+                   channel:(NSString *)channel
             destinationUrl:(NSString *)destinationUrl
                 properties:(NSDictionary *)properties;
 
@@ -113,6 +119,8 @@
  *
  * @param viralLoopName  Name of the viral loop. Must match the name of one of
  *                       the viral loops created on the Yozio dashboard.
+ * @param channel  The social channel being used. Must match the channels
+                   selected for the viral loop created on Yozio dashboard.
  * @param destinationUrl  URL that the generated Yozio link will redirect to.
  * @param callback  Called when the HTTP request completes.
  *                  The argument passed into the callback will be the Yozio
@@ -120,6 +128,7 @@
  *                  the Yozio link.
  */
 + (void)getYozioLinkAsync:(NSString *)viralLoopName
+                  channel:(NSString *)channel
            destinationUrl:(NSString *)destinationUrl
                  callback:(void(^)(NSString *))callback;
 
@@ -128,6 +137,8 @@
  *
  * @param viralLoopName  Name of the viral loop. Must match the name of one of
  *                       the viral loops created on the Yozio dashboard.
+ * @param channel  The social channel being used. Must match the channels
+                   selected for the viral loop created on Yozio dashboard.
  * @param destinationUrl  URL that the generated Yozio link will redirect to.
  * @param properties  Arbitrary meta data to attach to the generated Yozio link.
  * @param callback  Called when the HTTP request completes.
@@ -136,6 +147,7 @@
  *                  the Yozio link.
  */
 + (void)getYozioLinkAsync:(NSString *)viralLoopName
+                  channel:(NSString *)channel
            destinationUrl:(NSString *)destinationUrl
                properties:(NSDictionary *)properties
                  callback:(void(^)(NSString *))callback;
@@ -145,6 +157,8 @@
  *
  * @param viralLoopName  Name of the viral loop. Must match the name of one of
  *                       the viral loops created on the Yozio dashboard.
+ * @param channel  The social channel being used. Must match the channels
+                   selected for the viral loop created on Yozio dashboard.
  * @param iosDestinationUrl  URL that the generated Yozio link will redirect to
  *                           for iOS devices.
  * @param androidDestinationUrl URL that the generated Yozio link will redirect
@@ -155,6 +169,7 @@
  *         generating the Yozio link.
  */
 +     (NSString *)getYozioLink:(NSString *)viralLoopName
+                       channel:(NSString *)channel
              iosDestinationUrl:(NSString *)iosDestinationUrl
          androidDestinationUrl:(NSString *)androidDestinationUrl
        nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl;
@@ -164,6 +179,8 @@
  *
  * @param viralLoopName  Name of the viral loop. Must match the name of one of
  *                       the viral loops created on the Yozio dashboard.
+ * @param channel  The social channel being used. Must match the channels
+                   selected for the viral loop created on Yozio dashboard.
  * @param iosDestinationUrl  URL that the generated Yozio link will redirect to
  *                           for iOS devices.
  * @param androidDestinationUrl URL that the generated Yozio link will redirect
@@ -175,6 +192,7 @@
  *         generating the Yozio link.
  */
 +     (NSString *)getYozioLink:(NSString *)viralLoopName
+                       channel:(NSString *)channel
              iosDestinationUrl:(NSString *)iosDestinationUrl
          androidDestinationUrl:(NSString *)androidDestinationUrl
        nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
@@ -185,6 +203,8 @@
  *
  * @param viralLoopName  Name of the viral loop. Must match the name of one of
  *                       the viral loops created on the Yozio dashboard.
+ * @param channel  The social channel being used. Must match the channels
+                   selected for the viral loop created on Yozio dashboard.
  * @param iosDestinationUrl  URL that the generated Yozio link will redirect to
  *                           for iOS devices.
  * @param androidDestinationUrl URL that the generated Yozio link will redirect
@@ -197,6 +217,7 @@
  *                  generating the Yozio link.
  */
 +     (void)getYozioLinkAsync:(NSString *)viralLoopName
+                      channel:(NSString *)channel
             iosDestinationUrl:(NSString *)iosDestinationUrl
         androidDestinationUrl:(NSString *)androidDestinationUrl
       nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
@@ -207,6 +228,8 @@
  *
  * @param viralLoopName  Name of the viral loop. Must match the name of one of
  *                       the viral loops created on the Yozio dashboard.
+ * @param channel  The social channel being used. Must match the channels
+                   selected for the viral loop created on Yozio dashboard.
  * @param iosDestinationUrl  URL that the generated Yozio link will redirect to
  *                           for iOS devices.
  * @param androidDestinationUrl URL that the generated Yozio link will redirect
@@ -220,6 +243,7 @@
  *                  generating the Yozio link.
  */
 +     (void)getYozioLinkAsync:(NSString *)viralLoopName
+                      channel:(NSString *)channel
             iosDestinationUrl:(NSString *)iosDestinationUrl
         androidDestinationUrl:(NSString *)androidDestinationUrl
       nonMobileDestinationUrl:(NSString *)nonMobileDestinationUrl
@@ -237,8 +261,10 @@
  *
  * @param viralLoopName  Name of the viral loop. Must match the name of one of
  *                       the viral loops created on the Yozio dashboard.
+ * @param channel  The social channel being used. Must match the channels 
+                   selected for the viral loop created on Yozio dashboard.
  */
-+ (void)enteredViralLoop:(NSString *)viralLoopName;
++ (void)enteredViralLoop:(NSString *)viralLoopName channel:(NSString *)channel;
 
 /**
  * Notify Yozio that the user has entered the viral loop.
@@ -251,9 +277,11 @@
  *
  * @param viralLoopName  Name of the viral loop. Must match the name of one of
  *                       the viral loops created on the Yozio dashboard.
+ * @param channel  The social channel being used. Must match the channels
+                   selected for the viral loop created on Yozio dashboard.
  * @param properties  Arbitrary meta data to attach to the event.
  */
-+ (void)enteredViralLoop:(NSString *)viralLoopName properties:(NSDictionary *)properties;
++ (void)enteredViralLoop:(NSString *)viralLoopName channel:(NSString *)channel properties:(NSDictionary *)properties;
 
 /**
  * Notify Yozio that the user has shared a Yozio link.
@@ -263,8 +291,10 @@
  *
  * @param viralLoopName  Name of the viral loop. Must match the name of one of
  *                       the viral loops created on the Yozio dashboard.
+ * @param channel  The social channel being used. Must match the channels
+                   selected for the viral loop created on Yozio dashboard.
  */
-+ (void)sharedYozioLink:(NSString *)viralLoopName;
++ (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel;
 
 /**
  * Notify Yozio that the user has shared a Yozio link.
@@ -274,9 +304,11 @@
  *
  * @param viralLoopName  Name of the viral loop. Must match the name of one of
  *                       the viral loops created on the Yozio dashboard.
+ * @param channel  The social channel being used. Must match the channels
+                   selected for the viral loop created on Yozio dashboard.
  * @param properties  Arbitrary meta data to attach to the event.
  */
-+ (void)sharedYozioLink:(NSString *)viralLoopName properties:(NSDictionary *)properties;
++ (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel properties:(NSDictionary *)properties;
 
 @end
 
