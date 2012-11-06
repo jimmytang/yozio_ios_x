@@ -821,7 +821,9 @@ describe(@"getYozioLink", ^{
        destinationUrl, YOZIO_GET_URL_P_DEST_URL, nil];
       [Yozio addIfNotNil:expectedUrlParams
                      key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
-                     obj:[[NSDictionary dictionaryWithObject:[NSDictionary dictionaryWithObject:@"value" forKey:@"key"] forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS] JSONString]];
+                     obj:[[NSDictionary dictionaryWithObjectsAndKeys:
+                           [NSDictionary dictionaryWithObject:@"value" forKey:@"key"], YOZIO_P_EXPERIMENT_VARIATION_SIDS,
+                           @"channel", YOZIO_GET_URL_P_CHANNEL, nil] JSONString]];
 
       [Yozio getYozioLink:linkName channel:@"channel" destinationUrl:destinationUrl];
       [[[urlParamsSpy.argument JSONString] should] equal:[expectedUrlParams JSONString]];
@@ -859,7 +861,9 @@ describe(@"getYozioLink", ^{
        destinationUrl, YOZIO_GET_URL_P_DEST_URL, nil];
       [Yozio addIfNotNil:expectedUrlParams
                      key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
-                     obj:[[NSDictionary dictionaryWithObject:experimentVariationSids forKey:YOZIO_P_EXPERIMENT_VARIATION_SIDS] JSONString]];
+                     obj:[[NSDictionary dictionaryWithObjectsAndKeys:
+                           experimentVariationSids, YOZIO_P_EXPERIMENT_VARIATION_SIDS,
+                           @"channel", YOZIO_GET_URL_P_CHANNEL, nil] JSONString]];
       [Yozio addIfNotNil:expectedUrlParams
                      key:YOZIO_P_EXTERNAL_PROPERTIES
                      obj:[properties JSONString]];

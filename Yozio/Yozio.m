@@ -522,13 +522,17 @@ static Yozio *instance = nil;
         viralLoopName, YOZIO_GET_URL_P_LINK_NAME,
         destinationUrl, YOZIO_GET_URL_P_DEST_URL, nil];
 
+    NSMutableDictionary *d = [NSMutableDictionary dictionary];
     if (instance.experimentVariationSids && [instance.experimentVariationSids count] > 0) {
-      NSDictionary *d = [NSDictionary dictionaryWithObject:instance.experimentVariationSids
-                                                    forKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY];
-      [self addIfNotNil:urlParams
-                    key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
-                    obj:[d JSONString]];
+      [d setObject:instance.experimentVariationSids forKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY];
     }
+    if (channel) {
+      [d setObject:channel forKey:YOZIO_GET_URL_P_CHANNEL];
+    }
+    [self addIfNotNil:urlParams
+                  key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
+                  obj:[d JSONString]];
+
     if (properties && [properties count] > 0) {
       [self addIfNotNil:urlParams
                     key:YOZIO_P_EXTERNAL_PROPERTIES
@@ -569,14 +573,17 @@ static Yozio *instance = nil;
        androidDestinationUrl, YOZIO_GET_URL_P_ANDROID_DEST_URL,
        nonMobileDestinationUrl, YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, nil];
 
+    NSMutableDictionary *d = [NSMutableDictionary dictionary];
     if (instance.experimentVariationSids && [instance.experimentVariationSids count] > 0) {
-      NSDictionary *d = [NSDictionary dictionaryWithObjectsAndKeys:
-                         instance.experimentVariationSids, YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY,
-                         channel, YOZIO_GET_URL_P_CHANNEL, nil];
-      [self addIfNotNil:urlParams
-                    key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
-                    obj:[d JSONString]];
+      [d setObject:instance.experimentVariationSids forKey:YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY];
     }
+    if (channel) {
+      [d setObject:channel forKey:YOZIO_GET_URL_P_CHANNEL];
+    }
+    [self addIfNotNil:urlParams
+                  key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
+                  obj:[d JSONString]];
+
     if (properties && [properties count] > 0) {
       [self addIfNotNil:urlParams
                     key:YOZIO_P_EXTERNAL_PROPERTIES
