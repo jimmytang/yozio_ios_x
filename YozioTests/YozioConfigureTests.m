@@ -96,6 +96,7 @@ id mock;
     @"", @"link_name",
     @"", @"channel",
     @"2011-07-17 07:48:34", @"timestamp",
+    @"0", @"invites_sent",
     nil];
   [Yozio configure:@"app key" secretKey:@"secret key"];
   Yozio *instance = [Yozio getInstance];

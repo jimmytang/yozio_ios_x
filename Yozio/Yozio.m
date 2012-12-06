@@ -168,6 +168,7 @@ static Yozio *instance = nil;
   [instance doCollect:YOZIO_LOGIN_ACTION
         viralLoopName:@""
               channel:@""
+          invitesSent:0
              maxQueue:YOZIO_ACTION_DATA_LIMIT
            properties:properties];
 }
@@ -356,20 +357,32 @@ static Yozio *instance = nil;
   [instance doCollect:YOZIO_VIEWED_LINK_ACTION
         viralLoopName:viralLoopName
               channel:channel
+          invitesSent:0
              maxQueue:YOZIO_ACTION_DATA_LIMIT
            properties:properties];
 }
 
 + (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel
 {
-  [self sharedYozioLink:viralLoopName channel:channel properties:nil];
+  [self sharedYozioLink:viralLoopName channel:channel invitesSent:1 properties:nil];
+}
+
++ (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel invitesSent:(NSInteger)invitesSent
+{
+  [self sharedYozioLink:viralLoopName channel:channel invitesSent:invitesSent properties:nil];
 }
 
 + (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel properties:(NSDictionary *)properties
 {
+  [self sharedYozioLink:viralLoopName channel:channel invitesSent:1 properties:properties];
+}
+
++ (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel invitesSent:(NSInteger)invitesSent properties:(NSDictionary *)properties
+{
   [instance doCollect:YOZIO_SHARED_LINK_ACTION
         viralLoopName:viralLoopName
               channel:channel
+          invitesSent:invitesSent
              maxQueue:YOZIO_ACTION_DATA_LIMIT
            properties:properties];
 }
@@ -412,6 +425,7 @@ static Yozio *instance = nil;
 - (void)doCollect:(NSString *)type
     viralLoopName:(NSString *)viralLoopName
           channel:(NSString *)channel
+      invitesSent:(NSInteger)invitesSent
          maxQueue:(NSInteger)maxQueue
        properties:(NSDictionary *)properties
 {
@@ -424,6 +438,7 @@ static Yozio *instance = nil;
     [Yozio addIfNotNil:d key:YOZIO_D_EVENT_TYPE obj:type];
     [Yozio addIfNotNil:d key:YOZIO_D_LINK_NAME obj:viralLoopName];
     [Yozio addIfNotNil:d key:YOZIO_D_CHANNEL obj:channel];
+    [Yozio addIfNotNil:d key:YOZIO_D_INVITES_SENT obj:[NSString stringWithFormat:@"%d", invitesSent]];
     [Yozio addIfNotNil:d key:YOZIO_D_TIMESTAMP obj:[self timeStampString]];
     [Yozio addIfNotNil:d key:YOZIO_D_EVENT_IDENTIFIER obj:[self eventID]];
     [Yozio addIfNotNil:d key:YOZIO_P_EXTERNAL_PROPERTIES obj:[properties JSONString]]; // [nil JSONString] == nil
@@ -439,6 +454,7 @@ static Yozio *instance = nil;
   [instance doCollect:YOZIO_OPENED_APP_ACTION
         viralLoopName:@""
               channel:@""
+          invitesSent:0
              maxQueue:YOZIO_ACTION_DATA_LIMIT
            properties:nil];
 }
