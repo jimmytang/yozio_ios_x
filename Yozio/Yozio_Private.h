@@ -62,6 +62,7 @@
 #define YOZIO_D_EVENT_TYPE @"event_type"
 #define YOZIO_D_LINK_NAME @"link_name"
 #define YOZIO_D_CHANNEL @"channel"
+#define YOZIO_D_FIRST_OPEN @"first_open"
 #define YOZIO_D_INVITES_SENT @"invites_sent"
 #define YOZIO_D_TIMESTAMP @"timestamp"
 #define YOZIO_D_EVENT_IDENTIFIER @"event_identifier"
@@ -152,7 +153,7 @@
 - (void)doCollect:(NSString *)name
     viralLoopName:(NSString *)viralLoopName
           channel:(NSString *)channel
-      invitesSent:(NSInteger)invitesSent
+     eventOptions:(NSDictionary *)eventOptions
          maxQueue:(NSInteger)maxQueue
        properties:(NSDictionary *)properties;
 - (void)checkDataQueueSize;

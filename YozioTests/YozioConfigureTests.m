@@ -87,22 +87,44 @@ id mock;
 }
 
 
-- (void)testConfigureCreatesAnOpenAppEvent
+- (void)testConfigureCreatesAnOpenAppEventWithFirstOpenSetToTrueAndCreatesFile
 {
+  NSError *error;
+  NSString *rootPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+  NSString *plistPath = [rootPath stringByAppendingPathComponent:@"first_open_tracker.plist"];
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  [fileManager removeItemAtPath:plistPath error:&error];
+  
+  Yozio *instance = [Yozio getInstance];
+  instance.dataQueue = [NSMutableArray array];
+  [Yozio configure:@"app key" secretKey:@"secret key"];
+
+  STAssertTrue([[[instance.dataQueue lastObject] objectForKey:@"first_open"] isEqualToNumber:[NSNumber numberWithBool:YES]], @"first_open flag doesn't match");
+  STAssertTrue([fileManager fileExistsAtPath:plistPath], @"file not created");
+}
+
+- (void)testConfigureCreatesAnOpenAppEventWithFirstOpenSetToFalse
+{
+  NSString *rootPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+  NSString *plistPath = [rootPath stringByAppendingPathComponent:@"first_open_tracker.plist"];
+  NSData *plistData = [NSData data];
+  [plistData writeToFile:plistPath atomically:YES];
+  
   NSMutableDictionary *expectedOpenEvent =
-    [NSMutableDictionary dictionaryWithObjectsAndKeys:
-    @"mock UUID", @"event_identifier",
-    @"5", @"event_type",
-    @"", @"link_name",
-    @"", @"channel",
-    @"2011-07-17 07:48:34", @"timestamp",
-    @"0", @"invites_sent",
-    nil];
+  [NSMutableDictionary dictionaryWithObjectsAndKeys:
+   @"mock UUID", @"event_identifier",
+   @"5", @"event_type",
+   [NSNumber numberWithBool:NO], @"first_open",
+   @"", @"link_name",
+   @"", @"channel",
+   @"2011-07-17 07:48:34", @"timestamp",
+   nil];
+  
+  
   [Yozio configure:@"app key" secretKey:@"secret key"];
   Yozio *instance = [Yozio getInstance];
-  STAssertTrue([[instance.dataQueue objectAtIndex:0] isEqualToDictionary:expectedOpenEvent],
-               @"dataQueues don't match");
 
+  STAssertTrue([[instance.dataQueue lastObject] isEqualToDictionary:expectedOpenEvent], @"dataQueues don't match");  
 }
 
 - (void)testConfigureFlushesLoadedData

@@ -168,7 +168,7 @@ static Yozio *instance = nil;
   [instance doCollect:YOZIO_LOGIN_ACTION
         viralLoopName:@""
               channel:@""
-          invitesSent:0
+         eventOptions:[NSDictionary dictionary]
              maxQueue:YOZIO_ACTION_DATA_LIMIT
            properties:properties];
 }
@@ -357,7 +357,7 @@ static Yozio *instance = nil;
   [instance doCollect:YOZIO_VIEWED_LINK_ACTION
         viralLoopName:viralLoopName
               channel:channel
-          invitesSent:0
+         eventOptions:[NSDictionary dictionary]
              maxQueue:YOZIO_ACTION_DATA_LIMIT
            properties:properties];
 }
@@ -382,7 +382,7 @@ static Yozio *instance = nil;
   [instance doCollect:YOZIO_SHARED_LINK_ACTION
         viralLoopName:viralLoopName
               channel:channel
-          invitesSent:invitesSent
+         eventOptions:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%d", invitesSent] forKey:YOZIO_D_INVITES_SENT]
              maxQueue:YOZIO_ACTION_DATA_LIMIT
            properties:properties];
 }
@@ -425,7 +425,7 @@ static Yozio *instance = nil;
 - (void)doCollect:(NSString *)type
     viralLoopName:(NSString *)viralLoopName
           channel:(NSString *)channel
-      invitesSent:(NSInteger)invitesSent
+     eventOptions:(NSDictionary *)eventOptions
          maxQueue:(NSInteger)maxQueue
        properties:(NSDictionary *)properties
 {
@@ -434,11 +434,10 @@ static Yozio *instance = nil;
   }
   dataCount++;
   if ([self.dataQueue count] < maxQueue) {
-    NSMutableDictionary* d = [NSMutableDictionary dictionary];
+    NSMutableDictionary* d = [NSMutableDictionary dictionaryWithDictionary:eventOptions];
     [Yozio addIfNotNil:d key:YOZIO_D_EVENT_TYPE obj:type];
     [Yozio addIfNotNil:d key:YOZIO_D_LINK_NAME obj:viralLoopName];
     [Yozio addIfNotNil:d key:YOZIO_D_CHANNEL obj:channel];
-    [Yozio addIfNotNil:d key:YOZIO_D_INVITES_SENT obj:[NSString stringWithFormat:@"%d", invitesSent]];
     [Yozio addIfNotNil:d key:YOZIO_D_TIMESTAMP obj:[self timeStampString]];
     [Yozio addIfNotNil:d key:YOZIO_D_EVENT_IDENTIFIER obj:[self eventID]];
     [Yozio addIfNotNil:d key:YOZIO_P_EXTERNAL_PROPERTIES obj:[properties JSONString]]; // [nil JSONString] == nil
@@ -451,10 +450,23 @@ static Yozio *instance = nil;
 
 + (void)openedApp
 {
+  NSString *rootPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+  NSString *plistPath = [rootPath stringByAppendingPathComponent:@"first_open_tracker.plist"];
+  NSData *plistData = [NSData data];
+
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  NSMutableDictionary* eventOptions = [NSMutableDictionary dictionary];
+  if ([fileManager fileExistsAtPath:plistPath]){
+    [eventOptions setObject:[NSNumber numberWithBool:NO] forKey:YOZIO_D_FIRST_OPEN];
+  } else {
+    [plistData writeToFile:plistPath atomically:YES];
+    [eventOptions setObject:[NSNumber numberWithBool:YES] forKey:YOZIO_D_FIRST_OPEN];
+  }
+  
   [instance doCollect:YOZIO_OPENED_APP_ACTION
         viralLoopName:@""
               channel:@""
-          invitesSent:0
+         eventOptions:eventOptions
              maxQueue:YOZIO_ACTION_DATA_LIMIT
            properties:nil];
 }

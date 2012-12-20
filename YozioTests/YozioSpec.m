@@ -674,20 +674,20 @@ describe(@"doCollect", ^{
       Yozio *instance = [Yozio getInstance];
       
       id yozioMock = [Yozio nullMock];
-      [yozioMock stub:@selector(doCollect:viralLoopName:channel:invitesSent:maxQueue:properties:)];
-      KWCaptureSpy *typeSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:invitesSent:maxQueue:properties:) atIndex:0];
-      KWCaptureSpy *viralLoopNameSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:invitesSent:maxQueue:properties:) atIndex:1];
-      KWCaptureSpy *channelSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:invitesSent:maxQueue:properties:) atIndex:2];
-      KWCaptureSpy *invitesSentSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:invitesSent:maxQueue:properties:) atIndex:3];
-      KWCaptureSpy *maxQueueSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:invitesSent:maxQueue:properties:) atIndex:4];
-      KWCaptureSpy *propertiesSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:invitesSent:maxQueue:properties:) atIndex:5];
+      [yozioMock stub:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:)];
+      KWCaptureSpy *typeSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:) atIndex:0];
+      KWCaptureSpy *viralLoopNameSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:) atIndex:1];
+      KWCaptureSpy *channelSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:) atIndex:2];
+      KWCaptureSpy *eventOptionsSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:) atIndex:3];
+      KWCaptureSpy *maxQueueSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:) atIndex:4];
+      KWCaptureSpy *propertiesSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:) atIndex:5];
       [Yozio setInstance:yozioMock];
       
       [Yozio userLoggedIn:@"popo" properties:[NSDictionary dictionary]];
       [[typeSpy.argument should] equal:YOZIO_LOGIN_ACTION];
       [[viralLoopNameSpy.argument should] equal:@""];
       [[channelSpy.argument should] equal:@""];
-      [[invitesSentSpy.argument should] equal:theValue(0)];
+      [[eventOptionsSpy.argument should] equal:[NSDictionary dictionary]];
       [[maxQueueSpy.argument should] equal:theValue(YOZIO_ACTION_DATA_LIMIT)];
       [[propertiesSpy.argument should] equal:[NSDictionary dictionary]];
 
@@ -699,20 +699,20 @@ describe(@"doCollect", ^{
       Yozio *instance = [Yozio getInstance];
       
       id yozioMock = [Yozio mock];
-      [yozioMock stub:@selector(doCollect:viralLoopName:channel:invitesSent:maxQueue:properties:)];
-      KWCaptureSpy *typeSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:invitesSent:maxQueue:properties:) atIndex:0];
-      KWCaptureSpy *viralLoopNameSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:invitesSent:maxQueue:properties:) atIndex:1];
-      KWCaptureSpy *channelSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:invitesSent:maxQueue:properties:) atIndex:2];
-      KWCaptureSpy *invitesSentSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:invitesSent:maxQueue:properties:) atIndex:3];
-      KWCaptureSpy *maxQueueSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:invitesSent:maxQueue:properties:) atIndex:4];
-      KWCaptureSpy *propertiesSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:invitesSent:maxQueue:properties:) atIndex:5];
+      [yozioMock stub:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:)];
+      KWCaptureSpy *typeSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:) atIndex:0];
+      KWCaptureSpy *viralLoopNameSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:) atIndex:1];
+      KWCaptureSpy *channelSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:) atIndex:2];
+      KWCaptureSpy *eventOptionsSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:) atIndex:3];
+      KWCaptureSpy *maxQueueSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:) atIndex:4];
+      KWCaptureSpy *propertiesSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:) atIndex:5];
       [Yozio setInstance:yozioMock];
       
       [Yozio enteredViralLoop:@"loop name" channel:@"channel" properties:[NSDictionary dictionary]];
       [[typeSpy.argument should] equal:YOZIO_VIEWED_LINK_ACTION];
       [[viralLoopNameSpy.argument should] equal:@"loop name"];
       [[channelSpy.argument should] equal:@"channel"];
-      [[invitesSentSpy.argument should] equal:theValue(0)];
+      [[eventOptionsSpy.argument should] equal:[NSDictionary dictionary]];
       [[maxQueueSpy.argument should] equal:theValue(YOZIO_ACTION_DATA_LIMIT)];
       [[propertiesSpy.argument should] equal:[NSDictionary dictionary]];
       
@@ -725,20 +725,20 @@ describe(@"doCollect", ^{
       Yozio *instance = [Yozio getInstance];
       
       id yozioMock = [Yozio mock];
-      [yozioMock stub:@selector(doCollect:viralLoopName:channel:invitesSent:maxQueue:properties:)];
-      KWCaptureSpy *typeSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:invitesSent:maxQueue:properties:) atIndex:0];
-      KWCaptureSpy *viralLoopNameSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:invitesSent:maxQueue:properties:) atIndex:1];
-      KWCaptureSpy *channelSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:invitesSent:maxQueue:properties:) atIndex:2];
-      KWCaptureSpy *invitesSentSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:invitesSent:maxQueue:properties:) atIndex:3];
-      KWCaptureSpy *maxQueueSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:invitesSent:maxQueue:properties:) atIndex:4];
-      KWCaptureSpy *propertiesSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:invitesSent:maxQueue:properties:) atIndex:5];
+      [yozioMock stub:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:)];
+      KWCaptureSpy *typeSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:) atIndex:0];
+      KWCaptureSpy *viralLoopNameSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:) atIndex:1];
+      KWCaptureSpy *channelSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:) atIndex:2];
+      KWCaptureSpy *eventOptionsSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:) atIndex:3];
+      KWCaptureSpy *maxQueueSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:) atIndex:4];
+      KWCaptureSpy *propertiesSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:) atIndex:5];
       [Yozio setInstance:yozioMock];
       
       [Yozio sharedYozioLink:@"loop name" channel:@"channel" invitesSent:3 properties:[NSDictionary dictionary]];
       [[typeSpy.argument should] equal:YOZIO_SHARED_LINK_ACTION];
       [[viralLoopNameSpy.argument should] equal:@"loop name"];
       [[channelSpy.argument should] equal:@"channel"];
-      [[invitesSentSpy.argument should] equal:theValue(3)];
+      [[eventOptionsSpy.argument should] equal:[NSDictionary dictionaryWithObject:@"3" forKey:YOZIO_D_INVITES_SENT]];
       [[maxQueueSpy.argument should] equal:theValue(YOZIO_ACTION_DATA_LIMIT)];
       [[propertiesSpy.argument should] equal:[NSDictionary dictionary]];
       
@@ -761,7 +761,7 @@ describe(@"doCollect", ^{
       NSDictionary *properties = [NSDictionary dictionaryWithObject:@"value" forKey:@"property"];
       [instance stub:@selector(timeStampString) andReturn:@"time stamp string"];
       [instance stub:@selector(eventID) andReturn:@"event id"];
-      [instance doCollect:type viralLoopName:viralLoopName channel:@"channel" invitesSent:0 maxQueue:YOZIO_ACTION_DATA_LIMIT properties:properties];
+      [instance doCollect:type viralLoopName:viralLoopName channel:@"channel" eventOptions:NULL maxQueue:YOZIO_ACTION_DATA_LIMIT properties:properties];
       [[theValue(instance.dataCount) should] equal:theValue(1)];
     });
     
@@ -777,15 +777,13 @@ describe(@"doCollect", ^{
                                      type, YOZIO_D_EVENT_TYPE,
                                      viralLoopName, YOZIO_D_LINK_NAME,
                                      @"channel", YOZIO_D_CHANNEL,
-                                     @"0", YOZIO_D_INVITES_SENT,
                                      @"time stamp string", YOZIO_D_TIMESTAMP,
                                      @"event id", YOZIO_D_EVENT_IDENTIFIER,
                                      [properties JSONString], YOZIO_P_EXTERNAL_PROPERTIES,
                                      nil],
                                     nil];
       instance.dataQueue = [NSMutableArray array];
-      [instance doCollect:type viralLoopName:viralLoopName channel:@"channel" invitesSent:0 maxQueue:YOZIO_ACTION_DATA_LIMIT properties:properties];
-      NSLog(@"instance.dataQueue: %@", instance.dataQueue);
+      [instance doCollect:type viralLoopName:viralLoopName channel:@"channel" eventOptions:NULL maxQueue:YOZIO_ACTION_DATA_LIMIT properties:properties];
       [[instance.dataQueue should] equal:expectedDataQueue];
     });
   });
