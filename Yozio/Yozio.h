@@ -308,7 +308,7 @@
  selected for the viral loop created on Yozio dashboard.
  * @param invitesSent  The number of invites this sharing event is creating.
  */
-+ (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel invitesSent:(NSInteger)invitesSent;
++ (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel numberOfInvites:(NSInteger)numberOfInvites;
 
 /**
  * Notify Yozio that the user has shared a Yozio link.
@@ -339,7 +339,7 @@
  */
 + (void)sharedYozioLink:(NSString *)viralLoopName
                 channel:(NSString *)channel
-            invitesSent:(NSInteger)invitesSent
+        numberOfInvites:(NSInteger)numberOfInvites
              properties:(NSDictionary *)properties;
 
 @end

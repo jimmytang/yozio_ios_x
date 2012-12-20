@@ -364,25 +364,25 @@ static Yozio *instance = nil;
 
 + (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel
 {
-  [self sharedYozioLink:viralLoopName channel:channel invitesSent:1 properties:nil];
+  [self sharedYozioLink:viralLoopName channel:channel numberOfInvites:1 properties:nil];
 }
 
 + (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel invitesSent:(NSInteger)invitesSent
 {
-  [self sharedYozioLink:viralLoopName channel:channel invitesSent:invitesSent properties:nil];
+  [self sharedYozioLink:viralLoopName channel:channel numberOfInvites:invitesSent properties:nil];
 }
 
 + (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel properties:(NSDictionary *)properties
 {
-  [self sharedYozioLink:viralLoopName channel:channel invitesSent:1 properties:properties];
+  [self sharedYozioLink:viralLoopName channel:channel numberOfInvites:1 properties:properties];
 }
 
-+ (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel invitesSent:(NSInteger)invitesSent properties:(NSDictionary *)properties
++ (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel numberOfInvites:(NSInteger)numberOfInvites properties:(NSDictionary *)properties
 {
   [instance doCollect:YOZIO_SHARED_LINK_ACTION
         viralLoopName:viralLoopName
               channel:channel
-         eventOptions:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%d", invitesSent] forKey:YOZIO_D_INVITES_SENT]
+         eventOptions:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%d", numberOfInvites] forKey:YOZIO_D_NUMBER_OF_INVITES]
              maxQueue:YOZIO_ACTION_DATA_LIMIT
            properties:properties];
 }

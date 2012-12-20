@@ -63,7 +63,7 @@
 #define YOZIO_D_LINK_NAME @"link_name"
 #define YOZIO_D_CHANNEL @"channel"
 #define YOZIO_D_FIRST_OPEN @"first_open"
-#define YOZIO_D_INVITES_SENT @"invites_sent"
+#define YOZIO_D_NUMBER_OF_INVITES @"number_of_invites"
 #define YOZIO_D_TIMESTAMP @"timestamp"
 #define YOZIO_D_EVENT_IDENTIFIER @"event_identifier"
 
