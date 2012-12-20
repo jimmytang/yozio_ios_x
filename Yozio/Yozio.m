@@ -367,9 +367,9 @@ static Yozio *instance = nil;
   [self sharedYozioLink:viralLoopName channel:channel numberOfInvites:1 properties:nil];
 }
 
-+ (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel invitesSent:(NSInteger)invitesSent
++ (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel numberOfInvites:(NSInteger)numberOfInvites
 {
-  [self sharedYozioLink:viralLoopName channel:channel numberOfInvites:invitesSent properties:nil];
+  [self sharedYozioLink:viralLoopName channel:channel numberOfInvites:numberOfInvites properties:nil];
 }
 
 + (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel properties:(NSDictionary *)properties

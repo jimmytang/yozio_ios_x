@@ -734,11 +734,11 @@ describe(@"doCollect", ^{
       KWCaptureSpy *propertiesSpy = [yozioMock captureArgument:@selector(doCollect:viralLoopName:channel:eventOptions:maxQueue:properties:) atIndex:5];
       [Yozio setInstance:yozioMock];
       
-      [Yozio sharedYozioLink:@"loop name" channel:@"channel" invitesSent:3 properties:[NSDictionary dictionary]];
+      [Yozio sharedYozioLink:@"loop name" channel:@"channel" numberOfInvites:3 properties:[NSDictionary dictionary]];
       [[typeSpy.argument should] equal:YOZIO_SHARED_LINK_ACTION];
       [[viralLoopNameSpy.argument should] equal:@"loop name"];
       [[channelSpy.argument should] equal:@"channel"];
-      [[eventOptionsSpy.argument should] equal:[NSDictionary dictionaryWithObject:@"3" forKey:YOZIO_D_INVITES_SENT]];
+      [[eventOptionsSpy.argument should] equal:[NSDictionary dictionaryWithObject:@"3" forKey:YOZIO_D_NUMBER_OF_INVITES]];
       [[maxQueueSpy.argument should] equal:theValue(YOZIO_ACTION_DATA_LIMIT)];
       [[propertiesSpy.argument should] equal:[NSDictionary dictionary]];
       
