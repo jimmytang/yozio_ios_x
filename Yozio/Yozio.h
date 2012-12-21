@@ -306,9 +306,9 @@
  *                       the viral loops created on the Yozio dashboard.
  * @param channel  The social channel being used. Must match the channels
  selected for the viral loop created on Yozio dashboard.
- * @param numberOfInvites  The number of invites this sharing event is creating.
+ * @param count  The number of shares this sharing event is creating. Example is a text message sent to 5 people should have a count of 5.
  */
-+ (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel numberOfInvites:(NSInteger)numberOfInvites;
++ (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel count:(NSInteger)count;
 
 /**
  * Notify Yozio that the user has shared a Yozio link.
@@ -334,12 +334,12 @@
  *                       the viral loops created on the Yozio dashboard.
  * @param channel  The social channel being used. Must match the channels
  selected for the viral loop created on Yozio dashboard.
- * @param numberOfInvites  The number of invites this sharing event is creating.
- * @param properties  Arbitrary meta data to attach to the event.
+ * @param count  The number of shares this sharing event is creating.
+ * @param properties  Arbitrary meta data to attach to the event. Example is a text message sent to 5 people should have a count of 5.
  */
 + (void)sharedYozioLink:(NSString *)viralLoopName
                 channel:(NSString *)channel
-        numberOfInvites:(NSInteger)numberOfInvites
+                  count:(NSInteger)count
              properties:(NSDictionary *)properties;
 
 @end
