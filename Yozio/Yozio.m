@@ -153,7 +153,8 @@ static Yozio *instance = nil;
   // Perform this here instead of on applicationDidFinishLoading because instrumentation calls
   // could be made before an application is finished loading.
   [instance loadUnsentData];
-  [Yozio openedApp];
+//  [Yozio openedApp];
+  [Yozio doCookieTracking];
   [instance doFlush];
 }
 
@@ -470,6 +471,22 @@ static Yozio *instance = nil;
              maxQueue:YOZIO_ACTION_DATA_LIMIT
            properties:nil];
 }
+
++ (void)doCookieTracking
+{
+  NSString *urlString =
+  [NSString stringWithFormat:@"%@%@", YOZIO_DEFAULT_BASE_URL, YOZIO_LAUNCH_APP];
+
+  NSURL *url = [NSURL URLWithString:urlString];
+  
+  if (![[UIApplication sharedApplication] openURL:url])
+  {
+    NSLog(@"%@%@",@"Failed to open url:",[url description]);
+  }
+}
+
+
+
 
 + (void)addIfNotNil:(NSMutableDictionary*)dict key:(NSString *)key obj:(NSObject *)obj
 {

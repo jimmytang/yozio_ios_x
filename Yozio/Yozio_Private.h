@@ -20,6 +20,7 @@
 #define YOZIO_GET_CONFIGURATIONS_ROUTE @"/api/yozio/v1/get_configurations"
 #define YOZIO_GET_URL_ROUTE @"/api/viral/v1/get_url"
 #define YOZIO_BATCH_EVENTS_ROUTE @"/api/sdk/v1/batch_events"
+#define YOZIO_LAUNCH_APP @"/api/sdk/v1/launch_app"
 
 #define YOZIO_GET_CONFIGURATION_P_APP_KEY @"app_key"
 #define YOZIO_GET_CONFIGURATION_P_YOZIO_UDID @"yozio_udid"
