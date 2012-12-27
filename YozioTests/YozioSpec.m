@@ -258,10 +258,7 @@ describe(@"buildPayload", ^{
                            [NSMutableDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil], nil];
     instance.deviceId = @"device id";
 
-    NSLog(@"wtf");
     NSString *payload = [instance buildPayload:instance.dataToSend];
-    
-    NSLog(@"wtf");
     
     NSString *expectedPayload = [NSDictionary dictionaryWithObjectsAndKeys:
      @"2", @"device_type",

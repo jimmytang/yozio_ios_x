@@ -154,6 +154,7 @@ static Yozio *instance = nil;
   }
   instance._appKey = appKey;
   instance._secretKey = secretKey;
+  instance._configureCallback = callback;
   if (![instance validateConfiguration]) {
     return;
   }
@@ -163,7 +164,6 @@ static Yozio *instance = nil;
   // could be made before an application is finished loading.
   [instance loadUnsentData];
   [Yozio openedApp];
-  instance._configureCallback = callback;
   [instance doFlush];
 }
 
@@ -518,8 +518,6 @@ static Yozio *instance = nil;
   }
 }
 
-
-
 + (void)addIfNotNil:(NSMutableDictionary*)dict key:(NSString *)key obj:(NSObject *)obj
 {
   if (obj == nil) {
@@ -738,12 +736,10 @@ static Yozio *instance = nil;
   } else {
     self.dataToSend = [NSArray arrayWithArray:self.dataQueue];
   }
-  
   NSString *payloadStr = [[self buildPayload:self.dataToSend] JSONString];
   NSDictionary *urlParams = [NSDictionary dictionaryWithObject:payloadStr
                                                         forKey:YOZIO_BATCH_EVENTS_P_DATA];
   NSString *urlString = [NSString stringWithFormat:@"%@%@", YOZIO_DEFAULT_BASE_URL, YOZIO_BATCH_EVENTS_ROUTE];
-  
   [Yozio log:@"Final get request url: %@", urlString];
   [[YozioRequestManager sharedInstance] urlRequest:urlString
                                               body:urlParams
@@ -767,13 +763,12 @@ static Yozio *instance = nil;
        }
      }
      if ([body isKindOfClass:[NSDictionary class]]){
-       NSDictionary *yozioProperties = [body objectForKey:@"yozio"];
-       if ([yozioProperties objectForKey:@"cookie_tracking"] == [NSNumber numberWithBool:YES]
-           && [yozioProperties objectForKey:@"first_open"] == [NSNumber numberWithBool:YES]) {
+       NSDictionary *yozioProperties = [body objectForKey:YOZIO_PROPERTIES_KEY];
+       if ([yozioProperties objectForKey:YOZIO_COOKIE_TRACKING] == [NSNumber numberWithBool:YES]
+           && [yozioProperties objectForKey:YOZIO_FIRST_OPEN] == [NSNumber numberWithBool:YES]) {
          [Yozio doCookieTracking];
        }
-       NSDictionary *referrerLinkTags = [yozioProperties objectForKey:@"referrer_link_tags"];
-       
+       NSDictionary *referrerLinkTags = [yozioProperties objectForKey:YOZIO_REFERRER_LINK_TAGS];
        if (self._configureCallback && referrerLinkTags) {
          self._configureCallback(referrerLinkTags);
        }

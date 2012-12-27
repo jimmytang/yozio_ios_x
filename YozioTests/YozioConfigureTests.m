@@ -10,6 +10,7 @@
 #import "Yozio.h"
 #import "Yozio_Private.h"
 #import "YozioConfigureTests.h"
+#import "YozioRequestManagerMock.h"
 #import <OCMock/OCMock.h>
 #import <objc/runtime.h>
 
@@ -124,9 +125,46 @@ id mock;
   
   [Yozio configure:@"app key" secretKey:@"secret key"];
   Yozio *instance = [Yozio getInstance];
-
+  
   NSLog(@"instance.dataQuue: %@", instance.dataQueue);
-  STAssertTrue([[instance.dataQueue lastObject] isEqualToDictionary:expectedOpenEvent], @"dataQueues don't match");  
+  STAssertTrue([[instance.dataQueue lastObject] isEqualToDictionary:expectedOpenEvent], @"dataQueues don't match");
+}
+
+- (void)testConfigureSetsConfigureCallbackAndReturnsReferrerLinkTags
+{
+  YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
+  YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
+  [YozioRequestManager setInstance:yrmMock];
+  NSInteger statusCode = 200;
+  NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"123"]
+                                                            statusCode:statusCode
+                                                           HTTPVersion:@"HTTP/1.1"
+                                                          headerFields:[NSDictionary dictionary]];
+  
+  NSDictionary *referrerLinkTags = [NSDictionary dictionaryWithObject:@"1" forKey:@"a"];
+  yrmMock.body =
+  [NSDictionary dictionaryWithObject:[NSDictionary dictionaryWithObject:referrerLinkTags
+                                                                 forKey:YOZIO_REFERRER_LINK_TAGS]
+                              forKey:YOZIO_PROPERTIES_KEY];
+  yrmMock.response = response;
+
+  NSLog(@"asdf");
+  __block NSDictionary *dict;
+  NSLog(@"asdf");
+  Yozio *instance = [Yozio getInstance];
+  instance.dataToSend = NULL;
+  [instance.dataQueue addObject:@"1"];
+  NSLog(@"instance.dataQueue; %@", instance.dataQueue);
+  [Yozio configure:@"app key"
+         secretKey:@"secret key"
+          callback:^(NSDictionary * callbackDict){NSLog(@"afve");dict = callbackDict; NSLog(@"asdfasdf");}];
+  [YozioRequestManager setInstance:yrmInstance];
+  NSLog(@"dict %@", dict);
+  
+  
+  STAssertTrue([dict isEqualToDictionary:referrerLinkTags], @"dictionaries don't match");
+  NSLog(@"asdf");
+
 }
 
 - (void)testConfigureFlushesLoadedData
