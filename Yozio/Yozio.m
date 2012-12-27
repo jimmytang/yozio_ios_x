@@ -137,6 +137,15 @@ static Yozio *instance = nil;
 + (void)configure:(NSString *)appKey
         secretKey:(NSString *)secretKey
 {
+  [Yozio configure:appKey
+         secretKey:secretKey
+          callback:NULL];
+}
+
++ (void)configure:(NSString *)appKey
+        secretKey:(NSString *)secretKey
+         callback:(void(^)(NSDictionary *))callback
+{
   if (appKey == nil) {
     [NSException raise:NSInvalidArgumentException format:@"appKey cannot be nil."];
   }
@@ -153,8 +162,8 @@ static Yozio *instance = nil;
   // Perform this here instead of on applicationDidFinishLoading because instrumentation calls
   // could be made before an application is finished loading.
   [instance loadUnsentData];
-//  [Yozio openedApp];
-  [Yozio doCookieTracking];
+  [Yozio openedApp];
+  instance._configureCallback = callback;
   [instance doFlush];
 }
 
@@ -435,19 +444,33 @@ static Yozio *instance = nil;
   }
   dataCount++;
   if ([self.dataQueue count] < maxQueue) {
-    NSMutableDictionary* d = [NSMutableDictionary dictionaryWithDictionary:eventOptions];
-    [Yozio addIfNotNil:d key:YOZIO_D_EVENT_TYPE obj:type];
-    [Yozio addIfNotNil:d key:YOZIO_D_LINK_NAME obj:viralLoopName];
-    [Yozio addIfNotNil:d key:YOZIO_D_CHANNEL obj:channel];
-    [Yozio addIfNotNil:d key:YOZIO_D_TIMESTAMP obj:[self timeStampString]];
-    [Yozio addIfNotNil:d key:YOZIO_D_EVENT_IDENTIFIER obj:[self eventID]];
-    [Yozio addIfNotNil:d key:YOZIO_P_EXTERNAL_PROPERTIES obj:[properties JSONString]]; // [nil JSONString] == nil
-    
+    NSDictionary* d = [Yozio createQueueItem:type
+                               viralLoopName:viralLoopName
+                                     channel:channel
+                                eventOptions:eventOptions
+                                  properties:properties];
     [self.dataQueue addObject:d];
     [Yozio log:@"doCollect: %@", d];
   }
   [self checkDataQueueSize];
 }
+
+
++ (NSDictionary *) createQueueItem:(NSString *)type
+                     viralLoopName:(NSString *)viralLoopName
+                           channel:(NSString *)channel
+                      eventOptions:(NSDictionary *)eventOptions
+                        properties:(NSDictionary *)properties {
+  NSMutableDictionary* d = [NSMutableDictionary dictionaryWithDictionary:eventOptions];
+  [Yozio addIfNotNil:d key:YOZIO_D_EVENT_TYPE obj:type];
+  [Yozio addIfNotNil:d key:YOZIO_D_LINK_NAME obj:viralLoopName];
+  [Yozio addIfNotNil:d key:YOZIO_D_CHANNEL obj:channel];
+  [Yozio addIfNotNil:d key:YOZIO_D_TIMESTAMP obj:[instance timeStampString]];
+  [Yozio addIfNotNil:d key:YOZIO_D_EVENT_IDENTIFIER obj:[instance eventID]];
+  [Yozio addIfNotNil:d key:YOZIO_P_EXTERNAL_PROPERTIES obj:[properties JSONString]]; // [nil JSONString] == nil
+  return d;
+}
+
 
 + (void)openedApp
 {
@@ -474,17 +497,26 @@ static Yozio *instance = nil;
 
 + (void)doCookieTracking
 {
-  NSString *urlString =
-  [NSString stringWithFormat:@"%@%@", YOZIO_DEFAULT_BASE_URL, YOZIO_LAUNCH_APP];
-
-  NSURL *url = [NSURL URLWithString:urlString];
+  NSDictionary* d = [Yozio createQueueItem:YOZIO_OPENED_APP_ACTION
+                             viralLoopName:@""
+                                   channel:@""
+                              eventOptions:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:YOZIO_D_FIRST_OPEN]
+                                properties:nil
+                     ];
   
+  NSString* payload = [[instance buildPayload:[NSArray arrayWithObject:d]] JSONString];
+  
+  NSDictionary *urlParams = [NSDictionary dictionaryWithObject:payload
+                                                        forKey:YOZIO_BATCH_EVENTS_P_DATA];
+  NSString *urlString = [NSString stringWithFormat:@"%@%@", YOZIO_DEFAULT_BASE_URL, YOZIO_LAUNCH_APP];
+  
+  NSURL *url = [NSURL URLWithString:urlString];
+  url = [YSeriously url:url params:urlParams];
   if (![[UIApplication sharedApplication] openURL:url])
   {
     NSLog(@"%@%@",@"Failed to open url:",[url description]);
   }
 }
-
 
 
 
@@ -691,7 +723,6 @@ static Yozio *instance = nil;
     [self doFlush];
   }
 }
-
 - (void)doFlush
 {
   if ([self.dataQueue count] == 0) {
@@ -708,39 +739,50 @@ static Yozio *instance = nil;
     self.dataToSend = [NSArray arrayWithArray:self.dataQueue];
   }
   
-  NSString *payloadStr = [self buildPayload];
+  NSString *payloadStr = [[self buildPayload:self.dataToSend] JSONString];
   NSDictionary *urlParams = [NSDictionary dictionaryWithObject:payloadStr
                                                         forKey:YOZIO_BATCH_EVENTS_P_DATA];
   NSString *urlString = [NSString stringWithFormat:@"%@%@", YOZIO_DEFAULT_BASE_URL, YOZIO_BATCH_EVENTS_ROUTE];
   
   [Yozio log:@"Final get request url: %@", urlString];
   [[YozioRequestManager sharedInstance] urlRequest:urlString
-                                           body:urlParams
+                                              body:urlParams
                                            timeOut:0
                                            handler:^(id body, NSHTTPURLResponse *response, NSError *error)
-  {
-   if (error) {
-     [Yozio log:@"Flush error %@", error];
-     self.dataToSend = nil;
-   } else {
-     if (([response statusCode] == 200 || [response statusCode] == 400) && [body isKindOfClass:[NSDictionary class]]) {
-       [Yozio log:@"dataQueue before remove: %@", self.dataQueue];
-       [self.dataQueue removeObjectsInArray:self.dataToSend];
-       [Yozio log:@"dataQueue after remove: %@", self.dataQueue];
-       [Yozio log:@"flush successful. flushing any additional data"];
+   {
+     if (error) {
+       [Yozio log:@"Flush error %@", error];
        self.dataToSend = nil;
-       [self checkDataQueueSize];
+     } else {
+       if (([response statusCode] == 200 || [response statusCode] == 400) && [body isKindOfClass:[NSDictionary class]]) {
+         [Yozio log:@"dataQueue before remove: %@", self.dataQueue];
+         [self.dataQueue removeObjectsInArray:self.dataToSend];
+         [Yozio log:@"dataQueue after remove: %@", self.dataQueue];
+         [Yozio log:@"flush successful. flushing any additional data"];
+         self.dataToSend = nil;
+         [self checkDataQueueSize];
+       }
+       else {
+         self.dataToSend = nil;
+       }
      }
-     else {
-       self.dataToSend = nil;
+     if ([body isKindOfClass:[NSDictionary class]]){
+       NSDictionary *yozioProperties = [body objectForKey:@"yozio"];
+       if ([yozioProperties objectForKey:@"cookie_tracking"] == [NSNumber numberWithBool:YES]
+           && [yozioProperties objectForKey:@"first_open"] == [NSNumber numberWithBool:YES]) {
+         [Yozio doCookieTracking];
+       }
+       NSDictionary *referrerLinkTags = [yozioProperties objectForKey:@"referrer_link_tags"];
+       
+       if (self._configureCallback && referrerLinkTags) {
+         self._configureCallback(referrerLinkTags);
+       }
      }
-   }
-   [Yozio log:@"flush request complete"];
- }];
+     [Yozio log:@"flush request complete"];
+   }];
 }
 
-
-- (NSString *)buildPayload
+- (NSDictionary *)buildPayload:(NSArray *)dataPayload
 {
   NSMutableDictionary* payload = [NSMutableDictionary dictionary];
   [payload setObject:self._appKey forKey:YOZIO_P_APP_KEY];
@@ -763,13 +805,8 @@ static Yozio *instance = nil;
                  key:YOZIO_P_EXPERIMENT_VARIATION_SIDS
                  obj:instance.experimentVariationSids];
   
-  [payload setObject:self.dataToSend forKey:YOZIO_P_PAYLOAD];
-  [Yozio log:@"payload: %@", payload];
-  
-  //  JSONify
-  NSString *jsonPayload = [payload JSONString];
-  
-  return jsonPayload;
+  [payload setObject:dataPayload forKey:YOZIO_P_PAYLOAD];
+  return payload;
 }
 
 /*******************************************
@@ -932,6 +969,7 @@ static const char* jailbreak_apps[] =
 {
   [_appKey release], _appKey = nil;
   [_secretKey release], _secretKey = nil;
+  [self._configureCallback release], self._configureCallback = nil;
   [_userName release], _userName = nil;
   [deviceId release], deviceId = nil;
   [dateFormatter release], dateFormatter = nil;

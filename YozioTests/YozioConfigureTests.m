@@ -99,6 +99,7 @@ id mock;
   instance.dataQueue = [NSMutableArray array];
   [Yozio configure:@"app key" secretKey:@"secret key"];
 
+  NSLog(@"instance.dataQuue: %@", instance.dataQueue);
   STAssertTrue([[[instance.dataQueue lastObject] objectForKey:@"first_open"] isEqualToNumber:[NSNumber numberWithBool:YES]], @"first_open flag doesn't match");
   STAssertTrue([fileManager fileExistsAtPath:plistPath], @"file not created");
 }
@@ -124,6 +125,7 @@ id mock;
   [Yozio configure:@"app key" secretKey:@"secret key"];
   Yozio *instance = [Yozio getInstance];
 
+  NSLog(@"instance.dataQuue: %@", instance.dataQueue);
   STAssertTrue([[instance.dataQueue lastObject] isEqualToDictionary:expectedOpenEvent], @"dataQueues don't match");  
 }
 
