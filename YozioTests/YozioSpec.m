@@ -258,8 +258,9 @@ describe(@"buildPayload", ^{
                            [NSMutableDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil], nil];
     instance.deviceId = @"device id";
 
-    NSString *jsonPayload = [instance buildPayload];
-    NSString *expectedJsonPayload = [[NSDictionary dictionaryWithObjectsAndKeys:
+    NSString *payload = [instance buildPayload:instance.dataToSend];
+    
+    NSString *expectedPayload = [NSDictionary dictionaryWithObjectsAndKeys:
      @"2", @"device_type",
      instance.dataToSend, @"payload",
      @"Unknown", @"hardware",
@@ -272,8 +273,8 @@ describe(@"buildPayload", ^{
      @"app key", @"app_key",
      @"bundle version", @"app_version",
      @"0", @"is_jailbroken",
-     nil] JSONString];
-    [[jsonPayload should] equal:expectedJsonPayload];
+     nil];
+    [[payload should] equal:expectedPayload];
   });
 });
 

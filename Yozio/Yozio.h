@@ -22,8 +22,10 @@
  *
  * @param appKey  Application specific key provided by Yozio.
  * @param secretKey  Application specific secret key provided by Yozio.
+ * @param callback  Called when the configure call completes and returns a dictionary of tags
  */
 + (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey;
++ (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey callback:(void(^)(NSDictionary *))callback;
 
 /**
  * Makes a blocking HTTP request to download the experiment configurations.
