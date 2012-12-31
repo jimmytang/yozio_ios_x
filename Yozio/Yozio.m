@@ -163,8 +163,8 @@ static Yozio *instance = nil;
   // Perform this here instead of on applicationDidFinishLoading because instrumentation calls
   // could be made before an application is finished loading.
   [instance loadUnsentData];
-  [Yozio openedApp];
   [instance doFlush];
+  [Yozio openedApp];
 }
 
 + (void)userLoggedIn:(NSString *)userName
@@ -487,16 +487,6 @@ static Yozio *instance = nil;
     [eventOptions setObject:[NSNumber numberWithBool:YES] forKey:YOZIO_D_FIRST_OPEN];
   }
   
-  [instance doCollect:YOZIO_OPENED_APP_ACTION
-        viralLoopName:@""
-              channel:@""
-         eventOptions:eventOptions
-             maxQueue:YOZIO_ACTION_DATA_LIMIT
-           properties:nil];
-}
-
-+ (void)doCookieTracking
-{
   NSDictionary* d = [Yozio createQueueItem:YOZIO_OPENED_APP_ACTION
                              viralLoopName:@""
                                    channel:@""
@@ -506,8 +496,35 @@ static Yozio *instance = nil;
   
   NSString* payload = [[instance buildPayload:[NSArray arrayWithObject:d]] JSONString];
   
-  NSDictionary *urlParams = [NSDictionary dictionaryWithObject:payload
-                                                        forKey:YOZIO_BATCH_EVENTS_P_DATA];
+  __block NSDictionary *urlParams = [NSDictionary dictionaryWithObject:payload
+                                                                forKey:YOZIO_BATCH_EVENTS_P_DATA];
+  NSString *urlString = [NSString stringWithFormat:@"%@%@", YOZIO_DEFAULT_BASE_URL, YOZIO_OPENED_APP_ROUTE];
+
+  [Yozio log:@"Final get request url: %@", urlString];
+  [[YozioRequestManager sharedInstance] urlRequest:urlString
+                                              body:urlParams
+                                           timeOut:0
+                                           handler:^(id body, NSHTTPURLResponse *response, NSError *error)
+   {
+     if (error) {
+       [Yozio log:@"Opened App error %@", error];
+     } else if ([body isKindOfClass:[NSDictionary class]]){
+       NSDictionary *yozioProperties = [body objectForKey:@"yozio"];
+       if ([yozioProperties objectForKey:@"browser_flash"] == [NSNumber numberWithBool:YES]) {
+         [Yozio doCookieTracking:urlParams];
+       }
+       NSDictionary *referrerLinkTags = [yozioProperties objectForKey:@"referrer_link_tags"];
+       
+       if (instance._configureCallback && referrerLinkTags) {
+         instance._configureCallback(referrerLinkTags);
+       }
+     }
+     [Yozio log:@"Opened App complete"];
+   }];
+}
+
++ (void)doCookieTracking:(NSDictionary *)urlParams
+{
   NSString *urlString = [NSString stringWithFormat:@"%@%@", YOZIO_DEFAULT_BASE_URL, YOZIO_LAUNCH_APP];
   
   NSURL *url = [NSURL URLWithString:urlString];
@@ -760,17 +777,6 @@ static Yozio *instance = nil;
        }
        else {
          self.dataToSend = nil;
-       }
-     }
-     if ([body isKindOfClass:[NSDictionary class]]){
-       NSDictionary *yozioProperties = [body objectForKey:YOZIO_PROPERTIES_KEY];
-       if ([yozioProperties objectForKey:YOZIO_COOKIE_TRACKING] == [NSNumber numberWithBool:YES]
-           && [yozioProperties objectForKey:YOZIO_FIRST_OPEN] == [NSNumber numberWithBool:YES]) {
-         [Yozio doCookieTracking];
-       }
-       NSDictionary *referrerLinkTags = [yozioProperties objectForKey:YOZIO_REFERRER_LINK_TAGS];
-       if (self._configureCallback && referrerLinkTags) {
-         self._configureCallback(referrerLinkTags);
        }
      }
      [Yozio log:@"flush request complete"];
