@@ -22,7 +22,7 @@
  *
  * @param appKey  Application specific key provided by Yozio.
  * @param secretKey  Application specific secret key provided by Yozio.
- * @param callback  Called when the configure call completes and returns a dictionary of tags
+ * @param callback  Called when the configure call completes and returns a dictionary of link meta data.
  */
 + (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey;
 + (void)configure:(NSString *)appKey secretKey:(NSString *)secretKey callback:(void(^)(NSDictionary *))callback;
@@ -42,7 +42,7 @@
  *                              to for Android devices.
  * @param nonMobileDestinationUrl  URL that the generated Yozio link will
  *                                 redirect to for all other devices.
- * @param properties  Arbitrary meta data to attach to the generated Yozio link.
+ * @param properties  Arbitrary meta data to attach to the Yozio Link used to tie with your own data on export.
  * @param callback  Called when the HTTP request completes.
  *                  The argument passed into the callback will be the Yozio
  *                  link, or the nonMobileDestinationUrl if there is an error
@@ -95,16 +95,16 @@
  *
  * This will allow you to tie exported Yozio data with your own data.
  *
- * Warning: do not provide any personally identifiable information.
+ * Warning: do not provide any personally identifiable information about your user.
  *
  * @param userName  Name of the user that just logged in.
- * @param properties  Arbitrary meta data to attach to this event.
+ * @param properties  Arbitrary meta data to attach to this event used to tie with your own data on export.
  */
 + (void)userLoggedIn:(NSString *)userName;
 + (void)userLoggedIn:(NSString *)userName properties:(NSDictionary *)properties;
 
 /**
- * Notify Yozio that the user has entered the viral loop.
+ * Notify Yozio that the user has entered the viral loop. (Deprecated)
  *
  * This event should be triggered at whatever point you define the beginning
  * of the viral loop to be.
@@ -116,7 +116,7 @@
  *                       the viral loops created on the Yozio dashboard.
  * @param channel  The social channel being used. Must match the channels
                    selected for the viral loop created on Yozio dashboard.
- * @param properties  Arbitrary meta data to attach to the event.
+ * @param properties  Arbitrary meta data to attach to this event used to tie with your own data on export.
  */
 + (void)enteredViralLoop:(NSString *)viralLoopName channel:(NSString *)channel;
 + (void)enteredViralLoop:(NSString *)viralLoopName channel:(NSString *)channel properties:(NSDictionary *)properties;
@@ -131,8 +131,8 @@
  *                       the viral loops created on the Yozio dashboard.
  * @param channel  The social channel being used. Must match the channels
  selected for the viral loop created on Yozio dashboard.
- * @param count  The number of shares this sharing event is creating.
- * @param properties  Arbitrary meta data to attach to the event. Example is a text message sent to 5 people should have a count of 5.
+ * @param count  The number of shares this sharing event is creating. Example is an SMS sent to 5 people should have a count of 5.
+ * @param properties  Arbitrary meta data to attach to this event used to tie with your own data on export. 
  */
 + (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel;
 + (void)sharedYozioLink:(NSString *)viralLoopName channel:(NSString *)channel count:(NSInteger)count;
