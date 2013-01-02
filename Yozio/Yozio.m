@@ -498,6 +498,7 @@ static Yozio *instance = nil;
   
   __block NSDictionary *urlParams = [NSDictionary dictionaryWithObject:payload
                                                                 forKey:YOZIO_BATCH_EVENTS_P_DATA];
+  [urlParams retain];
   NSString *urlString = [NSString stringWithFormat:@"%@%@", YOZIO_DEFAULT_BASE_URL, YOZIO_OPENED_APP_ROUTE];
 
   [Yozio log:@"Final get request url: %@", urlString];
@@ -511,14 +512,17 @@ static Yozio *instance = nil;
      } else if ([body isKindOfClass:[NSDictionary class]]){
        NSDictionary *yozioProperties = [body objectForKey:YOZIO_PROPERTIES];
        if ([yozioProperties objectForKey:YOZIO_FLASH_BROWSER] == [NSNumber numberWithBool:YES]) {
+         [Yozio log:@"doCookieTracking: %@", urlParams];
          [Yozio doCookieTracking:urlParams];
        }
        NSDictionary *referrerLinkTags = [yozioProperties objectForKey:YOZIO_REFERRER_LINK_TAGS];
        
        if (instance._configureCallback && referrerLinkTags) {
+         [Yozio log:@"calling callback with : %@", referrerLinkTags];
          instance._configureCallback(referrerLinkTags);
        }
      }
+     [urlParams release];
      [Yozio log:@"Opened App complete"];
    }];
 }
