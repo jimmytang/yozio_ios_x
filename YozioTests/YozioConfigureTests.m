@@ -100,6 +100,7 @@ id mock;
   [YOpenUDID stub:@selector(value) andReturn:@"open udid value"];
   [Yozio stub:@selector(bundleVersion) andReturn:@"bundle version"];
   Yozio *instance = [Yozio getInstance];
+  [instance stub:@selector(timeStampString) andReturn:@"time stamp string"];
   instance._appKey = @"app key";
   instance.dataToSend = [NSMutableArray arrayWithObjects:
                          [NSMutableDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil],
@@ -122,10 +123,10 @@ id mock;
   [NSMutableDictionary dictionaryWithObjectsAndKeys:
    @"mock UUID", @"event_identifier",
    @"5", @"event_type",
-   [NSNumber numberWithBool:NO], @"first_open",
+   [NSNumber numberWithBool:YES], @"first_open",
    @"", @"link_name",
    @"", @"channel",
-   @"2011-07-17 07:48:34", @"timestamp",
+   @"time stamp string", @"timestamp",
    nil];
   
   NSString *expectedJsonPayload = [[NSDictionary dictionaryWithObjectsAndKeys:
@@ -144,18 +145,11 @@ id mock;
                                     nil] JSONString];
 
   [Yozio configure:@"app key" secretKey:@"secret key"];
-
-  NSLog(@"expectedJsonPayload: %@", expectedJsonPayload);
   
   NSString *urlString = urlSpy.argument;
   NSString *expectedUrlString = [NSString stringWithFormat:@"http://yoz.io/api/sdk/v1/opened_app"];
   NSDictionary *urlParams = urlParamsSpy.argument;
   NSDictionary *expectedUrlParams = [NSDictionary dictionaryWithObject:expectedJsonPayload forKey:@"data"];
-
-  NSLog(@"urlString: %@", urlString);
-  NSLog(@"expectedUrlString: %@", expectedUrlString);
-  NSLog(@"urlParams: %@", urlParams);
-  NSLog(@"expectedUrlParams: %@", expectedUrlParams);
 
   STAssertTrue([urlString isEqualToString:expectedUrlString], @"path doesn't match");
   STAssertTrue([[urlParams JSONString] isEqualToString:[expectedUrlParams JSONString]], @"first_open flag doesn't match");
@@ -170,6 +164,24 @@ id mock;
   NSData *plistData = [NSData data];
   [plistData writeToFile:plistPath atomically:YES];
   
+  [Yozio stub:@selector(getMACAddress) andReturn:@"mac address"];
+  [YOpenUDID stub:@selector(getOpenUDIDSlotCount) andReturn:theValue(1)];
+  [YOpenUDID stub:@selector(value) andReturn:@"open udid value"];
+  [Yozio stub:@selector(bundleVersion) andReturn:@"bundle version"];
+  Yozio *instance = [Yozio getInstance];
+  [instance stub:@selector(timeStampString) andReturn:@"time stamp string"];
+  instance._appKey = @"app key";
+  instance.dataToSend = [NSMutableArray arrayWithObjects:
+                         [NSMutableDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil],
+                         [NSMutableDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil], nil];
+  instance.deviceId = @"device id";
+  
+  YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
+  id yrmMock = [YozioRequestManager nullMock];
+  [YozioRequestManager setInstance:yrmMock];
+  KWCaptureSpy *urlSpy = [yrmMock captureArgument:@selector(urlRequest:body:timeOut:handler:) atIndex:0];
+  KWCaptureSpy *urlParamsSpy = [yrmMock captureArgument:@selector(urlRequest:body:timeOut:handler:) atIndex:1];
+  
   NSMutableDictionary *expectedOpenEvent =
   [NSMutableDictionary dictionaryWithObjectsAndKeys:
    @"mock UUID", @"event_identifier",
@@ -177,15 +189,34 @@ id mock;
    [NSNumber numberWithBool:NO], @"first_open",
    @"", @"link_name",
    @"", @"channel",
-   @"2011-07-17 07:48:34", @"timestamp",
+   @"time stamp string", @"timestamp",
    nil];
   
+  NSString *expectedJsonPayload = [[NSDictionary dictionaryWithObjectsAndKeys:
+                                    @"2", @"device_type",
+                                    [NSArray arrayWithObject:expectedOpenEvent], @"payload",
+                                    @"Unknown", @"hardware",
+                                    @"open udid value", @"open_udid",
+                                    @"5.0", @"os_version",
+                                    @"device id", @"yozio_udid",
+                                    @"1", @"open_udid_count",
+                                    @"1.000000", @"display_multiplier",
+                                    @"mac address", @"mac_address",
+                                    @"app key", @"app_key",
+                                    @"bundle version", @"app_version",
+                                    @"0", @"is_jailbroken",
+                                    nil] JSONString];
   
   [Yozio configure:@"app key" secretKey:@"secret key"];
-  Yozio *instance = [Yozio getInstance];
   
-  NSLog(@"instance.dataQuue: %@", instance.dataQueue);
-  STAssertTrue([[instance.dataQueue lastObject] isEqualToDictionary:expectedOpenEvent], @"dataQueues don't match");
+  NSString *urlString = urlSpy.argument;
+  NSString *expectedUrlString = [NSString stringWithFormat:@"http://yoz.io/api/sdk/v1/opened_app"];
+  NSDictionary *urlParams = urlParamsSpy.argument;
+  NSDictionary *expectedUrlParams = [NSDictionary dictionaryWithObject:expectedJsonPayload forKey:@"data"];
+  
+  STAssertTrue([urlString isEqualToString:expectedUrlString], @"path doesn't match");
+  STAssertTrue([[urlParams JSONString] isEqualToString:[expectedUrlParams JSONString]], @"first_open flag doesn't match");
+  [YozioRequestManager setInstance:yrmInstance];
 }
 
 - (void)testConfigureSetsConfigureCallbackAndReturnsReferrerLinkTags
@@ -206,28 +237,21 @@ id mock;
                               forKey:YOZIO_PROPERTIES_KEY];
   yrmMock.response = response;
 
-  NSLog(@"asdf");
   __block NSDictionary *dict;
-  NSLog(@"asdf");
   Yozio *instance = [Yozio getInstance];
   instance.dataToSend = NULL;
   [instance.dataQueue addObject:@"1"];
-  NSLog(@"instance.dataQueue; %@", instance.dataQueue);
   [Yozio configure:@"app key"
          secretKey:@"secret key"
-          callback:^(NSDictionary * callbackDict){NSLog(@"afve");dict = callbackDict; NSLog(@"asdfasdf");}];
+          callback:^(NSDictionary * callbackDict){dict = callbackDict;}];
   [YozioRequestManager setInstance:yrmInstance];
-  NSLog(@"dict %@", dict);
   
   
   STAssertTrue([dict isEqualToDictionary:referrerLinkTags], @"dictionaries don't match");
-  NSLog(@"asdf");
-
 }
 
 - (void)testConfigureFlushesLoadedData
 {
-  [[mock expect] doFlush];
   [[mock expect] doFlush];
   [Yozio configure:@"app key" secretKey:@"secret key"];
   [mock verify];
