@@ -15,11 +15,13 @@
 
 #import "Yozio.h"
 
-#define YOZIO_SDK_VERSION @"IOS-v3.1"
+#define YOZIO_SDK_VERSION @"IOS-v4.0"
 #define YOZIO_DEFAULT_BASE_URL @"http://yoz.io"
 #define YOZIO_GET_CONFIGURATIONS_ROUTE @"/api/yozio/v1/get_configurations"
 #define YOZIO_GET_URL_ROUTE @"/api/viral/v1/get_url"
+#define YOZIO_OPENED_APP_ROUTE @"/api/sdk/v1/opened_app"
 #define YOZIO_BATCH_EVENTS_ROUTE @"/api/sdk/v1/batch_events"
+#define YOZIO_LAUNCH_APP @"/api/sdk/v1/launch_app"
 
 #define YOZIO_GET_CONFIGURATION_P_APP_KEY @"app_key"
 #define YOZIO_GET_CONFIGURATION_P_YOZIO_UDID @"yozio_udid"
@@ -62,6 +64,8 @@
 #define YOZIO_D_EVENT_TYPE @"event_type"
 #define YOZIO_D_LINK_NAME @"link_name"
 #define YOZIO_D_CHANNEL @"channel"
+#define YOZIO_D_COUNT @"count"
+#define YOZIO_D_FIRST_OPEN @"first_open"
 #define YOZIO_D_TIMESTAMP @"timestamp"
 #define YOZIO_D_EVENT_IDENTIFIER @"event_identifier"
 
@@ -69,7 +73,10 @@
 #define YOZIO_URLS_KEY @"urls"
 #define YOZIO_CONFIG_KEY @"experiment_configs"
 #define YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY @"experiment_variation_sids"
-
+#define YOZIO_PROPERTIES @"yozio"
+#define YOZIO_REFERRER_LINK_TAGS @"referrer_link_tags"
+#define YOZIO_FLASH_BROWSER @"flash_browser"
+#define YOZIO_FIRST_OPEN @"first_open"
 
 #define YOZIO_DATA_QUEUE_FILE [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
 
@@ -98,6 +105,7 @@
   NSString *_appKey;
   NSString *_secretKey;
   NSString *_userName;
+  void (^configureCallback)(NSDictionary *dict);
 
   // Automatically determined instrumentation variables.
   NSString *deviceId;
@@ -119,6 +127,7 @@
 @property(nonatomic, retain) NSString *_appKey;
 @property(nonatomic, retain) NSString *_secretKey;
 @property(nonatomic, retain) NSString *_userName;
+@property(nonatomic, copy) void (^_configureCallback)(NSDictionary *dict);
 
 // Automatically determined instrumentation variables.
 @property(nonatomic, retain) NSString *deviceId;
@@ -151,11 +160,12 @@
 - (void)doCollect:(NSString *)name
     viralLoopName:(NSString *)viralLoopName
           channel:(NSString *)channel
+     eventOptions:(NSDictionary *)eventOptions
          maxQueue:(NSInteger)maxQueue
        properties:(NSDictionary *)properties;
 - (void)checkDataQueueSize;
 - (void)doFlush;
-- (NSString *)buildPayload;
+- (NSString *)buildPayload:(NSArray *)dataPayload;
 
 + (void)initializeExperimentsHelper:(NSInteger)timeOut callback:(void(^)(void))callback;
 
