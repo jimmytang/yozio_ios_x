@@ -475,7 +475,7 @@ static Yozio *instance = nil;
 + (void)openedApp
 {
   NSString *rootPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-  NSString *plistPath = [rootPath stringByAppendingPathComponent:@"first_open_tracker.plist"];
+  NSString *plistPath = [rootPath stringByAppendingPathComponent:@"yozio_first_open_tracker.plist"];
   NSData *plistData = [NSData data];
 
   NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -509,11 +509,11 @@ static Yozio *instance = nil;
      if (error) {
        [Yozio log:@"Opened App error %@", error];
      } else if ([body isKindOfClass:[NSDictionary class]]){
-       NSDictionary *yozioProperties = [body objectForKey:@"yozio"];
-       if ([yozioProperties objectForKey:@"browser_flash"] == [NSNumber numberWithBool:YES]) {
+       NSDictionary *yozioProperties = [body objectForKey:YOZIO_PROPERTIES];
+       if ([yozioProperties objectForKey:YOZIO_FLASH_BROWSER] == [NSNumber numberWithBool:YES]) {
          [Yozio doCookieTracking:urlParams];
        }
-       NSDictionary *referrerLinkTags = [yozioProperties objectForKey:@"referrer_link_tags"];
+       NSDictionary *referrerLinkTags = [yozioProperties objectForKey:YOZIO_REFERRER_LINK_TAGS];
        
        if (instance._configureCallback && referrerLinkTags) {
          instance._configureCallback(referrerLinkTags);

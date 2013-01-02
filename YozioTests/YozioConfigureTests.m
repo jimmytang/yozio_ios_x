@@ -109,7 +109,7 @@ id mock;
 
   NSError *error;
   NSString *rootPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-  NSString *plistPath = [rootPath stringByAppendingPathComponent:@"first_open_tracker.plist"];
+  NSString *plistPath = [rootPath stringByAppendingPathComponent:@"yozio_first_open_tracker.plist"];
   NSFileManager *fileManager = [NSFileManager defaultManager];
   [fileManager removeItemAtPath:plistPath error:&error];
 
@@ -160,7 +160,7 @@ id mock;
 - (void)testConfigureCreatesAnOpenAppEventWithFirstOpenSetToFalse
 {
   NSString *rootPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-  NSString *plistPath = [rootPath stringByAppendingPathComponent:@"first_open_tracker.plist"];
+  NSString *plistPath = [rootPath stringByAppendingPathComponent:@"yozio_first_open_tracker.plist"];
   NSData *plistData = [NSData data];
   [plistData writeToFile:plistPath atomically:YES];
   
@@ -234,7 +234,7 @@ id mock;
   yrmMock.body =
   [NSDictionary dictionaryWithObject:[NSDictionary dictionaryWithObject:referrerLinkTags
                                                                  forKey:YOZIO_REFERRER_LINK_TAGS]
-                              forKey:YOZIO_PROPERTIES_KEY];
+                              forKey:YOZIO_PROPERTIES];
   yrmMock.response = response;
 
   __block NSDictionary *dict;

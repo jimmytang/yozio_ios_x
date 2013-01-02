@@ -73,9 +73,9 @@
 #define YOZIO_URLS_KEY @"urls"
 #define YOZIO_CONFIG_KEY @"experiment_configs"
 #define YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY @"experiment_variation_sids"
-#define YOZIO_PROPERTIES_KEY @"yozio"
+#define YOZIO_PROPERTIES @"yozio"
 #define YOZIO_REFERRER_LINK_TAGS @"referrer_link_tags"
-#define YOZIO_COOKIE_TRACKING @"cookie_tracking"
+#define YOZIO_FLASH_BROWSER @"flash_browser"
 #define YOZIO_FIRST_OPEN @"first_open"
 
 #define YOZIO_DATA_QUEUE_FILE [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"YozioLib_SavedData.plist"]
