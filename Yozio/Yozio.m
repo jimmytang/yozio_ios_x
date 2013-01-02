@@ -490,7 +490,7 @@ static Yozio *instance = nil;
   NSDictionary* d = [Yozio createQueueItem:YOZIO_OPENED_APP_ACTION
                              viralLoopName:@""
                                    channel:@""
-                              eventOptions:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:YOZIO_D_FIRST_OPEN]
+                              eventOptions:eventOptions
                                 properties:nil
                      ];
   
