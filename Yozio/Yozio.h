@@ -142,6 +142,14 @@
                   count:(NSInteger)count
              properties:(NSDictionary *)properties;
 
+/**
+ * This returns a dictionary of the url params from NSURL.
+ *
+ * @param url  The url to parse.
+ *
+ */
++ (NSDictionary *)parseParamsFromUrl:(NSURL *)url;
+
 @end
 
 #endif /* ! __YOZIO__ */

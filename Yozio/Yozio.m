@@ -397,6 +397,21 @@ static Yozio *instance = nil;
            properties:properties];
 }
 
++ (NSDictionary *)parseParamsFromUrl:(NSURL *)url {
+  NSString *query = [url query];
+  NSMutableDictionary *dict = [[[NSMutableDictionary alloc] initWithCapacity:6] autorelease];
+  NSArray *pairs = [query componentsSeparatedByString:@"&"];
+  
+  for (NSString *pair in pairs) {
+    NSArray *elements = [pair componentsSeparatedByString:@"="];
+    NSString *key = [[elements objectAtIndex:0] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *val = [[elements objectAtIndex:1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    [dict setObject:val forKey:key];
+  }
+  return dict;
+}
+
 /*******************************************
  * Notification observer methods.
  *******************************************/
