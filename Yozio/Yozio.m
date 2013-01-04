@@ -397,7 +397,7 @@ static Yozio *instance = nil;
            properties:properties];
 }
 
-+ (NSDictionary *)parseParamsFromUrl:(NSURL *)url {
++ (NSDictionary *)parseYozioParamsFromUrl:(NSURL *)url {
   NSString *query = [url query];
   NSMutableDictionary *dict = [[[NSMutableDictionary alloc] initWithCapacity:6] autorelease];
   NSArray *pairs = [query componentsSeparatedByString:@"&"];
@@ -409,7 +409,8 @@ static Yozio *instance = nil;
     
     [dict setObject:val forKey:key];
   }
-  return dict;
+  NSDictionary *yozioReferrerLinkTags = [[dict objectForKey:YOZIO_REFERRER_LINK_TAGS] objectFromJSONString];
+  return yozioReferrerLinkTags;
 }
 
 /*******************************************
@@ -490,15 +491,16 @@ static Yozio *instance = nil;
 + (void)openedApp
 {
   NSString *rootPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-  NSString *plistPath = [rootPath stringByAppendingPathComponent:@"yozio_first_open_tracker.plist"];
-  NSData *plistData = [NSData data];
+  __block NSString *plistPath = [rootPath stringByAppendingPathComponent:@"yozio_first_open_tracker.plist"];
+  __block NSData *plistData = [NSData data];
+  [plistPath retain];
+  [plistData retain];
 
   NSFileManager *fileManager = [NSFileManager defaultManager];
   NSMutableDictionary* eventOptions = [NSMutableDictionary dictionary];
   if ([fileManager fileExistsAtPath:plistPath]){
     [eventOptions setObject:[NSNumber numberWithBool:NO] forKey:YOZIO_D_FIRST_OPEN];
   } else {
-    [plistData writeToFile:plistPath atomically:YES];
     [eventOptions setObject:[NSNumber numberWithBool:YES] forKey:YOZIO_D_FIRST_OPEN];
   }
   
@@ -525,18 +527,20 @@ static Yozio *instance = nil;
      if (error) {
        [Yozio log:@"Opened App error %@", error];
      } else if ([body isKindOfClass:[NSDictionary class]]){
-       NSDictionary *yozioProperties = [body objectForKey:YOZIO_PROPERTIES];
-       if ([yozioProperties objectForKey:YOZIO_FLASH_BROWSER] == [NSNumber numberWithBool:YES]) {
+       [plistData writeToFile:plistPath atomically:YES];
+       if ([body objectForKey:YOZIO_FLASH_BROWSER] == [NSNumber numberWithBool:YES]) {
          [Yozio log:@"doCookieTracking: %@", urlParams];
          [Yozio doCookieTracking:urlParams];
        }
-       NSDictionary *referrerLinkTags = [yozioProperties objectForKey:YOZIO_REFERRER_LINK_TAGS];
+       NSDictionary *referrerLinkTags = [body objectForKey:YOZIO_REFERRER_LINK_TAGS];
        
        if (instance._configureCallback && referrerLinkTags) {
          [Yozio log:@"calling callback with : %@", referrerLinkTags];
          instance._configureCallback(referrerLinkTags);
        }
      }
+     [plistPath release];
+     [plistData release];
      [urlParams release];
      [Yozio log:@"Opened App complete"];
    }];

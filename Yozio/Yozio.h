@@ -148,7 +148,7 @@
  * @param url  The url to parse.
  *
  */
-+ (NSDictionary *)parseParamsFromUrl:(NSURL *)url;
++ (NSDictionary *)parseYozioParamsFromUrl:(NSURL *)url;
 
 @end
 
