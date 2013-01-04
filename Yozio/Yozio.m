@@ -11,6 +11,7 @@
 #import "CommonCrypto/CommonCryptor.h"
 #import "YJSONKit.h"
 #import "YSeriously.h"
+#import "YSeriouslyJSON.h"
 #import "YOpenUDID.h"
 #import "YozioRequestManager.h"
 #import <CommonCrypto/CommonHMAC.h>
@@ -409,7 +410,7 @@ static Yozio *instance = nil;
     
     [dict setObject:val forKey:key];
   }
-  NSDictionary *yozioReferrerLinkTags = [[dict objectForKey:YOZIO_REFERRER_LINK_TAGS] objectFromJSONString];
+  NSDictionary *yozioReferrerLinkTags = [YSeriouslyJSON parse:[dict objectForKey:YOZIO_REFERRER_LINK_TAGS]];
   return yozioReferrerLinkTags;
 }
 
