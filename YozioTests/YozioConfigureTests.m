@@ -153,7 +153,6 @@ id mock;
 
   STAssertTrue([urlString isEqualToString:expectedUrlString], @"path doesn't match");
   STAssertTrue([[urlParams JSONString] isEqualToString:[expectedUrlParams JSONString]], @"first_open flag doesn't match");
-  STAssertTrue([fileManager fileExistsAtPath:plistPath], @"file not created");
   [YozioRequestManager setInstance:yrmInstance];
 }
 
@@ -231,10 +230,7 @@ id mock;
                                                           headerFields:[NSDictionary dictionary]];
   
   NSDictionary *referrerLinkTags = [NSDictionary dictionaryWithObject:@"1" forKey:@"a"];
-  yrmMock.body =
-  [NSDictionary dictionaryWithObject:[NSDictionary dictionaryWithObject:referrerLinkTags
-                                                                 forKey:YOZIO_REFERRER_LINK_TAGS]
-                              forKey:YOZIO_PROPERTIES];
+  yrmMock.body = [NSDictionary dictionaryWithObject:referrerLinkTags forKey:YOZIO_REFERRER_LINK_TAGS];
   yrmMock.response = response;
 
   __block NSDictionary *dict;
@@ -245,7 +241,6 @@ id mock;
          secretKey:@"secret key"
           callback:^(NSDictionary * callbackDict){dict = callbackDict;}];
   [YozioRequestManager setInstance:yrmInstance];
-  
   
   STAssertTrue([dict isEqualToDictionary:referrerLinkTags], @"dictionaries don't match");
 }
