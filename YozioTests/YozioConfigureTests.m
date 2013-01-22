@@ -245,6 +245,32 @@ id mock;
   STAssertTrue([dict isEqualToDictionary:referrerLinkTags], @"dictionaries don't match");
 }
 
+- (void)testConfigureSetsConfigureCallbackAndReturnsEmptyDictionaryIfReferrerLinkTagsIsEmpty
+{
+  YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
+  YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
+  [YozioRequestManager setInstance:yrmMock];
+  NSInteger statusCode = 200;
+  NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"123"]
+                                                            statusCode:statusCode
+                                                           HTTPVersion:@"HTTP/1.1"
+                                                          headerFields:[NSDictionary dictionary]];
+  
+  yrmMock.body = [NSDictionary dictionary];
+  yrmMock.response = response;
+  
+  __block NSDictionary *dict;
+  Yozio *instance = [Yozio getInstance];
+  instance.dataToSend = NULL;
+  [instance.dataQueue addObject:@"1"];
+  [Yozio configure:@"app key"
+         secretKey:@"secret key"
+          callback:^(NSDictionary * callbackDict){dict = callbackDict;}];
+  [YozioRequestManager setInstance:yrmInstance];
+  
+  STAssertTrue([dict isEqualToDictionary:[NSDictionary dictionary]], @"dictionaries don't match");
+}
+
 - (void)testConfigureFlushesLoadedData
 {
   [[mock expect] doFlush];

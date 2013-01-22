@@ -535,7 +535,11 @@ static Yozio *instance = nil;
        }
        NSDictionary *referrerLinkTags = [body objectForKey:YOZIO_REFERRER_LINK_TAGS];
        
-       if (instance._configureCallback && referrerLinkTags) {
+       if (!referrerLinkTags) {
+         referrerLinkTags = [NSDictionary dictionary];
+       }
+       
+       if (instance._configureCallback) {
          [Yozio log:@"calling callback with : %@", referrerLinkTags];
          instance._configureCallback(referrerLinkTags);
        }
