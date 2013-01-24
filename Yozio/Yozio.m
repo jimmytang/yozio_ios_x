@@ -409,7 +409,7 @@ static Yozio *instance = nil;
     [dict setObject:val forKey:key];
   }
   NSError *e = nil;
-  NSDictionary *yozioReferrerLinkTags = [NSJSONSerialization JSONObjectWithData:[dict objectForKey:YOZIO_REFERRER_LINK_TAGS]
+  NSDictionary *yozioReferrerLinkTags = [NSJSONSerialization JSONObjectWithData:[[dict objectForKey:YOZIO_REFERRER_LINK_TAGS] dataUsingEncoding:NSUTF8StringEncoding]
                                                                         options:NSJSONReadingMutableContainers
                                                                           error:&e];
   return yozioReferrerLinkTags;
@@ -486,13 +486,16 @@ static Yozio *instance = nil;
   [Yozio addIfNotNil:d key:YOZIO_D_TIMESTAMP obj:[instance timeStampString]];
   [Yozio addIfNotNil:d key:YOZIO_D_EVENT_IDENTIFIER obj:[instance eventID]];
 
-  NSError *e = nil;
-  NSData *externalProperties = [NSJSONSerialization dataWithJSONObject:properties
-                                                               options:NSJSONReadingMutableContainers
-                                                                 error:&e];
-
-  [Yozio addIfNotNil:d key:YOZIO_P_EXTERNAL_PROPERTIES obj:externalProperties]; // [nil JSONString] == nil
-  
+  if (properties) {
+    NSError *e = nil;
+    NSData *externalProperties = [NSJSONSerialization dataWithJSONObject:properties
+                                                                 options:NSJSONReadingMutableContainers
+                                                                   error:&e];
+    NSString* externalPropertiesStr = [[[NSString alloc] initWithData:externalProperties
+                                                             encoding:NSUTF8StringEncoding] autorelease];
+    
+    [Yozio addIfNotNil:d key:YOZIO_P_EXTERNAL_PROPERTIES obj:externalPropertiesStr]; // [nil JSONString] == nil
+  }
 
   return d;
 }
@@ -523,10 +526,12 @@ static Yozio *instance = nil;
   
   NSError *e = nil;
   NSData *payload = [NSJSONSerialization dataWithJSONObject:[instance buildPayload:[NSArray arrayWithObject:d]]
-                                                               options:NSJSONReadingMutableContainers
-                                                                 error:&e];
-
-  __block NSDictionary *urlParams = [NSDictionary dictionaryWithObject:payload
+                                                    options:NSJSONReadingMutableContainers
+                                                      error:&e];
+  NSString* payloadStr = [[[NSString alloc] initWithData:payload
+                                                encoding:NSUTF8StringEncoding] autorelease];
+  
+  __block NSDictionary *urlParams = [NSDictionary dictionaryWithObject:payloadStr
                                                                 forKey:YOZIO_BATCH_EVENTS_P_DATA];
   [urlParams retain];
   NSString *urlString = [NSString stringWithFormat:@"%@%@", YOZIO_DEFAULT_BASE_URL, YOZIO_OPENED_APP_ROUTE];
@@ -665,19 +670,23 @@ static Yozio *instance = nil;
     NSData *dData = [NSJSONSerialization dataWithJSONObject:d
                                                     options:NSJSONReadingMutableContainers
                                                       error:&e];
-
+    NSString* dStr = [[[NSString alloc] initWithData:dData
+                                            encoding:NSUTF8StringEncoding] autorelease];
+    
     [self addIfNotNil:urlParams
                   key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
-                  obj:dData];
+                  obj:dStr];
 
     if (properties && [properties count] > 0) {
       NSData *propertiesData = [NSJSONSerialization dataWithJSONObject:properties
                                                       options:NSJSONReadingMutableContainers
                                                         error:&e];
+      NSString* propertiesStr = [[[NSString alloc] initWithData:propertiesData
+                                                       encoding:NSUTF8StringEncoding] autorelease];
 
       [self addIfNotNil:urlParams
                     key:YOZIO_P_EXTERNAL_PROPERTIES
-                    obj:propertiesData];
+                    obj:propertiesStr];
     }
     
     return [instance getYozioLinkRequest:urlParams destUrl:destinationUrl timeOut:timeOut callback:callback];
@@ -725,18 +734,23 @@ static Yozio *instance = nil;
     NSData *dData = [NSJSONSerialization dataWithJSONObject:d
                                                     options:NSJSONReadingMutableContainers
                                                       error:&e];
-
+    NSString* dStr = [[[NSString alloc] initWithData:dData
+                                            encoding:NSUTF8StringEncoding] autorelease];
+    
     [self addIfNotNil:urlParams
                   key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
-                  obj:dData];
+                  obj:dStr];
 
     if (properties && [properties count] > 0) {
       NSData *propertiesData = [NSJSONSerialization dataWithJSONObject:properties
                                                                options:NSJSONReadingMutableContainers
                                                                  error:&e];
+      NSString* propertiesStr = [[[NSString alloc] initWithData:propertiesData
+                                                       encoding:NSUTF8StringEncoding] autorelease];
+      
       [self addIfNotNil:urlParams
                     key:YOZIO_P_EXTERNAL_PROPERTIES
-                    obj:propertiesData];
+                    obj:propertiesStr];
     }
     return [instance getYozioLinkRequest:urlParams destUrl:nonMobileDestinationUrl timeOut:timeOut callback:callback];
   }
@@ -812,10 +826,12 @@ static Yozio *instance = nil;
   }
   NSError *e = nil;
   NSData *payloadData = [NSJSONSerialization dataWithJSONObject:[self buildPayload:self.dataToSend]
-                                                  options:NSJSONReadingMutableContainers
-                                                    error:&e];
-
-  NSDictionary *urlParams = [NSDictionary dictionaryWithObject:payloadData
+                                                        options:NSJSONReadingMutableContainers
+                                                          error:&e];
+  NSString* payloadStr = [[[NSString alloc] initWithData:payloadData
+                                                encoding:NSUTF8StringEncoding] autorelease];
+  
+  NSDictionary *urlParams = [NSDictionary dictionaryWithObject:payloadStr
                                                         forKey:YOZIO_BATCH_EVENTS_P_DATA];
   NSString *urlString = [NSString stringWithFormat:@"%@%@", YOZIO_DEFAULT_BASE_URL, YOZIO_BATCH_EVENTS_ROUTE];
   [Yozio log:@"Final get request url: %@", urlString];

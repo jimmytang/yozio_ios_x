@@ -116,7 +116,8 @@ self._key_ = (_value_); \
         
         NSString *text = [[NSString alloc] initWithData:_data encoding:NSUTF8StringEncoding];
         NSError *e = nil;
-        id result = [NSJSONSerialization dataWithJSONObject:text
+        NSData *jsonData = [text dataUsingEncoding:NSUTF8StringEncoding];
+        id result = [NSJSONSerialization JSONObjectWithData:jsonData
                                                     options:NSJSONReadingMutableContainers
                                                       error:&e];
         [text release];
