@@ -7,7 +7,6 @@
 //
 
 #import "YSeriouslyOperation.h"
-#import "YSeriouslyJSON.h"
 
 #define KVO_SET(_key_, _value_) [self willChangeValueForKey:@#_key_]; \
 self._key_ = (_value_); \
@@ -116,7 +115,10 @@ self._key_ = (_value_); \
         [contentType hasPrefix:@"text/javascript"]) {
         
         NSString *text = [[NSString alloc] initWithData:_data encoding:NSUTF8StringEncoding];
-        id result = [YSeriouslyJSON parse:text];
+        NSError *e = nil;
+        id result = [NSJSONSerialization dataWithJSONObject:text
+                                                    options:NSJSONReadingMutableContainers
+                                                      error:&e];
         [text release];
      
         return result;

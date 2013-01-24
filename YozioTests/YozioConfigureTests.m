@@ -17,7 +17,6 @@
 #import "Kiwi.h"
 #import "KWIntercept.h"
 #import "YOpenUDID.h"
-#import "YJSONKit.h"
 
 @implementation YozioConfigureTests
 
@@ -129,7 +128,8 @@ id mock;
    @"time stamp string", @"timestamp",
    nil];
   
-  NSString *expectedJsonPayload = [[NSDictionary dictionaryWithObjectsAndKeys:
+  NSError *e = nil;
+  NSString *expectedJsonPayload = [NSJSONSerialization JSONObjectWithData:[NSDictionary dictionaryWithObjectsAndKeys:
                                     @"2", @"device_type",
                                     [NSArray arrayWithObject:expectedOpenEvent], @"payload",
                                     @"Unknown", @"hardware",
@@ -142,7 +142,10 @@ id mock;
                                     @"app key", @"app_key",
                                     @"bundle version", @"app_version",
                                     @"0", @"is_jailbroken",
-                                    nil] JSONString];
+                                    nil]
+                                   options: NSJSONReadingMutableContainers
+                                   error: &e
+                                   ];
 
   [Yozio configure:@"app key" secretKey:@"secret key"];
   

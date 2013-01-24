@@ -12,7 +12,6 @@
 #import "Yozio_Private.h"
 #import "YozioRequestManager.h"
 #import "YSeriously.h"
-#import "YJSONKit.h"
 #import "YOpenUDID.h"
 
 SPEC_BEGIN(YozioRequestManagerSpec)
