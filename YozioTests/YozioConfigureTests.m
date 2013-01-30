@@ -92,73 +92,6 @@ id mock;
 }
 
 
-- (void)testConfigureCreatesAnOpenAppEventWithFirstOpenSetToTrueAndCreatesFile
-{
-  [Yozio stub:@selector(getMACAddress) andReturn:@"mac address"];
-  [YOpenUDID stub:@selector(getOpenUDIDSlotCount) andReturn:theValue(1)];
-  [YOpenUDID stub:@selector(value) andReturn:@"open udid value"];
-  [Yozio stub:@selector(bundleVersion) andReturn:@"bundle version"];
-  Yozio *instance = [Yozio getInstance];
-  [instance stub:@selector(timeStampString) andReturn:@"time stamp string"];
-  instance._appKey = @"app key";
-  instance.dataToSend = [NSMutableArray arrayWithObjects:
-                         [NSMutableDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil],
-                         [NSMutableDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil], nil];
-  instance.deviceId = @"device id";
-
-  NSError *error;
-  NSString *rootPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-  NSString *plistPath = [rootPath stringByAppendingPathComponent:@"yozio_first_open_tracker.plist"];
-  NSFileManager *fileManager = [NSFileManager defaultManager];
-  [fileManager removeItemAtPath:plistPath error:&error];
-
-  YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
-  id yrmMock = [YozioRequestManager nullMock];
-  [YozioRequestManager setInstance:yrmMock];
-  KWCaptureSpy *urlSpy = [yrmMock captureArgument:@selector(urlRequest:body:timeOut:handler:) atIndex:0];
-  KWCaptureSpy *urlParamsSpy = [yrmMock captureArgument:@selector(urlRequest:body:timeOut:handler:) atIndex:1];
-
-  NSMutableDictionary *expectedOpenEvent =
-  [NSMutableDictionary dictionaryWithObjectsAndKeys:
-   @"mock UUID", @"event_identifier",
-   @"5", @"event_type",
-   [NSNumber numberWithBool:YES], @"first_open",
-   @"", @"link_name",
-   @"", @"channel",
-   @"time stamp string", @"timestamp",
-   nil];
-  
-  NSError *e = nil;
-  NSString *expectedJsonPayload = [NSJSONSerialization JSONObjectWithData:[NSDictionary dictionaryWithObjectsAndKeys:
-                                    @"2", @"device_type",
-                                    [NSArray arrayWithObject:expectedOpenEvent], @"payload",
-                                    @"Unknown", @"hardware",
-                                    @"open udid value", @"open_udid",
-                                    @"5.0", @"os_version",
-                                    @"device id", @"yozio_udid",
-                                    @"1", @"open_udid_count",
-                                    @"1.000000", @"display_multiplier",
-                                    @"mac address", @"mac_address",
-                                    @"app key", @"app_key",
-                                    @"bundle version", @"app_version",
-                                    @"0", @"is_jailbroken",
-                                    nil]
-                                   options: NSJSONReadingMutableContainers
-                                   error: &e
-                                   ];
-
-  [Yozio configure:@"app key" secretKey:@"secret key"];
-  
-  NSString *urlString = urlSpy.argument;
-  NSString *expectedUrlString = [NSString stringWithFormat:@"http://yoz.io/api/sdk/v1/opened_app"];
-  NSDictionary *urlParams = urlParamsSpy.argument;
-  NSDictionary *expectedUrlParams = [NSDictionary dictionaryWithObject:expectedJsonPayload forKey:@"data"];
-
-  STAssertTrue([urlString isEqualToString:expectedUrlString], @"path doesn't match");
-  STAssertTrue([[urlParams JSONString] isEqualToString:[expectedUrlParams JSONString]], @"first_open flag doesn't match");
-  [YozioRequestManager setInstance:yrmInstance];
-}
-
 - (void)testConfigureCreatesAnOpenAppEventWithFirstOpenSetToFalse
 {
   NSString *rootPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
@@ -194,7 +127,7 @@ id mock;
    @"time stamp string", @"timestamp",
    nil];
   
-  NSString *expectedJsonPayload = [[NSDictionary dictionaryWithObjectsAndKeys:
+  NSString *expectedJsonPayload = [Yozio toJSON:[NSDictionary dictionaryWithObjectsAndKeys:
                                     @"2", @"device_type",
                                     [NSArray arrayWithObject:expectedOpenEvent], @"payload",
                                     @"Unknown", @"hardware",
@@ -207,7 +140,7 @@ id mock;
                                     @"app key", @"app_key",
                                     @"bundle version", @"app_version",
                                     @"0", @"is_jailbroken",
-                                    nil] JSONString];
+                                    nil]];
   
   [Yozio configure:@"app key" secretKey:@"secret key"];
   
@@ -217,7 +150,7 @@ id mock;
   NSDictionary *expectedUrlParams = [NSDictionary dictionaryWithObject:expectedJsonPayload forKey:@"data"];
   
   STAssertTrue([urlString isEqualToString:expectedUrlString], @"path doesn't match");
-  STAssertTrue([[urlParams JSONString] isEqualToString:[expectedUrlParams JSONString]], @"first_open flag doesn't match");
+  STAssertTrue([[Yozio toJSON:urlParams] isEqualToString:[Yozio toJSON:expectedUrlParams]], @"first_open flag doesn't match");
   [YozioRequestManager setInstance:yrmInstance];
 }
 

@@ -21,7 +21,7 @@
   int timeOut;
 }
 
-@property(nonatomic, retain) SeriouslyHandler block;
+@property(nonatomic, copy) SeriouslyHandler block;
 @property(nonatomic, retain) id body;
 @property(nonatomic, retain) NSHTTPURLResponse *response;
 @property(nonatomic, retain) NSError *error;

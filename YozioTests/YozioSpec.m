@@ -106,7 +106,8 @@ describe(@"doFlush", ^{
       instance.dataToSend = nil;
       [instance doFlush];
 
-      NSString *expectedJsonPayload = [[NSDictionary dictionaryWithObjectsAndKeys:
+
+      NSDictionary *expectedJsonPayload = [NSDictionary dictionaryWithObjectsAndKeys:
                                         @"2", @"device_type",
                                         instance.dataToSend, @"payload",
                                         @"Unknown", @"hardware",
@@ -119,14 +120,34 @@ describe(@"doFlush", ^{
                                         @"app key", @"app_key",
                                         @"bundle version", @"app_version",
                                         @"0", @"is_jailbroken",
-                                        nil] JSONString];
+                                        nil];
+
+      NSError *e = nil;
+      NSData *expectedJsonPayloadData = [NSJSONSerialization dataWithJSONObject:expectedJsonPayload
+                                                      options:NSJSONReadingMutableContainers
+                                                        error:&e];
+      NSString* expectedJsonPayloadStr = [[[NSString alloc] initWithData:expectedJsonPayloadData
+                                              encoding:NSUTF8StringEncoding] autorelease];
 
       NSString *urlString = urlSpy.argument;
       NSString *expectedUrlString = [NSString stringWithFormat:@"http://yoz.io/api/sdk/v1/batch_events"];
       NSDictionary *urlParams = urlParamsSpy.argument;
-      NSDictionary *expectedUrlParams = [NSDictionary dictionaryWithObject:expectedJsonPayload forKey:@"data"];
+      NSDictionary *expectedUrlParams = [NSDictionary dictionaryWithObject:expectedJsonPayloadStr forKey:@"data"];
       [[urlString should] equal:expectedUrlString];
-      [[[urlParams JSONString] should] equal:[expectedUrlParams JSONString]];
+      
+      NSData *urlParamsData = [NSJSONSerialization dataWithJSONObject:urlParams
+                                                                      options:NSJSONReadingMutableContainers
+                                                                        error:&e];
+      NSString* urlParamsStr = [[[NSString alloc] initWithData:urlParamsData
+                                                              encoding:NSUTF8StringEncoding] autorelease];
+
+      NSData *expectedUrlParamsData = [NSJSONSerialization dataWithJSONObject:expectedUrlParams
+                                                                        options:NSJSONReadingMutableContainers
+                                                                          error:&e];
+      NSString* expectedUrlParamsStr = [[[NSString alloc] initWithData:expectedUrlParamsData
+                                                                encoding:NSUTF8StringEncoding] autorelease];
+
+      [[urlParamsStr should] equal:expectedUrlParamsStr];
       [YozioRequestManager setInstance:yrmInstance];
     });
     
@@ -277,383 +298,6 @@ describe(@"buildPayload", ^{
   });
 });
 
-//describe(@"initializeExperiments", ^{
-//  context(@"", ^{
-//    beforeEach(^{
-//      [Yozio stub:@selector(getMACAddress) andReturn:@"mac address"];
-//      [YOpenUDID stub:@selector(getOpenUDIDSlotCount) andReturn:theValue(1)];
-//      [YOpenUDID stub:@selector(value) andReturn:@"open udid value"];
-//      [Yozio stub:@selector(bundleVersion) andReturn:@"bundle version"];
-//      Yozio *instance = [Yozio getInstance];
-//      instance._appKey = @"app key";
-//      instance.dataToSend = [NSMutableArray arrayWithObjects:
-//                             [NSMutableDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil],
-//                             [NSMutableDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil], nil];
-//      instance.deviceId = @"device id";
-//      instance._appKey = @"app key";
-//      instance._secretKey = @"secret key";
-//      instance.experimentConfig = [NSMutableDictionary dictionary];
-//      instance.experimentVariationSids = [NSMutableDictionary dictionary];
-//    });
-//    
-//    afterEach(^{
-//      KWClearAllMessageSpies();
-//      KWClearAllObjectStubs();
-//    });
-//    
-//    it(@"should set the experimentConfig and experimentVariationSids if 200", ^{
-//      YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
-//      
-//      YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
-//      
-//      NSInteger statusCode = 200;
-//      NSDictionary *experimentConfig = [NSDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil];
-//      NSDictionary *experimentSids = [NSDictionary dictionaryWithObjectsAndKeys:@"variation id", @"experiment id", nil];
-//      id body = [NSDictionary dictionaryWithObjectsAndKeys:
-//                 experimentConfig, YOZIO_CONFIG_KEY,
-//                 experimentSids, YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY,
-//                 nil];
-//      NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"123"]
-//                                                                statusCode:statusCode
-//                                                               HTTPVersion:@"HTTP/1.1"
-//                                                              headerFields:[NSDictionary dictionary]];
-//      yrmMock.body = body;
-//      yrmMock.response = response;
-//      yrmMock.error = nil;
-//      
-//      [YozioRequestManager setInstance:yrmMock];
-//      
-//      [Yozio initializeExperiments];
-//      
-//      Yozio *instance = [Yozio getInstance];
-//      [[instance.experimentConfig should] equal:experimentConfig];
-//      [[instance.experimentVariationSids should] equal:experimentSids];
-//      
-//      [YozioRequestManager setInstance:yrmInstance];
-//    });
-//    
-//    it(@"should not set either the experimentConfig nor the experimentVariationSids if one of them is blank and the other isn't", ^{
-//      YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
-//      
-//      YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
-//      
-//      NSInteger statusCode = 200;
-//      NSDictionary *experimentConfig = [NSDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil];
-//      NSDictionary *experimentSids = nil;
-//      id body = [NSDictionary dictionaryWithObjectsAndKeys:
-//                 experimentConfig, YOZIO_CONFIG_KEY,
-//                 experimentSids, YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY,
-//                 nil];
-//      NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"123"]
-//                                                                statusCode:statusCode
-//                                                               HTTPVersion:@"HTTP/1.1"
-//                                                              headerFields:[NSDictionary dictionary]];
-//      yrmMock.body = body;
-//      yrmMock.response = response;
-//      yrmMock.error = nil;
-//      
-//      [YozioRequestManager setInstance:yrmMock];
-//      
-//      [Yozio initializeExperiments];
-//      
-//      Yozio *instance = [Yozio getInstance];
-//      [[instance.experimentConfig should] equal:[NSDictionary dictionary]];
-//      [[instance.experimentVariationSids should] equal:[NSDictionary dictionary]];
-//      
-//      [YozioRequestManager setInstance:yrmInstance];
-//    });
-//    
-//
-//    
-//    it(@"should not set the experimentConfig, eventYozioProperties, linkYozioProperties if not 200", ^{
-//      YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
-//      
-//      YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
-//      
-//      NSInteger statusCode = 999;
-//      NSDictionary *experimentConfig = [NSDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil];
-//      NSDictionary *experimentSids = [NSDictionary dictionaryWithObjectsAndKeys:@"variation id", @"experiment id", nil];
-//      id body = [NSDictionary dictionaryWithObjectsAndKeys:
-//                 experimentConfig, YOZIO_CONFIG_KEY,
-//                 experimentSids, YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY,
-//                 nil];
-//      NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"123"]
-//                                                                statusCode:statusCode
-//                                                               HTTPVersion:@"HTTP/1.1"
-//                                                              headerFields:[NSDictionary dictionary]];
-//      yrmMock.body = body;
-//      yrmMock.response = response;
-//      yrmMock.error = nil;
-//      
-//      [YozioRequestManager setInstance:yrmMock];
-//      
-//      [Yozio initializeExperiments];
-//      
-//      Yozio *instance = [Yozio getInstance];
-//      [[instance.experimentConfig should] equal:[NSMutableDictionary dictionary]];
-//      [[instance.experimentVariationSids should] equal:[NSMutableDictionary dictionary]];
-//      
-//      [YozioRequestManager setInstance:yrmInstance];
-//    });
-//
-//    context(@"if body missing value for YOZIO_CONFIG_KEY", ^{
-//      it(@"should not set experimentConfig", ^{
-//        YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
-//        
-//        YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
-//        
-//        NSInteger statusCode = 200;
-//        NSDictionary *experimentSids = [NSDictionary dictionaryWithObjectsAndKeys:@"variation id", @"experiment id", nil];
-//        id body = [NSDictionary dictionaryWithObjectsAndKeys:
-//                   experimentSids, YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY,
-//                   nil];
-//        NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"123"]
-//                                                                  statusCode:statusCode
-//                                                                 HTTPVersion:@"HTTP/1.1"
-//                                                                headerFields:[NSDictionary dictionary]];
-//        yrmMock.body = body;
-//        yrmMock.response = response;
-//        yrmMock.error = nil;
-//        
-//        [YozioRequestManager setInstance:yrmMock];
-//        
-//        Yozio *instance = [Yozio getInstance];
-//        instance._appKey = @"app key";
-//        instance._secretKey = @"secret key";
-//        [Yozio initializeExperiments];
-//        
-//        [[instance.experimentConfig should] equal:[NSMutableDictionary dictionary]];
-//        
-//        [YozioRequestManager setInstance:yrmInstance];
-//      });
-//    });
-//
-//    context(@"if value for YOZIO_CONFIG_KEY is not a dictionary", ^{
-//      it(@"should not set experimentConfig", ^{
-//        YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
-//        
-//        YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
-//        
-//        NSInteger statusCode = 200;
-//        NSDictionary *experimentSids = [NSDictionary dictionaryWithObjectsAndKeys:@"variation id", @"experiment id", nil];
-//        id body = [NSDictionary dictionaryWithObjectsAndKeys:
-//                   @"not a dictionary", YOZIO_CONFIG_KEY,
-//                   experimentSids, YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY,
-//                   nil];
-//        NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"123"]
-//                                                                  statusCode:statusCode
-//                                                                 HTTPVersion:@"HTTP/1.1"
-//                                                                headerFields:[NSDictionary dictionary]];
-//        yrmMock.body = body;
-//        yrmMock.response = response;
-//        yrmMock.error = nil;
-//        
-//        [YozioRequestManager setInstance:yrmMock];
-//        
-//        Yozio *instance = [Yozio getInstance];
-//        instance._appKey = @"app key";
-//        instance._secretKey = @"secret key";
-//        [Yozio initializeExperiments];
-//        
-//        [[instance.experimentConfig should] equal:[NSMutableDictionary dictionary]];
-//        
-//        [YozioRequestManager setInstance:yrmInstance];
-//      });
-//    });
-//
-//    context(@"if body missing value for YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY", ^{
-//      it(@"should not set eventYozioProperties or linkYozioProperties", ^{
-//        YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
-//        
-//        YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
-//        
-//        NSInteger statusCode = 200;
-//        NSDictionary *experimentConfig = [NSDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil];
-//        id body = [NSDictionary dictionaryWithObjectsAndKeys:
-//                   experimentConfig, YOZIO_CONFIG_KEY,
-//                   nil];
-//        NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"123"]
-//                                                                  statusCode:statusCode
-//                                                                 HTTPVersion:@"HTTP/1.1"
-//                                                                headerFields:[NSDictionary dictionary]];
-//        yrmMock.body = body;
-//        yrmMock.response = response;
-//        yrmMock.error = nil;
-//        
-//        [YozioRequestManager setInstance:yrmMock];
-//        
-//        Yozio *instance = [Yozio getInstance];
-//        instance._appKey = @"app key";
-//        instance._secretKey = @"secret key";
-//        [Yozio initializeExperiments];
-//        
-//        [[instance.experimentVariationSids should] equal:[NSMutableDictionary dictionary]];
-//        
-//        [YozioRequestManager setInstance:yrmInstance];
-//      });
-//    });
-//    
-//
-//    context(@"if value for YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY is not a dictionary", ^{
-//      it(@"should not set eventYozioProperties or linkYozioProperties", ^{
-//        YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
-//        
-//        YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
-//        
-//        NSInteger statusCode = 200;
-//        NSDictionary *experimentConfig = [NSDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil];
-//        id body = [NSDictionary dictionaryWithObjectsAndKeys:
-//                   experimentConfig, YOZIO_CONFIG_KEY,
-//                   @"not a dictionary", YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY,
-//                   nil];
-//        NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"123"]
-//                                                                  statusCode:statusCode
-//                                                                 HTTPVersion:@"HTTP/1.1"
-//                                                                headerFields:[NSDictionary dictionary]];
-//        yrmMock.body = body;
-//        yrmMock.response = response;
-//        yrmMock.error = nil;
-//        
-//        [YozioRequestManager setInstance:yrmMock];
-//        
-//        Yozio *instance = [Yozio getInstance];
-//        instance._appKey = @"app key";
-//        instance._secretKey = @"secret key";
-//        [Yozio initializeExperiments];
-//        
-//        [[instance.experimentVariationSids should] equal:[NSMutableDictionary dictionary]];
-//        
-//        [YozioRequestManager setInstance:yrmInstance];
-//      });
-//    });
-//
-//  });
-//});
-//
-//describe(@"initializeExperimentsAsync", ^{
-//  context(@"", ^{
-//    beforeEach(^{
-//      [Yozio stub:@selector(getMACAddress) andReturn:@"mac address"];
-//      [YOpenUDID stub:@selector(getOpenUDIDSlotCount) andReturn:theValue(1)];
-//      [YOpenUDID stub:@selector(value) andReturn:@"open udid value"];
-//      [Yozio stub:@selector(bundleVersion) andReturn:@"bundle version"];
-//      Yozio *instance = [Yozio getInstance];
-//      instance._appKey = @"app key";
-//      instance.dataToSend = [NSMutableArray arrayWithObjects:
-//                             [NSMutableDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil],
-//                             [NSMutableDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil], nil];
-//      instance.deviceId = @"device id";
-//      instance._appKey = @"app key";
-//      instance._secretKey = @"secret key";
-//      instance.experimentConfig = [NSMutableDictionary dictionary];
-//      instance.experimentVariationSids = [NSMutableDictionary dictionary];
-//    });
-//    
-//    it(@"should execute the callback", ^{
-//      YozioRequestManager *yrmInstance = [YozioRequestManager sharedInstance];
-//      
-//      YozioRequestManagerMock *yrmMock = [[YozioRequestManagerMock alloc] init];
-//      
-//      NSInteger statusCode = 200;
-//      NSDictionary *experimentConfig = [NSDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil];
-//      NSDictionary *experimentSids = [NSDictionary dictionaryWithObjectsAndKeys:@"variation id", @"experiment id", nil];
-//      id body = [NSDictionary dictionaryWithObjectsAndKeys:
-//                 experimentConfig, YOZIO_CONFIG_KEY,
-//                 experimentSids, YOZIO_CONFIG_EXPERIMENT_VARIATION_SIDS_KEY,
-//                 nil];
-//      NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"123"]
-//                                                                statusCode:statusCode
-//                                                               HTTPVersion:@"HTTP/1.1"
-//                                                              headerFields:[NSDictionary dictionary]];
-//      yrmMock.body = body;
-//      yrmMock.response = response;
-//      yrmMock.error = nil;
-//      
-//      [YozioRequestManager setInstance:yrmMock];
-//      
-//      __block BOOL testBool = false;
-//      [Yozio initializeExperimentsAsync:^{testBool = true;}];
-//      [[theValue(testBool) should] equal:theValue(true)];
-//      
-//      [YozioRequestManager setInstance:yrmInstance];
-//
-//    });
-//
-//  });
-//});
-//          
-//describe(@"stringForKey", ^{
-//  context(@"", ^{
-//    it(@"should return default if key is null", ^{
-//      Yozio *instance = [Yozio getInstance];
-//      instance.experimentConfig = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil];
-//      [[[Yozio stringForKey:nil defaultValue:@"default value"] should] equal:@"default value"];
-//      [[[Yozio stringForKey:NULL defaultValue:@"default value"] should] equal:@"default value"];
-//    });
-//    
-//    it(@"should return default if experimentConfig is null", ^{
-//      Yozio *instance = [Yozio getInstance];
-//      instance.experimentConfig = nil;
-//      [[[Yozio stringForKey:@"key" defaultValue:@"default value"] should] equal:@"default value"];
-//    });
-//    
-//    it(@"should return default if the key isn't found in experimentConfig", ^{
-//      [[[Yozio stringForKey:@"key" defaultValue:@"default value"] should] equal:@"default value"];
-//    });
-//    
-//    it(@"should return default if the value for key isn't a string", ^{
-//      Yozio *instance = [Yozio getInstance];
-//      instance.experimentConfig = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NSArray array], @"key", nil];
-//      [[[Yozio stringForKey:@"key" defaultValue:@"default value"] should] equal:@"default value"];
-//    });
-//    
-//    it(@"should return value for key if it exists in experimentConfig and is a string", ^{
-//      Yozio *instance = [Yozio getInstance];
-//      instance.experimentConfig = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil];
-//      [[[Yozio stringForKey:@"key" defaultValue:@"default value"] should] equal:@"value"];
-//    });
-//  });
-//});
-//
-//describe(@"intForKey", ^{
-//  context(@"", ^{
-//    it(@"should return default if key is null", ^{
-//      Yozio *instance = [Yozio getInstance];
-//      instance.experimentConfig = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"value", @"key", nil];
-//      [[theValue([Yozio intForKey:nil defaultValue:-1]) should] equal:theValue(-1)];
-//      [[theValue([Yozio intForKey:NULL defaultValue:-1]) should] equal:theValue(-1)];
-//    });
-//    
-//    it(@"should return default if experimentConfig is null", ^{
-//      Yozio *instance = [Yozio getInstance];
-//      instance.experimentConfig = nil;
-//      [[theValue([Yozio intForKey:@"key" defaultValue:-1]) should] equal:theValue(-1)];
-//    });
-//    
-//    it(@"should return default if the key isn't found in experimentConfig", ^{
-//      [[theValue([Yozio intForKey:@"key" defaultValue:-1]) should] equal:theValue(-1)];
-//    });
-//    
-//    it(@"should return default if the value for key isn't a string that converts to an int", ^{
-//      Yozio *instance = [Yozio getInstance];
-//      instance.experimentConfig = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NSArray array], @"key", nil];
-//      [[theValue([Yozio intForKey:@"key" defaultValue:-1]) should] equal:theValue(-1)];
-//    });
-//    
-//    it(@"should return default if the value for key is a string that doesn't convert to an int", ^{
-//      Yozio *instance = [Yozio getInstance];
-//      instance.experimentConfig = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"non int string 1", @"key", nil];
-//      [[theValue([Yozio intForKey:@"key" defaultValue:-1]) should] equal:theValue(-1)];
-//    });
-//    
-//    it(@"should return value for key if it exists in experimentConfig and is a string that converts to an int", ^{
-//      Yozio *instance = [Yozio getInstance];
-//      instance.experimentConfig = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"1", @"key", nil];
-//      [[theValue([Yozio intForKey:@"key" defaultValue:-1]) should] equal:theValue(1)];
-//    });
-//  });
-//});
-
 describe(@"doCollect", ^{
   context(@"userLoggedIn", ^{
     it(@"should update the user name to null if null user name passed", ^{
@@ -779,7 +423,7 @@ describe(@"doCollect", ^{
                                      @"channel", YOZIO_D_CHANNEL,
                                      @"time stamp string", YOZIO_D_TIMESTAMP,
                                      @"event id", YOZIO_D_EVENT_IDENTIFIER,
-                                     [properties JSONString], YOZIO_P_EXTERNAL_PROPERTIES,
+                                     [Yozio toJSON:properties], YOZIO_P_EXTERNAL_PROPERTIES,
                                      nil],
                                     nil];
       instance.dataQueue = [NSMutableArray array];
@@ -827,12 +471,12 @@ describe(@"getYozioLink", ^{
        destinationUrl, YOZIO_GET_URL_P_DEST_URL, nil];
       [Yozio addIfNotNil:expectedUrlParams
                      key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
-                     obj:[[NSDictionary dictionaryWithObjectsAndKeys:
+                     obj:[Yozio toJSON:[NSDictionary dictionaryWithObjectsAndKeys:
                            [NSDictionary dictionaryWithObject:@"value" forKey:@"key"], YOZIO_P_EXPERIMENT_VARIATION_SIDS,
-                           @"channel", YOZIO_GET_URL_P_CHANNEL, nil] JSONString]];
+                           @"channel", YOZIO_GET_URL_P_CHANNEL, nil]]];
 
       [Yozio getYozioLink:linkName channel:@"channel" destinationUrl:destinationUrl];
-      [[[urlParamsSpy.argument JSONString] should] equal:[expectedUrlParams JSONString]];
+      [[[Yozio toJSON:urlParamsSpy.argument] should] equal:[Yozio toJSON:expectedUrlParams]];
       [[destUrlSpy.argument should] equal:@"destination url"];
       
       [Yozio setInstance:instance];
@@ -867,18 +511,18 @@ describe(@"getYozioLink", ^{
        destinationUrl, YOZIO_GET_URL_P_DEST_URL, nil];
       [Yozio addIfNotNil:expectedUrlParams
                      key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
-                     obj:[[NSDictionary dictionaryWithObjectsAndKeys:
+                     obj:[Yozio toJSON:[NSDictionary dictionaryWithObjectsAndKeys:
                            experimentVariationSids, YOZIO_P_EXPERIMENT_VARIATION_SIDS,
-                           @"channel", YOZIO_GET_URL_P_CHANNEL, nil] JSONString]];
+                           @"channel", YOZIO_GET_URL_P_CHANNEL, nil]]];
       [Yozio addIfNotNil:expectedUrlParams
                      key:YOZIO_P_EXTERNAL_PROPERTIES
-                     obj:[properties JSONString]];
+                     obj:[Yozio toJSON:properties]];
 
       [Yozio getYozioLink:@"twitter"
                   channel:@"channel"
            destinationUrl:destinationUrl
                properties:properties];
-      [[[urlParamsSpy.argument JSONString] should] equal:[expectedUrlParams JSONString]];
+      [[[Yozio toJSON:urlParamsSpy.argument] should] equal:[Yozio toJSON:expectedUrlParams]];
       [[destUrlSpy.argument should] equal:@"destination url"];
       
       [Yozio setInstance:instance];
@@ -916,7 +560,7 @@ describe(@"getYozioLink", ^{
        nonMobileDestinationUrl, YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, nil];
       [Yozio addIfNotNil:expectedUrlParams
                      key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
-                     obj:[[NSDictionary dictionaryWithObjectsAndKeys:experimentVariationSids, YOZIO_P_EXPERIMENT_VARIATION_SIDS, @"channel", YOZIO_GET_URL_P_CHANNEL, nil] JSONString]];
+                     obj:[Yozio toJSON:[NSDictionary dictionaryWithObjectsAndKeys:experimentVariationSids, YOZIO_P_EXPERIMENT_VARIATION_SIDS, @"channel", YOZIO_GET_URL_P_CHANNEL, nil]]];
 
       [Yozio getYozioLink:linkName
                   channel:channel
@@ -924,7 +568,7 @@ describe(@"getYozioLink", ^{
     androidDestinationUrl:androidDestinationUrl
   nonMobileDestinationUrl:nonMobileDestinationUrl];
       
-      [[[urlParamsSpy.argument JSONString] should] equal:[expectedUrlParams JSONString]];
+      [[[Yozio toJSON:urlParamsSpy.argument] should] equal:[Yozio toJSON:expectedUrlParams]];
       [[destUrlSpy.argument should] equal:@"non mobile destination"];
       
       [Yozio setInstance:instance];
@@ -962,10 +606,10 @@ describe(@"getYozioLink", ^{
        nonMobileDestinationUrl, YOZIO_GET_URL_P_NON_MOBILE_DEST_URL, nil];
       [Yozio addIfNotNil:expectedUrlParams
                      key:YOZIO_GET_URL_P_YOZIO_PROPERTIES
-                     obj:[[NSDictionary dictionaryWithObjectsAndKeys:experimentVariationSids, YOZIO_P_EXPERIMENT_VARIATION_SIDS, @"channel", YOZIO_GET_URL_P_CHANNEL, nil] JSONString]];
+                     obj:[Yozio toJSON:[NSDictionary dictionaryWithObjectsAndKeys:experimentVariationSids, YOZIO_P_EXPERIMENT_VARIATION_SIDS, @"channel", YOZIO_GET_URL_P_CHANNEL, nil]]];
       [Yozio addIfNotNil:expectedUrlParams
                      key:YOZIO_P_EXTERNAL_PROPERTIES
-                     obj:[properties JSONString]];
+                     obj:[Yozio toJSON:properties]];
       
       
       [Yozio getYozioLink:linkName
@@ -974,7 +618,7 @@ describe(@"getYozioLink", ^{
     androidDestinationUrl:androidDestinationUrl
   nonMobileDestinationUrl:nonMobileDestinationUrl
                properties:properties];
-      [[[urlParamsSpy.argument JSONString] should] equal:[expectedUrlParams JSONString]];
+      [[[Yozio toJSON:urlParamsSpy.argument] should] equal:[Yozio toJSON:expectedUrlParams]];
       [[destUrlSpy.argument should] equal:@"non mobile destination"];
       
       [Yozio setInstance:instance];
@@ -1065,6 +709,4 @@ describe(@"getYozioLinkRequest", ^{
   });
 });
 
-
 SPEC_END
-

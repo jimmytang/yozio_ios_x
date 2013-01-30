@@ -175,6 +175,7 @@
 // Instrumentation data helper methods.
 - (NSString *)timeStampString;
 - (NSString *)eventID;
++ (NSString *)toJSON:(NSDictionary *)dict;
 // File system helper methods.
 - (void)saveUnsentData;
 - (void)loadUnsentData;

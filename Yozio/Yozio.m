@@ -1015,6 +1015,17 @@ static const char* jailbreak_apps[] =
   return timeStamp;
 }
 
++ (NSString *)toJSON:(NSDictionary *)dict
+{
+  NSError *e = nil;
+  NSData *dictData = [NSJSONSerialization dataWithJSONObject:dict
+                                                     options:NSJSONReadingMutableContainers
+                                                       error:&e];
+  NSString* dictStr = [[[NSString alloc] initWithData:dictData
+                                             encoding:NSUTF8StringEncoding] autorelease];
+  return dictStr;
+}
+
 /*******************************************
  * File system helper methods.
  *******************************************/
